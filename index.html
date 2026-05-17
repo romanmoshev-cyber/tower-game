@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Страж Ядра</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section id="menuScreen" class="screen active menu-screen">
+        <div class="menu-topline">
+          <span>// SYSTEM ONLINE</span>
+          <span>v1.0.0</span>
+        </div>
+        <div class="menu-hero">
+          <div class="brand-block compact">
+            <p class="eyebrow">Idle защита одной башни</p>
+            <h1>Страж<br />Ядра</h1>
+            <p class="subtitle">Защищай ядро, усиливай башню и продвигайся все дальше по волнам врагов, превращая заработанные $ в постоянные монеты.</p>
+          </div>
+          <div class="menu-hero-art" aria-hidden="true"></div>
+        </div>
+
+        <div class="stats-grid menu-stats">
+          <div class="stat-card">
+            <i class="sprite-icon stat-icon icon-wave"></i>
+            <span>Лучшая волна</span>
+            <strong id="menuBestWave">0</strong>
+          </div>
+          <div class="stat-card">
+            <i class="sprite-icon stat-icon icon-coin"></i>
+            <span>Монеты</span>
+            <strong id="menuCoins">0</strong>
+          </div>
+          <div class="stat-card">
+            <i class="sprite-icon stat-icon icon-medal"></i>
+            <span>Медали</span>
+            <strong id="menuMedals">0</strong>
+          </div>
+          <div class="stat-card">
+            <i class="sprite-icon stat-icon icon-prestige"></i>
+            <span>Престиж</span>
+            <strong id="menuPrestige">0</strong>
+          </div>
+          <div class="stat-card">
+            <i class="sprite-icon stat-icon icon-crystal"></i>
+            <span>Кристаллы</span>
+            <strong id="menuCrystals">0</strong>
+          </div>
+        </div>
+
+        <div class="tier-panel">
+          <span class="sprite-icon tier-emblem icon-rank-star"></span>
+          <label class="field-label" for="tierSelect">Сложность:</label>
+          <select id="tierSelect" class="select-input"></select>
+        </div>
+        <div id="activeRunInfo" class="info-panel active-run-info hidden"></div>
+
+        <button id="continueBtn" class="primary-btn menu-play-btn continue hidden"><span class="sprite-icon icon-play"></span> Продолжить</button>
+        <button id="playBtn" class="primary-btn menu-play-btn"><span class="sprite-icon icon-play"></span> Играть</button>
+        <div class="menu-feature-grid">
+          <button id="upgradesBtn" class="primary-btn menu-feature-card upgrades">
+            <span>Улучшения</span>
+            <small>Усиль башню и открой новые возможности</small>
+          </button>
+          <button id="ultimateBtn" class="primary-btn menu-feature-card ultimate">
+            <span>Ультимейты</span>
+            <small>Сокрушительные способности изменят ход битвы</small>
+          </button>
+          <button id="labsBtn" class="primary-btn menu-feature-card labs">
+            <span>Лаборатория</span>
+            <small>Исследуй и открывай новые технологии</small>
+          </button>
+          <button id="cardsBtn" class="primary-btn menu-feature-card cards">
+            <span>Карточки</span>
+            <small>Собирай и комбинируй мощные карты</small>
+          </button>
+        </div>
+        <div class="btn-split menu-utility-row">
+          <button id="profileBtn" class="secondary-btn menu-small-btn"><span class="sprite-icon icon-profile"></span>Профиль</button>
+          <button id="customBtn" class="secondary-btn menu-small-btn"><span class="sprite-icon icon-skins"></span>Скины</button>
+          <button id="modulesBtn" class="secondary-btn menu-small-btn"><span class="sprite-icon icon-modules"></span>Модули</button>
+        </div>
+        <div class="btn-split menu-utility-row">
+          <button id="eventsBtn" class="secondary-btn menu-small-btn accent-pink"><span class="sprite-icon icon-events"></span>События</button>
+          <button id="guideBtn" class="secondary-btn menu-small-btn accent-purple"><span class="sprite-icon icon-guide"></span>Справка</button>
+          <button id="settingsBtn" class="secondary-btn menu-small-btn"><span class="sprite-icon icon-settings"></span>Настройки</button>
+        </div>
+        <div class="info-panel debug-panel hidden">
+          <strong>Отладка</strong>
+          <span id="debugStatus">Локальные инструменты тестирования.</span>
+        </div>
+        <div class="btn-split debug-panel hidden">
+          <button id="debugCoinsBtn" class="secondary-btn">+10к Ресурсов</button>
+          <button id="debugUltimatesBtn" class="secondary-btn">Открыть УО</button>
+        </div>
+        <div class="btn-split debug-panel hidden">
+          <button id="debugWaveBtn" class="secondary-btn">Волна 10</button>
+          <button id="debugKillBtn" class="secondary-btn">Завершить</button>
+        </div>
+      </section>
+
+      <section id="gameScreen" class="screen game-screen">
+        <div id="topLeftCurrencies" class="top-left-currencies">
+          <span>$ <strong id="hudCash">0</strong></span>
+          <span>⊙ <strong id="hudCoins">0</strong></span>
+          <span>♦ <strong id="hudCrystals" style="color: var(--accent-pink);">0</strong></span>
+          <span>🔮 <strong id="hudStones" style="color: #b375ff;">0</strong></span>
+          <span>⚙ <strong id="hudParts" style="color: #a0a5b5;">0</strong></span>
+        </div>
+        <div class="top-hud">
+          <div class="hud-panel hud-left">
+            <div class="hud-metrics">
+              <span>⚔ <strong id="hudDamage">10</strong></span>
+              <span>✚ <strong id="hudRegen">0.0</strong></span>
+              <span>× <strong id="hudCoinMult">1.00</strong></span>
+            </div>
+            <div class="hud-healthbar" aria-label="Здоровье башни">
+              <b id="hudOverhealFill"></b>
+              <i id="hudHealthFill"></i>
+              <strong id="hudHealth">100/100</strong>
+            </div>
+          </div>
+          <div class="hud-panel hud-right">
+            <div class="hud-wave-line">
+              <span>Волна</span>
+              <strong id="hudWave">1</strong>
+            </div>
+            <div class="hud-wavebar" aria-label="Время до следующей волны">
+              <i id="hudWaveTimer"></i>
+            </div>
+            <div id="hudEnemyPower" class="hud-threat">ATK 0 / HP 0</div>
+          </div>
+        </div>
+        <div class="playback-controls">
+          <button id="hudSpeedDownBtn" class="speed-btn hidden" type="button">◀</button>
+          <button id="hudSpeedUpBtn" class="speed-btn" type="button">▶ x1.0</button>
+          <button id="hudPlayPauseBtn" class="play-btn" type="button">⏸</button>
+        </div>
+        <button id="gameSettingsBtn" class="game-gear" aria-label="Меню игры" type="button">⚙</button>
+        <div id="gameGearMenu" class="gear-menu hidden">
+          <button id="gameMenuBtn" class="mini-btn" type="button">Меню</button>
+          <button id="settingsFromGameBtn" class="mini-btn" type="button">Настройки</button>
+          <button id="quitRunBtn" class="mini-btn danger" type="button">Выход</button>
+        </div>
+
+        <div class="arena-wrap">
+          <canvas id="gameCanvas" width="760" height="920" aria-label="Прямоугольная арена защиты башни"></canvas>
+          <div id="waveToast" class="wave-toast">Волна 1</div>
+          <div id="bossBar" class="boss-bar hidden">
+            <span>Босс</span>
+            <div><i id="bossFill"></i></div>
+          </div>
+          <div id="ultimateHud" class="ultimate-hud"></div>
+          <div id="bossRewardOverlay" class="reward-overlay hidden">
+            <div class="reward-box">
+              <span>Босс побежден</span>
+              <strong>Выбери протокол ядра</strong>
+              <div id="bossRewardChoices" class="reward-choices"></div>
+            </div>
+          </div>
+          <div id="perkOverlay" class="reward-overlay hidden">
+            <div class="reward-box">
+              <span>Волна пройдена</span>
+              <strong>Выбери Перк</strong>
+              <div id="perkChoices" class="reward-choices"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="upgrade-panel">
+          <div class="panel-title">
+            <span id="upgradePanelTitle">УЛУЧШЕНИЯ: АТАКА</span>
+          </div>
+          <div id="towerStats" class="tower-stats hidden">Статы башни: загрузка...</div>
+          <div id="runUpgradeGrid" class="run-upgrade-grid"></div>
+        </div>
+        <div class="game-tabbar" aria-label="Разделы улучшений">
+          <button class="tab-cell active" data-category="attack" aria-label="Атака">⚔</button>
+          <button class="tab-cell" data-category="defense" aria-label="Защита">🛡</button>
+          <button class="tab-cell" data-category="utility" aria-label="Тактика">★</button>
+        </div>
+      </section>
+
+      <section id="defeatScreen" class="screen">
+        <div class="brand-block compact">
+          <i class="sprite-icon" style="width: 64px; height: 64px; margin-bottom: 8px; background-image: url('image/ui/icon_close.png'); filter: drop-shadow(0 0 15px rgba(255, 92, 155, 0.8));"></i>
+          <p class="eyebrow">Забег завершен</p>
+          <h1>Ядро отключено</h1>
+        </div>
+        <div class="result-list">
+          <div><span>Достигнута волна</span><strong id="resultWave">0</strong></div>
+          <div><span>Награда</span><strong id="resultCoins">0</strong></div>
+          <div><span>Лучшая волна</span><strong id="resultBest">0</strong></div>
+          <div><span>Убийства</span><strong id="resultKills">0</strong></div>
+          <div><span>Боссы</span><strong id="resultBosses">0</strong></div>
+          <div><span>Всего $</span><strong id="resultCash">0</strong></div>
+        </div>
+        <button id="againBtn" class="primary-btn">Играть снова</button>
+        <button id="menuBtn" class="secondary-btn wide">Главное меню</button>
+      </section>
+
+      <section id="profileScreen" class="screen">
+        <div class="sub-head">
+          <button class="back-btn" data-screen="menuScreen">Назад</button>
+          <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-profile" style="width:28px; height:28px;"></i> Профиль</h2>
+          <strong id="playerIdDisplay" style="font-size: 0.8rem; color: var(--text-muted);">ID: ---</strong>
+        </div>
+        <div class="info-panel" style="margin-bottom: 24px;">
+          <strong>Глобальная статистика</strong><span>Данные за все время существования аккаунта.</span>
+        </div>
+        <div class="result-list">
+          <div><span>Сыграно времени</span><strong id="statPlayTime">0ч 0м</strong></div>
+          <div><span>Всего убийств</span><strong id="statTotalKills">0</strong></div>
+          <div><span>Боссов повержено</span><strong id="statTotalBosses">0</strong></div>
+          <div><span>Инвестировано монет</span><strong id="statSpentCoins">0</strong></div>
+          <div><span>Потрачено медалей</span><strong id="statSpentMedals">0</strong></div>
+        </div>
+        <div class="info-panel"><strong>Бестиарий</strong><span>Изученные враги и статистика убийств.</span></div>
+        <div id="bestiaryList" class="shop-list"></div>
+      </section>
+
+      <section id="permanentScreen" class="screen">
+        <div class="sub-head">
+          <button class="back-btn" data-screen="menuScreen">Назад</button>
+          <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-upgrades" style="width:28px; height:28px;"></i> Постоянные улучшения</h2>
+          <strong id="permCoins">0</strong>
+        </div>
+        <div id="prestigePanel" class="info-panel"></div>
+        <div id="permanentList" class="shop-list"></div>
+      </section>
+
+      <section id="labScreen" class="screen">
+        <div class="sub-head">
+          <button class="back-btn" data-screen="menuScreen">Назад</button>
+          <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-labs" style="width:28px; height:28px;"></i> Лаборатория</h2>
+          <strong id="labCoins">0</strong>
+        </div>
+        <div id="labActiveSlots" style="margin-bottom: 24px;"></div>
+        <div id="labList" class="shop-list"></div>
+      </section>
+
+      <section id="cardsScreen" class="screen">
+        <div class="sub-head">
+          <button class="back-btn" data-screen="menuScreen">Назад</button>
+          <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-cards" style="width:28px; height:28px;"></i> Экипировка Карт</h2>
+          <strong id="cardsCrystals" style="color: var(--accent-pink);">0 ♦</strong>
+        </div>
+        <div id="cardSlotsGrid" class="cards-grid" style="margin-bottom: 30px;"></div>
+        <button id="pullCardBtn" class="primary-btn" style="background: linear-gradient(135deg, #b375ff, #ff5c9b);">Вытянуть карту (20 ♦)</button>
+        <div class="info-panel"><strong>Твоя коллекция</strong><span>Нажми на карту, чтобы экипировать её в свободный слот.</span></div>
+        <div id="cardsInventory" class="cards-grid"></div>
+      </section>
+
+      <section id="customScreen" class="screen">
+        <div class="sub-head">
+          <button class="back-btn" data-screen="menuScreen">Назад</button>
+          <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-skins" style="width:28px; height:28px;"></i> Скины башни</h2>
+          <strong id="customMedals" style="color: var(--accent-orange);">0 Медалей</strong>
+        </div>
+        <div class="info-panel"><strong>Форма Ядра</strong><span>Измени физическую форму башни.</span></div>
+        <div id="customShapes" class="cards-grid" style="margin-bottom: 24px;"></div>
+        <div class="info-panel"><strong>Цвет неона</strong><span>Измени цвет подсветки и выстрелов.</span></div>
+        <div id="customColors" class="cards-grid"></div>
+      </section>
+
+      <section id="modulesScreen" class="screen">
+        <div class="sub-head">
+          <button class="back-btn" data-screen="menuScreen">Назад</button>
+          <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-modules" style="width:28px; height:28px;"></i> Модули ядра</h2>
+          <strong id="modulesParts" style="color: #a0a5b5;">0 ⚙</strong>
+        </div>
+        <div id="moduleSlotsGrid" class="cards-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 20px;"></div>
+        <div class="btn-split">
+          <button id="pullModuleBtn" class="primary-btn">Создать модуль (50 ⚙)</button>
+          <button id="mergeModulesBtn" class="secondary-btn" style="color: var(--accent-green);">Слить дубликаты</button>
+        </div>
+        <div class="info-panel"><strong>Склад модулей</strong><span>Собери 3 одинаковых модуля одной редкости, чтобы слить их в модуль высшего качества. Нажми, чтобы надеть.</span></div>
+        <div id="modulesInventory" class="cards-grid" style="grid-template-columns: repeat(2, 1fr);"></div>
+      </section>
+
+      <section id="ultimateScreen" class="screen">
+        <div class="sub-head">
+          <button class="back-btn" data-screen="menuScreen">Назад</button>
+          <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-ultimate" style="width:28px; height:28px;"></i> Ультимативное оружие</h2>
+          <strong id="ultimateCoins">0</strong>
+        </div>
+        <div class="info-panel"><strong>Улучшения за Камни Силы</strong><span id="ultimateStones">0 🔮</span></div>
+        <div id="stoneShopList" class="shop-list" style="margin-bottom: 16px;"></div>
+        <div id="ultimateLoadoutInfo" class="info-panel"></div>
+        <div id="ultimateList" class="shop-list"></div>
+      </section>
+
+      <section id="eventsScreen" class="screen">
+        <div class="sub-head">
+          <button class="back-btn" data-screen="menuScreen">Назад</button>
+          <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-events" style="width:28px; height:28px;"></i> События</h2>
+          <strong id="eventMedals">0</strong>
+        </div>
+        <div id="dailyQuestsList" class="shop-list"></div>
+        <div id="eventModes" class="shop-list"></div>
+        <div id="eventShop" class="shop-list"></div>
+        <div id="eventList" class="shop-list"></div>
+      </section>
+
+      <section id="guideScreen" class="screen">
+        <div class="sub-head">
+          <button class="back-btn" data-screen="menuScreen">Назад</button>
+          <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-guide" style="width:28px; height:28px;"></i> Справка</h2>
+          <strong>V10</strong>
+        </div>
+        <div class="guide-list">
+          <div><strong>Ядро</strong><span>Переживай волны, покупай улучшения забега, а после поражения превращай кэш в постоянные монеты.</span></div>
+          <div><strong>Босс-волны</strong><span>Каждая 10-я волна вызывает босса с отдельной полосой здоровья и повышенной наградой.</span></div>
+          <div><strong>Ультимейты</strong><span>Открытое оружие можно добавить в загрузку перед забегом. Одновременно активно до трех видов.</span></div>
+          <div><strong>Turtle</strong><span>Для ранних тиров теперь сильнее работают абсолютная защита, броня, шипы, регенерация, карты Крепость и Экстра защита.</span></div>
+          <div><strong>Blender</strong><span>Орбы, Ударная волна, отбрасывание, вампиризм и карта Доп. сферы помогают держать врагов на дистанции и перемалывать толпу.</span></div>
+          <div><strong>Фарм-синхрон</strong><span>Золотое Ядро и Черная Дыра вместе дают повышенный доход: враги стягиваются, а убийства внутри Черной Дыры приносят больше $.</span></div>
+          <div><strong>NamuWiki v1</strong><span>Добавлены Damage/meter, Rapid Fire, расширенный рикошет, $/волна, монеты/волна, пропуск уровней HP/ATK врагов, новые карты и уникальные модули.</span></div>
+          <div><strong>Тиры</strong><span>Тир 2 открывается после 50-й волны на Тире 1. Тир 3 открывается после 75-й волны на Тире 2.</span></div>
+        </div>
+      </section>
+
+      <section id="settingsScreen" class="screen">
+        <div class="sub-head">
+          <button class="back-btn" data-screen="menuScreen">Назад</button>
+          <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-settings" style="width:28px; height:28px;"></i> Настройки</h2>
+          <strong></strong>
+        </div>
+        <div class="settings-list">
+          <label class="setting-row">
+            <span><strong>Музыка</strong><small>Фоновый саундтрек (в разработке).</small></span>
+            <input id="musicToggle" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <span><strong>Громкость музыки</strong></span>
+            <input id="musicVolumeSlider" type="range" min="0" max="1" step="0.05" style="width: 100px;" />
+          </label>
+          <label class="setting-row">
+            <span><strong>Звуки (SFX)</strong><small>Эффекты выстрелов и взрывов.</small></span>
+            <input id="soundToggle" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <span><strong>Громкость SFX</strong></span>
+            <input id="soundVolumeSlider" type="range" min="0" max="1" step="0.05" style="width: 100px;" />
+          </label>
+          <label class="setting-row">
+            <span><strong>60 FPS</strong><small>Выкл = 30 FPS для экономии батареи.</small></span>
+            <input id="fpsToggle" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <span><strong>Авто-рестарт</strong><small>Начинать новый забег после смерти.</small></span>
+            <input id="autoRestartToggle" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <span><strong>Числа урона</strong><small>Показывать всплывающий урон и полученный кэш.</small></span>
+            <input id="damageNumbersToggle" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <span><strong>Тряска экрана</strong><small>Небольшая отдача при ударах и появлении босса.</small></span>
+            <input id="screenShakeToggle" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <span><strong>Меньше движения</strong><small>Более спокойные эффекты для долгих idle-сессий.</small></span>
+            <input id="reducedMotionToggle" type="checkbox" />
+          </label>
+          <div class="info-panel">
+            <strong>Сохранение прогресса</strong>
+            <span id="saveToolStatus">Привязка к Telegram или экспорт вручную.</span>
+          </div>
+          <div id="tgCloudBlock" class="hidden">
+            <button id="tgSaveBtn" class="primary-btn" style="margin-bottom: 8px;">Сохранить в Telegram Cloud</button>
+            <button id="tgLoadBtn" class="secondary-btn wide" style="margin-top: 0;">Загрузить из облака</button>
+          </div>
+          <button id="exportSaveBtn" class="secondary-btn wide">Скопировать код сохранения</button>
+          <button id="importSaveBtn" class="secondary-btn wide">Вставить код и загрузить</button>
+          <button id="resetSaveBtn" class="secondary-btn wide danger-text">Сбросить прогресс</button>
+        </div>
+      </section>
+
+      <div id="upgradeInfoOverlay" class="reward-overlay hidden">
+        <div class="reward-box">
+          <span id="upgradeInfoCategory">Категория</span>
+          <strong id="upgradeInfoTitle">Название</strong>
+          <p id="upgradeInfoDesc" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px; line-height: 1.4;">Описание улучшения</p>
+          <div style="margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; text-align: left; border: 1px solid var(--border-light);">
+            <div id="upgradeInfoLevel" style="color: var(--accent-cyan); font-size: 0.95rem; margin-bottom: 8px;">Уровень: 0 / 100</div>
+            <div id="upgradeInfoEffect" style="color: var(--text-main); font-size: 0.95rem; margin-bottom: 8px; line-height: 1.4;">Текущий стат: 0</div>
+            <div id="upgradeInfoNext" style="color: var(--accent-green); font-size: 0.85rem;">Следующий уровень: +0</div>
+          </div>
+          <button id="closeUpgradeInfoBtn" class="primary-btn">Понятно</button>
+        </div>
+      </div>
+
+      <div id="welcomeOverlay" class="reward-overlay hidden">
+        <div class="reward-box">
+          <span>С возвращением!</span>
+          <strong id="welcomeTitle">Отчет за отсутствие</strong>
+          <div id="offlineReport" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px; line-height: 1.4;"></div>
+          <div id="dailyRewardReport" style="color: var(--accent-cyan); font-size: 1rem; margin-bottom: 20px;"></div>
+          <button id="claimWelcomeBtn" class="primary-btn">Забрать</button>
+        </div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+      // Инициализация Telegram Mini App после загрузки интерфейса
+      if (window.Telegram && window.Telegram.WebApp) {
+        const telegramApp = window.Telegram.WebApp;
+        telegramApp.ready();
+        telegramApp.expand();
+      }
+    </script>
+  </body>
+</html>
