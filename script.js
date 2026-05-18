@@ -138,6 +138,7 @@ const cosmeticDefs = {
     { id: "shape_square", name: "Квадрат", sides: 4, cost: 15 },
     { id: "shape_triangle", name: "Тригон", sides: 3, cost: 25 },
     { id: "shape_octa", name: "Октагон", sides: 8, cost: 40 },
+    { id: "shape_substance", name: "Субстанция", sides: 8, cost: 35, substance: true },
   ],
   colors: [
     { id: "color_cyan", name: "Неон", color: "#55ecff", dark: "#141a3a", cost: 0 },
@@ -782,7 +783,7 @@ function defaultProgress() {
     milestones: {},
     settings: { damageNumbers: true, screenShake: true, reducedMotion: false, music: true, sound: true, fps60: true, musicVolume: 0.8, soundVolume: 0.8, autoRestart: false },
     customization: { shape: "shape_hex", color: "color_cyan" },
-    unlockedCosmetics: ["shape_hex", "color_cyan"],
+    unlockedCosmetics: ["shape_hex", "color_cyan", "shape_substance"],
     dailyQuests: { date: "", list: [] },
   };
 }
@@ -1875,6 +1876,8 @@ function towerShoot(dt) {
   const targets = findTargets(1 + (Math.random() < game.tower.multiShot ? 1 : 0));
   if (!targets.length) return;
   audio.play("shoot");
+  const projectileStyle = progress.customization.shape === "shape_substance" ? "substance" : "normal";
+  if (projectileStyle === "substance") addEffect("spit", game.tower.x, game.tower.y, 0.18, "#8cff72");
 
   targets.forEach((target) => {
     const isCrit = Math.random() < game.tower.critChance;
@@ -1896,6 +1899,7 @@ function towerShoot(dt) {
       crit: isCrit,
       superCrit: isSuperCrit,
       criticalCoin: isCrit && progress.equippedCards.includes("cardCriticalCoin"),
+      style: projectileStyle,
     });
   });
 
@@ -4079,36 +4083,82 @@ function drawTower() {
   }
   ctx.restore();
 
-  ctx.beginPath();
-  for (let i = 0; i < sides; i += 1) {
-    const angle = -Math.PI / sides + (i / sides) * TWO_PI;
-    const x = t.x + Math.cos(angle) * 22;
-    const y = t.y + Math.sin(angle) * 22;
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  }
-  ctx.closePath();
-  ctx.fillStyle = darkColor;
-  ctx.fill();
-  ctx.strokeStyle = mainColor;
-  ctx.lineWidth = 3;
-  ctx.shadowColor = mainColor;
-  ctx.shadowBlur = 16;
-  ctx.stroke();
+  if (shapeDef.substance) {
+    const time = performance.now() / 420;
+    const blobRadius = 24;
 
-  ctx.beginPath();
-  for (let i = 0; i < sides; i += 1) {
-    const angle = Math.PI / sides + (i / sides) * TWO_PI;
-    const x = t.x + Math.cos(angle) * 12;
-    const y = t.y + Math.sin(angle) * 12;
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
+    ctx.save();
+    ctx.translate(t.x, t.y);
+    ctx.beginPath();
+    const blobPoints = 14;
+    for (let i = 0; i <= blobPoints; i += 1) {
+      const angle = (i / blobPoints) * TWO_PI;
+      const wobble = Math.sin(angle * 3 + time) * 5 + Math.cos(angle * 5 - time * 1.25) * 4;
+      const r = blobRadius + wobble;
+      const x = Math.cos(angle) * r;
+      const y = Math.sin(angle) * r;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = "rgba(180, 255, 160, 0.95)";
+    ctx.shadowColor = mainColor;
+    ctx.shadowBlur = 18;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(110, 220, 130, 0.95)";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.beginPath();
+    ctx.arc(t.x, t.y, 10, 0, TWO_PI);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.shadowBlur = 12;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    for (let j = 0; j < 4; j += 1) {
+      const a = time * 1.4 + j * TWO_PI / 4;
+      const radius = blobRadius + 10 + j * 4;
+      const bx = t.x + Math.cos(a) * radius;
+      const by = t.y + Math.sin(a) * radius;
+      ctx.beginPath();
+      ctx.arc(bx, by, 2 + Math.sin(time * 1.7 + j) * 1.2, 0, TWO_PI);
+      ctx.fillStyle = "rgba(180, 255, 160, 0.45)";
+      ctx.fill();
+    }
+  } else {
+    ctx.beginPath();
+    for (let i = 0; i < sides; i += 1) {
+      const angle = -Math.PI / sides + (i / sides) * TWO_PI;
+      const x = t.x + Math.cos(angle) * 22;
+      const y = t.y + Math.sin(angle) * 22;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = darkColor;
+    ctx.fill();
+    ctx.strokeStyle = mainColor;
+    ctx.lineWidth = 3;
+    ctx.shadowColor = mainColor;
+    ctx.shadowBlur = 16;
+    ctx.stroke();
+
+    ctx.beginPath();
+    for (let i = 0; i < sides; i += 1) {
+      const angle = Math.PI / sides + (i / sides) * TWO_PI;
+      const x = t.x + Math.cos(angle) * 12;
+      const y = t.y + Math.sin(angle) * 12;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = "rgba(233, 253, 255, 0.92)";
+    ctx.shadowBlur = 18;
+    ctx.fill();
+    ctx.shadowBlur = 0;
   }
-  ctx.closePath();
-  ctx.fillStyle = "rgba(233, 253, 255, 0.92)";
-  ctx.shadowBlur = 18;
-  ctx.fill();
-  ctx.shadowBlur = 0;
 
   if (game?.goldenCoreTimer > 0) {
     ctx.beginPath();
@@ -4261,12 +4311,30 @@ function drawProjectiles() {
   const colorDef = cosmeticDefs.colors.find(c => c.id === progress?.customization?.color) || cosmeticDefs.colors[0];
   ctx.save();
   game.projectiles.forEach((p) => {
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.superCrit ? 8 : (p.crit ? 6 : 4), 0, TWO_PI);
-    ctx.fillStyle = p.superCrit ? "#ff4444" : (p.crit ? "#ffb020" : colorDef.color);
-    ctx.shadowColor = ctx.fillStyle;
-    ctx.shadowBlur = 12;
-    ctx.fill();
+    if (p.style === "substance") {
+      const drift = Math.sin(performance.now() / 220 + p.x * 0.02) * 2;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(drift);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 9, 6, 0, 0, TWO_PI);
+      ctx.fillStyle = p.superCrit ? "rgba(255,68,68,0.95)" : (p.crit ? "rgba(255,176,32,0.95)" : "rgba(140, 255, 114, 0.95)");
+      ctx.shadowColor = "rgba(140, 255, 114, 0.9)";
+      ctx.shadowBlur = 14;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.fillStyle = "rgba(255,255,255,0.65)";
+      ctx.ellipse(-2, -1, 2, 1.5, 0, 0, TWO_PI);
+      ctx.fill();
+      ctx.restore();
+    } else {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.superCrit ? 8 : (p.crit ? 6 : 4), 0, TWO_PI);
+      ctx.fillStyle = p.superCrit ? "#ff4444" : (p.crit ? "#ffb020" : colorDef.color);
+      ctx.shadowColor = ctx.fillStyle;
+      ctx.shadowBlur = 12;
+      ctx.fill();
+    }
   });
   game.missiles.forEach((m) => {
     ctx.beginPath();
@@ -4364,6 +4432,14 @@ function drawEffects() {
       ctx.arc(effect.x, effect.y, (1 - k) * 270 + 24, 0, TWO_PI);
       ctx.strokeStyle = "rgba(85, 236, 255, 0.8)";
       ctx.stroke();
+    } else if (effect.type === "spit") {
+      ctx.fillStyle = effect.color;
+      ctx.shadowColor = effect.color;
+      ctx.shadowBlur = 18;
+      ctx.beginPath();
+      ctx.ellipse(effect.x, effect.y, (1 - k) * 26 + 8, (1 - k) * 12 + 4, Math.sin(performance.now() / 250) * 0.4, 0, TWO_PI);
+      ctx.fill();
+      ctx.shadowBlur = 0;
     } else {
       ctx.beginPath();
       ctx.arc(effect.x, effect.y, (1 - k) * (effect.type === "superCrit" ? 110 : 70) + 8, 0, TWO_PI);
