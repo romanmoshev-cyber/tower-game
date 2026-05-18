@@ -12,6 +12,7 @@ arenaBackground.addEventListener("load", () => {
 
 const STORAGE_KEY = "coreSentinelSaveV1";
 const TWO_PI = Math.PI * 2;
+const ARENA_CAMERA_ZOOM_OUT = 5;
 
 const balance = {
   waveEnemyBase: 4,
@@ -365,8 +366,12 @@ function applyTelegramPlatformClasses() {
 
 function resizeGameCanvas() {
   const rect = arenaWrap?.getBoundingClientRect();
-  const width = Math.max(320, Math.round(rect?.width || canvas.clientWidth || 760));
-  const height = Math.max(240, Math.round(rect?.height || canvas.clientHeight || 920));
+  const viewportWidth = Math.max(320, Math.round(rect?.width || canvas.clientWidth || 760));
+  const viewportHeight = Math.max(240, Math.round(rect?.height || canvas.clientHeight || 920));
+  // The canvas is rendered into the same CSS viewport, but the playable world is
+  // five times larger so the arena camera feels pulled back instead of cramped.
+  const width = viewportWidth * ARENA_CAMERA_ZOOM_OUT;
+  const height = viewportHeight * ARENA_CAMERA_ZOOM_OUT;
   const prevWidth = canvas.width;
   const prevHeight = canvas.height;
 
@@ -2412,7 +2417,7 @@ function getNextUpgradeEffectString(id, level) {
   switch(id) {
     case "damage": return `+${(4 + level * 1.4).toFixed(1)} к базовому урону`;
     case "attackSpeed": return `x1.12 к скорости атаки`;
-    case "range": return `+16 px`;
+    case "range": return `+12 px`;
     case "critChance": return `+3.5%`;
     case "critDamage": return `+0.22x`;
     case "superCritChance": return `+1.0%`;
