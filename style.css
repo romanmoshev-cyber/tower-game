@@ -751,15 +751,13 @@ button:disabled {
 }
 .arena-wrap {
   position: absolute;
-  inset: 0 0 360px 0; /* Ограничиваем арену пространством над панелью апгрейдов, чтобы башня была строго по центру */
+  inset: 0; /* Арена всегда полноэкранная; панели улучшений накладываются поверх неё. */
   z-index: 1;
 }
 #gameCanvas {
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: contain;
-  object-position: center center;
 }
 
 .top-left-currencies {
