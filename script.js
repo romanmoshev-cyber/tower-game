@@ -623,6 +623,13 @@ const audio = {
       gain.gain.setValueAtTime(0.15 * vol, t);
       gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
       osc.start(t); osc.stop(t + 0.1);
+    } else if (type === "substanceShoot") {
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(420, t);
+      osc.frequency.exponentialRampToValueAtTime(90, t + 0.18);
+      gain.gain.setValueAtTime(0.16 * vol, t);
+      gain.gain.exponentialRampToValueAtTime(0.002, t + 0.18);
+      osc.start(t); osc.stop(t + 0.18);
     } else if (type === "hit") {
       osc.type = "sawtooth";
       osc.frequency.setValueAtTime(120, t);
@@ -1875,8 +1882,9 @@ function towerShoot(dt) {
   const rapid = game.tower.rapidFireTimer > 0 ? 0.42 : 1;
   const targets = findTargets(1 + (Math.random() < game.tower.multiShot ? 1 : 0));
   if (!targets.length) return;
-  audio.play("shoot");
   const projectileStyle = progress.customization.shape === "shape_substance" ? "substance" : "normal";
+  const shootSound = projectileStyle === "substance" ? "substanceShoot" : "shoot";
+  audio.play(shootSound);
   if (projectileStyle === "substance") addEffect("spit", game.tower.x, game.tower.y, 0.18, "#8cff72");
 
   targets.forEach((target) => {
@@ -4049,8 +4057,12 @@ function drawTower() {
   const shapeDef = cosmeticDefs.shapes.find(s => s.id === progress?.customization?.shape) || cosmeticDefs.shapes[0];
   const colorDef = cosmeticDefs.colors.find(c => c.id === progress?.customization?.color) || cosmeticDefs.colors[0];
   const sides = shapeDef.sides;
-  const mainColor = colorDef.color;
-  const darkColor = colorDef.dark;
+  let mainColor = colorDef.color;
+  let darkColor = colorDef.dark;
+  if (shapeDef.substance) {
+    mainColor = "#8cff72";
+    darkColor = "#2d4f1d";
+  }
 
   ctx.save();
   ctx.beginPath();
