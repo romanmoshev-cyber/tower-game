@@ -2618,7 +2618,7 @@ function unlockCardSlot() {
 }
 
 function renderCards() {
-  document.getElementById("cardsCrystals").textContent = `${progress.crystals || 0} ♦`;
+  document.getElementById("cardsCrystals").textContent = progress.crystals || 0;
   
   const slotsGrid = document.getElementById("cardSlotsGrid");
   slotsGrid.innerHTML = "";
@@ -2718,7 +2718,7 @@ function mergeModules() {
 }
 
 function renderModules() {
-  document.getElementById("modulesParts").textContent = `${progress.moduleParts || 0} ⚙`;
+  document.getElementById("modulesParts").textContent = progress.moduleParts || 0;
   const slotsGrid = document.getElementById("moduleSlotsGrid");
   slotsGrid.innerHTML = "";
   moduleTypes.forEach(def => {
@@ -2848,7 +2848,7 @@ function renderUltimateShop() {
   const selectedIds = getSelectedUltimateIds();
   const synergies = getActiveSynergies();
   
-  document.getElementById("ultimateStones").textContent = `${progress.powerStones || 0} 🔮`;
+  document.getElementById("ultimateStones").textContent = progress.powerStones || 0;
   const stoneShop = document.getElementById("stoneShopList");
   stoneShop.innerHTML = `
     <div class="shop-card"><div><strong>Урон УО (+5%)</strong><span style="display:block; font-size:0.8rem; margin-top:2px;">Ур.${progress.stoneUpgrades.dmg || 0} • 10 🔮</span></div>
