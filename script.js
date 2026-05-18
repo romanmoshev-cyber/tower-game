@@ -8,17 +8,17 @@ const TWO_PI = Math.PI * 2;
 const ARENA_CAMERA_ZOOM_OUT = 2.5;
 
 const balance = {
-  waveEnemyBase: 4,
-  waveEnemyGrowth: 0.96,
+  waveEnemyBase: 3,
+  waveEnemyGrowth: 0.88,
   waveHpGrowth: 1.068,
   waveDamageGrowth: 1.052,
   waveSpeedGrowth: 0.006,
   spawnBaseDelay: 0.78,
   spawnMinDelay: 0.3,
   spawnDelayWaveReduction: 0.008,
-  coinCashRate: 0.04,
-  coinWaveBonus: 1.6,
-  coinKillRate: 0.08,
+  coinCashRate: 0.025,
+  coinWaveBonus: 1.25,
+  coinKillRate: 0.05,
   coinBossBonus: 12,
   bossHpGrowth: 1.85,
   bossDamageGrowth: 1.28,
@@ -161,7 +161,8 @@ const enemyDescs = {
   armored: "Тяжелый металл. Полностью игнорирует отбрасывание.",
   assassin: "Стремительный. Огромный урон, но мало ОЗ.",
   healer: "Периодически восстанавливает ОЗ всем врагам вокруг.",
-  boss: "Иммунитет к сферам и отбрасыванию. Дает кристаллы и детали модулей."
+  boss: "Иммунитет к сферам и отбрасыванию. Дает кристаллы и детали модулей.",
+  horn: "Прозрачный убийца. Его видит только внимательная рука игрока."
 };
 
 const runUpgradeDefs = [
@@ -179,8 +180,8 @@ const runUpgradeDefs = [
   { id: "damageMeter", name: "Урон/метр", category: "attack", base: 110, growth: 1.42, max: 120, desc: "Снаряды наносят больше урона дальним целям." },
   { id: "superCritChance", name: "Супер-крит (%)", category: "attack", base: 1500, growth: 1.8, max: 100, desc: "Шанс превратить критический урон в супер-крит." },
   { id: "superCritMult", name: "Супер-крит (x)", category: "attack", base: 2000, growth: 1.85, max: 150, desc: "Дополнительный множитель для супер-критов." },
-  { id: "orbCount", name: "Сферы (шт)", category: "attack", base: 250, growth: 1.95, max: 4, desc: "Количество орбитальных сфер вокруг башни." },
-  { id: "orbSpeed", name: "Скорость сфер", category: "attack", base: 120, growth: 1.45, max: 50, desc: "Скорость вращения орбитальных сфер." },
+  { id: "orbCount", name: "Сферы (шт)", category: "attack", base: 750, growth: 2.05, max: 4, desc: "Количество орбитальных сфер вокруг башни." },
+  { id: "orbSpeed", name: "Скорость сфер", category: "attack", base: 360, growth: 1.52, max: 50, desc: "Скорость вращения орбитальных сфер." },
   { id: "maxHealth", name: "Макс. здоровье", category: "defense", base: 15, growth: 1.32, max: 5000, desc: "Увеличивает максимальный запас здоровья." },
   { id: "regen", name: "Регенерация", category: "defense", base: 20, growth: 1.38, max: 5000, desc: "Восстанавливает здоровье каждую секунду." },
   { id: "absDefense", name: "Абс. защита", category: "defense", base: 10, growth: 1.25, max: 5000, desc: "Вычитает фиксированное значение из урона врагов." },
@@ -260,7 +261,7 @@ const ultimateDefs = [
   { id: "solarBeam", name: "Солнечный луч", cost: 1400, cooldown: 45, desc: "Мощный луч на 360 градусов.", getUpgradeInfo: (lvl) => `Урон/сек: x${15+lvl*5} -> x${15+(lvl+1)*5}` },
   { id: "goldenCore", name: "Golden Tower", cost: 1600, cooldown: 35, desc: "Умножает $ и монеты во время активности.", getUpgradeInfo: (lvl) => `Длительность: ${10+lvl*2}с -> ${10+(lvl+1)*2}с` },
   { id: "blackHole", name: "Black Hole", cost: 1850, cooldown: 42, desc: "Стягивает врагов и увеличивает награды за убийства внутри.", getUpgradeInfo: (lvl) => `Длительность: ${6+lvl}с -> ${6+lvl+1}с` },
-  { id: "deathWave", name: "Death Wave", cost: 2000, cooldown: 60, desc: "Кольцо энергии, уничтожающее врагов.", getUpgradeInfo: (lvl) => `Урон: x${(3.5+lvl*0.8).toFixed(1)} -> x${(3.5+(lvl+1)*0.8).toFixed(1)}` },
+  { id: "deathWave", name: "Death Wave", cost: 3300, cooldown: 74, desc: "Короткая волна энергии вокруг башни.", getUpgradeInfo: (lvl) => `Урон: x${(2.4+lvl*0.55).toFixed(1)} -> x${(2.4+(lvl+1)*0.55).toFixed(1)}` },
   { id: "poisonSwamp", name: "Poison Swamp", cost: 2200, cooldown: 18, desc: "Создает токсичные лужи.", getUpgradeInfo: (lvl) => `Луж: ${3+lvl} -> ${3+lvl+1}` },
 ];
 
@@ -376,7 +377,8 @@ const enemyDefs = {
   armored: { name: "Броненосец", hp: 85, speed: 13, reward: 18, damage: 18, radius: 14, color: "#8a94a6" },
   assassin: { name: "Ассасин", hp: 6, speed: 65, reward: 8, damage: 25, radius: 8, color: "#ff2a2a" },
   healer: { name: "Целитель", hp: 35, speed: 18, reward: 15, damage: 5, radius: 12, color: "#24b47e" },
-  boss: { name: "Босс", hp: 420, speed: 13, reward: 115, damage: 28, radius: 30, color: "#f8f2ff" },
+  boss: { name: "Босс", hp: 1260, speed: 13, reward: 115, damage: 28, radius: 40, color: "#f8f2ff" },
+  horn: { name: "Рога", hp: 38, speed: 9, reward: 16, damage: 0, radius: 12, color: "#a9a9a9" },
 };
 
 let progress;
@@ -848,6 +850,7 @@ function showScreen(screenKey) {
   if (screenKey === "events") renderEvents();
   if (screenKey === "settings") renderSettings();
   if (screenKey === "profile") renderProfile();
+  if (screenKey === "guide") renderGuide();
 }
 
 function initGame() {
@@ -915,6 +918,17 @@ function bindUi() {
   document.getElementById("importSaveBtn").addEventListener("click", importSave);
   document.getElementById("tgSaveBtn").addEventListener("click", saveToTgCloud);
   document.getElementById("tgLoadBtn").addEventListener("click", loadFromTgCloud);
+  canvas.addEventListener("click", (event) => {
+    if (!game?.enemies?.length) return;
+    const rect = canvas.getBoundingClientRect();
+    const sx = (event.clientX - rect.left) * (canvas.width / rect.width);
+    const sy = (event.clientY - rect.top) * (canvas.height / rect.height);
+    const horn = game.enemies.find((enemy) => enemy.type === "horn" && enemy.hidden && Math.hypot(enemy.x - sx, enemy.y - sy) <= enemy.radius + 10);
+    if (!horn) return;
+    horn.hidden = false;
+    horn.revealTimer = 6;
+    addText("Обнаружен!", horn.x, horn.y - 22, "#ffcf66");
+  });
   
   // Бронебойная разблокировка аудио для мобильных браузеров и WebView (Telegram/VK)
   const unlockAudio = () => {
@@ -963,10 +977,10 @@ function checkWelcomeBack() {
 
   // Офлайн доход (считаем, если отсутствовал более 5 минут)
   const offlineMins = Math.floor(offlineMsCalculated / 60000);
-  if (offlineMins >= 5) {
+  if (offlineMins >= 240) {
     const hours = Math.min(24, offlineMins / 60); // Максимум 24 часа
     // Базовая ставка: 10 монет/мин + 2 монеты за каждую пройденную лучшую волну
-    const coinRatePerMin = 2 + (progress.bestWave || 0) * 0.4; 
+    const coinRatePerMin = Math.min(8.33, 0.8 + (progress.bestWave || 0) * 0.05); 
     const labMult = 1 + (progress.labs.levels.labCoins || 0) * 0.015;
     const earned = Math.floor(offlineMins * coinRatePerMin * labMult);
     
@@ -1423,6 +1437,7 @@ function getWaveEnemyCount(wave) {
 }
 
 function createWaveQueue(wave) {
+  if (wave % 50 === 0) return [{ type: "boss", mega: true }];
   if (wave % 10 === 0) return game.eventMode === "doubleBoss" ? ["boss", "boss"] : ["boss"];
   const queue = [];
   const count = getWaveEnemyCount(wave);
@@ -1447,6 +1462,7 @@ function getWavePool(wave) {
   if (wave >= 15) pool.push("armored");
   if (wave >= 8) pool.push("assassin");
   if (wave >= 18) pool.push("healer");
+  if (wave >= 14) pool.push("horn");
   return pool;
 }
 
@@ -1483,6 +1499,7 @@ function spawnEnemy(type, override = {}) {
     shieldHits: type === "shield" ? 3 : 0,
     shootTimer: 1.2 + Math.random(),
     elite: Boolean(override.elite),
+    mega: Boolean(override.mega),
     reached: false,
   };
   if (enemy.elite) {
@@ -1500,6 +1517,21 @@ function spawnEnemy(type, override = {}) {
   if (type === "boss" && game.tower.energyNetDuration > 0) {
     enemy.netTimer = game.tower.energyNetDuration;
     enemy.slow = Math.min(enemy.slow, 0.08);
+  }
+  if (enemy.mega) {
+    enemy.name = "Множитель";
+    enemy.hp *= 2.8;
+    enemy.maxHp *= 2.8;
+    enemy.speed *= 0.9;
+    enemy.damage = Math.ceil(enemy.damage * 1.8);
+    enemy.reward = Math.ceil(enemy.reward * 3.4);
+    enemy.radius += 14;
+  }
+  if (enemy.type === "horn") {
+    enemy.hidden = true;
+    enemy.revealed = false;
+    enemy.revealTimer = 0;
+    enemy.angle += Math.random() * TWO_PI;
   }
   game.enemies.push(enemy);
 }
@@ -1648,8 +1680,8 @@ function triggerDeathRay() {
     const py = enemy.y - origin.y;
     const forward = px * Math.cos(angle) + py * Math.sin(angle);
     const side = Math.abs(px * Math.sin(angle) - py * Math.cos(angle));
-    if (forward > -40 && side < width) {
-      const dmg = enemy.type === "boss" ? enemy.maxHp * (0.04 + lvl * 0.015) : enemy.maxHp * (0.75 + lvl * 0.12);
+    if (forward > -40 && forward < 300 + lvl * 30 && side < width) {
+      const dmg = enemy.type === "boss" ? enemy.maxHp * (0.025 + lvl * 0.01) : enemy.maxHp * (0.48 + lvl * 0.08);
       damageEnemy(enemy, dmg, "deathRay");
     }
   });
@@ -1707,7 +1739,7 @@ function updateEnemies(dt) {
   // Обработка Сфер
   if (game.tower.orbCount > 0) {
     game.tower.orbAngle += game.tower.orbSpeed * dt;
-    const orbRadius = 180;
+    const orbRadius = 220;
     for (let i = 0; i < game.tower.orbCount; i++) {
       const angle = game.tower.orbAngle + (i / game.tower.orbCount) * TWO_PI;
       const ox = game.tower.x + Math.cos(angle) * orbRadius;
@@ -1751,6 +1783,12 @@ function updateEnemies(dt) {
       return;
     }
 
+    if (enemy.type === "assassin") {
+      enemy.spiralPhase = (enemy.spiralPhase || Math.random() * TWO_PI) + dt * 3.2;
+      enemy.x += Math.cos(enemy.spiralPhase) * 44 * dt;
+      enemy.y += Math.sin(enemy.spiralPhase) * 44 * dt;
+    }
+    if (enemy.type === "horn" && enemy.revealTimer > 0) enemy.revealTimer -= dt;
     const step = enemy.speed * enemy.slow * dt;
     enemy.x += (dx / dist) * step;
     enemy.y += (dy / dist) * step;
@@ -1773,6 +1811,13 @@ function updateEnemies(dt) {
         }
         enemy.healTimer = 2.0;
       }
+    }
+
+    // Для треугольников (разведчик/ассасин) всегда держим острый угол строго к башне
+    if (enemy.type === "scout" || enemy.type === "assassin") {
+      enemy.angle = Math.atan2(dy, dx) + Math.PI / 2;
+      enemy.angularVelocity = 0;
+      return;
     }
 
     // Плавное вращение (физика направления и трение)
@@ -1853,11 +1898,12 @@ function updateEnemies(dt) {
         audio.play("baseHit");
         const actualDamage = Math.max(1, (enemy.damage - game.tower.absDefense)) * Math.max(0.1, (1 - game.tower.defensePercent));
         
-        if (game.tower.hp - actualDamage <= 0 && Math.random() < game.tower.deathDefy) {
+        const hitDamage = enemy.type === "horn" ? game.tower.maxHp * 0.5 : actualDamage;
+        if (game.tower.hp - hitDamage <= 0 && Math.random() < game.tower.deathDefy) {
           game.tower.hp = 1;
           addText("Игнор смерти!", game.tower.x, game.tower.y - 80, "#ff5c9b");
         } else {
-          game.tower.hp -= actualDamage;
+          game.tower.hp -= hitDamage;
           if (game.tower.hp <= 0 && tryPreventTowerDeath()) enemy.meleeTimer = 1.0;
         }
 
@@ -1867,7 +1913,8 @@ function updateEnemies(dt) {
 
         if (enemy.type === "vampire") enemy.hp = Math.min(enemy.maxHp, enemy.hp + enemy.damage * 1.4);
         addEffect("hit", game.tower.x, game.tower.y, 0.35, "#ff5c6c");
-        addText(`-${Math.ceil(actualDamage)}`, game.tower.x, game.tower.y - 48, "#ff5c6c");
+        addText(`-${Math.ceil(hitDamage)}`, game.tower.x, game.tower.y - 48, "#ff5c6c");
+        if (enemy.type === "horn") enemy.hp = 0;
         triggerShake();
         enemy.meleeTimer = 1.0; 
       }
@@ -1927,7 +1974,7 @@ function towerShoot(dt) {
 function findTargets(count) {
   return [...game.enemies]
     .map((enemy) => ({ enemy, dist: Math.hypot(enemy.x - game.tower.x, enemy.y - game.tower.y) }))
-    .filter((item) => item.dist <= game.tower.range)
+    .filter((item) => item.dist <= game.tower.range && !(item.enemy.type === "horn" && item.enemy.hidden))
     .sort((a, b) => a.dist - b.dist)
     .slice(0, count)
     .map((item) => item.enemy);
@@ -2374,10 +2421,13 @@ function triggerUltimate(ultimate) {
   if (ultimate.id === "deathWave") {
     const selectedUltimates = getSelectedUltimateIds();
     const triSync = game.goldenCoreTimer > 0 && game.blackHoleTimer > 0 && ["goldenCore", "blackHole", "deathWave"].every((id) => selectedUltimates.includes(id)) ? 1.25 : 1;
+    const waveRadius = 175 + level * 16;
     game.enemies.forEach((enemy) => {
+      const dist = Math.hypot(enemy.x - game.tower.x, enemy.y - game.tower.y);
+      if (dist > waveRadius) return;
       const compressed = enemy.inBlackHole && hasSynergy("Сжатая волна") ? 1.45 : 1;
-      damageEnemy(enemy, game.tower.damage * (3.5 + level * 0.8) * dmgBonus * compressed * triSync, "deathWave");
-      knockbackEnemy(enemy, 50);
+      damageEnemy(enemy, game.tower.damage * (2.4 + level * 0.55) * dmgBonus * compressed * triSync, "deathWave");
+      knockbackEnemy(enemy, 38);
     });
     addEffect("deathWave", game.tower.x, game.tower.y, 1.0, "#ff5c9b");
   }
@@ -3717,17 +3767,42 @@ function renderProfile() {
   document.getElementById("statSpentCoins").textContent = (progress.spentCoins || 0).toLocaleString();
   document.getElementById("statSpentMedals").textContent = (progress.spentMedals || 0).toLocaleString();
 
-  const bestiaryList = document.getElementById("bestiaryList");
-  bestiaryList.innerHTML = "";
-  Object.keys(enemyDefs).forEach(type => {
+}
+
+function getBestiaryIconSvg(type, color) {
+  if (type === "scout" || type === "assassin") return `<svg class="bestiary-icon" viewBox="0 0 32 32"><polygon points="16,4 27,27 5,27" fill="${color}"/></svg>`;
+  if (type === "grunt" || type === "brute" || type === "boss" || type === "armored") return `<svg class="bestiary-icon" viewBox="0 0 32 32"><rect x="5" y="5" width="22" height="22" fill="${color}"/></svg>`;
+  if (type === "healer") return `<svg class="bestiary-icon" viewBox="0 0 32 32"><polygon points="16,4 28,16 16,28 4,16" fill="${color}"/></svg>`;
+  return `<svg class="bestiary-icon" viewBox="0 0 32 32"><circle cx="16" cy="16" r="11" fill="${color}"/></svg>`;
+}
+
+function renderGuide() {
+  const list = document.getElementById("guideBestiaryList");
+  const details = document.getElementById("guideBestiaryDetails");
+  if (!list || !details) return;
+  list.innerHTML = "";
+  details.classList.add("hidden");
+  Object.keys(enemyDefs).forEach((type) => {
+    const def = enemyDefs[type];
     const kills = progress.bestiary[type] || 0;
-    if (kills > 0 || type === "grunt") {
-      const def = enemyDefs[type];
-      const el = document.createElement("div");
-      el.className = "shop-card";
-      el.innerHTML = `<div><strong><span style="color:${def.color};">■</span> ${def.name}</strong><div style="font-size:0.85rem; line-height:1.2; margin:2px 0 4px;">${enemyDescs[type]}</div><span style="font-size:0.8rem;">Убито: ${kills.toLocaleString()}</span></div>`;
-      bestiaryList.append(el);
-    }
+    const row = document.createElement("div");
+    row.className = "shop-card bestiary-row";
+    row.innerHTML = `
+      <div class="bestiary-left">
+        ${getBestiaryIconSvg(type, def.color)}
+        <div>
+          <strong>${def.name}</strong>
+          <div style="font-size:0.8rem; color: var(--text-muted);">Убито: ${kills.toLocaleString()}</div>
+        </div>
+      </div>
+      <button class="secondary-btn" style="padding:6px 10px;" data-enemy-info="${type}">i</button>
+    `;
+    row.querySelector("button")?.addEventListener("click", () => {
+      const extra = type === "horn" ? "Подсказка: иногда нужен не урон, а действие игрока." : "Особенности и сопротивления зависят от типа.";
+      details.innerHTML = `<strong>${def.name}</strong><span>${enemyDescs[type] || ""}</span><span>ОЗ: <b>${def.hp}</b> • Скорость: <b>${def.speed}</b> • Урон: <b>${def.damage}</b> • Радиус тела: <b>${def.radius}</b></span><span>${extra}</span>`;
+      details.classList.remove("hidden");
+    });
+    list.append(row);
   });
 }
 

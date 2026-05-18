@@ -1101,6 +1101,24 @@ button:disabled {
   flex-direction: column;
   gap: 8px;
 }
+
+.bestiary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.bestiary-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bestiary-icon {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.25));
+}
 .shop-card > div:first-child {
   flex: 1;
   display: flex;
