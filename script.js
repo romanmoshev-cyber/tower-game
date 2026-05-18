@@ -654,6 +654,7 @@ function bindUi() {
   document.getElementById("hudPlayPauseBtn").addEventListener("click", togglePause);
   document.getElementById("hudSpeedUpBtn").addEventListener("click", increaseSpeed);
   document.getElementById("hudSpeedDownBtn").addEventListener("click", decreaseSpeed);
+  document.getElementById("upgradePanelToggle").addEventListener("click", toggleUpgradePanel);
   document.getElementById("closeUpgradeInfoBtn").addEventListener("click", () => {
     document.getElementById("upgradeInfoOverlay").classList.add("hidden");
     if (wasPausedForInfo) {
@@ -791,6 +792,21 @@ function selectRunUpgradeCategory(category) {
   activeRunUpgradeCategory = category;
   renderRunUpgradeTabs();
   renderRunUpgrades();
+}
+
+function setUpgradePanelCollapsed(collapsed) {
+  const gameScreen = screens.game || document.getElementById("gameScreen");
+  const toggle = document.getElementById("upgradePanelToggle");
+  if (!gameScreen || !toggle) return;
+  gameScreen.classList.toggle("upgrade-panel-collapsed", collapsed);
+  toggle.setAttribute("aria-expanded", String(!collapsed));
+  toggle.setAttribute("aria-label", collapsed ? "Развернуть панель улучшений" : "Свернуть панель улучшений");
+}
+
+function toggleUpgradePanel() {
+  const gameScreen = screens.game || document.getElementById("gameScreen");
+  if (!gameScreen) return;
+  setUpgradePanelCollapsed(!gameScreen.classList.contains("upgrade-panel-collapsed"));
 }
 
 function renderRunUpgradeTabs() {
@@ -1003,6 +1019,7 @@ function startRun(options = {}) {
   updateSpeedButtons();
   document.getElementById("hudPlayPauseBtn").textContent = "⏸";
   clearRunOverlays();
+  setUpgradePanelCollapsed(false);
   renderRunUpgradeTabs();
   renderRunUpgrades();
   updateHud();
