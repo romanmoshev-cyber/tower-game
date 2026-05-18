@@ -2472,3 +2472,78 @@ button {
     border-radius: 24px;
   }
 }
+
+/* Sticky secondary-screen header and compact resource badges. */
+.screen:not(.game-screen):not(.menu-screen) .sub-head {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  background: rgba(4, 13, 30, 0.94);
+  backdrop-filter: blur(10px);
+}
+
+.screen:not(.game-screen):not(.menu-screen) .sub-head h2 {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.screen:not(.game-screen):not(.menu-screen) .back-btn {
+  border-width: 8px;
+  padding: 3px 9px;
+  min-height: 32px;
+  font-size: 0.78rem;
+  line-height: 1;
+}
+
+.resource-pill,
+.resource-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  min-width: 0;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.resource-pill {
+  padding: 2px 7px 2px 4px;
+  color: var(--text-main);
+  background: rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.resource-pill .sprite-icon,
+.resource-inline .sprite-icon {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+.resource-coins { color: var(--accent-green); }
+.resource-crystals { color: var(--accent-pink); }
+.resource-medals { color: var(--accent-orange); }
+.resource-parts { color: #a0a5b5; }
+.resource-stones { color: #b375ff; }
+
+.resource-pill span,
+.resource-inline span {
+  color: currentColor;
+}
+
+.top-left-currencies .resource-inline {
+  justify-content: flex-start;
+}
+
+.top-left-currencies .resource-inline strong {
+  color: currentColor;
+}
+
+.resource-cash { color: var(--accent-green); }

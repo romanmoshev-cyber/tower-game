@@ -114,11 +114,11 @@
 
       <section id="gameScreen" class="screen game-screen">
         <div id="topLeftCurrencies" class="top-left-currencies">
-          <span>$ <strong id="hudCash">0</strong></span>
-          <span>⊙ <strong id="hudCoins">0</strong></span>
-          <span>♦ <strong id="hudCrystals" style="color: var(--accent-pink);">0</strong></span>
-          <span>🔮 <strong id="hudStones" style="color: #b375ff;">0</strong></span>
-          <span>⚙ <strong id="hudParts" style="color: #a0a5b5;">0</strong></span>
+          <span class="resource-inline resource-cash"><span aria-hidden="true">$</span><strong id="hudCash">0</strong></span>
+          <span class="resource-inline resource-coins"><i class="sprite-icon icon-coin" aria-hidden="true"></i><strong id="hudCoins">0</strong></span>
+          <span class="resource-inline resource-crystals"><i class="sprite-icon icon-crystal" aria-hidden="true"></i><strong id="hudCrystals">0</strong></span>
+          <span class="resource-inline resource-stones"><i class="sprite-icon icon-stone" aria-hidden="true"></i><strong id="hudStones">0</strong></span>
+          <span class="resource-inline resource-parts"><i class="sprite-icon icon-parts" aria-hidden="true"></i><strong id="hudParts">0</strong></span>
         </div>
         <div class="top-hud">
           <div class="hud-panel hud-left">
@@ -236,7 +236,7 @@
         <div class="sub-head">
           <button class="back-btn" data-screen="menuScreen">Назад</button>
           <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-upgrades" style="width:28px; height:28px;"></i> Постоянные улучшения</h2>
-          <strong id="permCoins">0</strong>
+          <strong class="resource-pill resource-coins"><i class="sprite-icon icon-coin" aria-hidden="true"></i><span id="permCoins">0</span></strong>
         </div>
         <div id="prestigePanel" class="info-panel"></div>
         <div id="permanentList" class="shop-list"></div>
@@ -246,7 +246,7 @@
         <div class="sub-head">
           <button class="back-btn" data-screen="menuScreen">Назад</button>
           <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-labs" style="width:28px; height:28px;"></i> Лаборатория</h2>
-          <strong id="labCoins">0</strong>
+          <strong class="resource-pill resource-coins"><i class="sprite-icon icon-coin" aria-hidden="true"></i><span id="labCoins">0</span></strong>
         </div>
         <div id="labActiveSlots" style="margin-bottom: 24px;"></div>
         <div id="labList" class="shop-list"></div>
@@ -256,7 +256,7 @@
         <div class="sub-head">
           <button class="back-btn" data-screen="menuScreen">Назад</button>
           <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-cards" style="width:28px; height:28px;"></i> Экипировка Карт</h2>
-          <strong id="cardsCrystals" style="color: var(--accent-pink);">0 ♦</strong>
+          <strong class="resource-pill resource-crystals"><i class="sprite-icon icon-crystal" aria-hidden="true"></i><span id="cardsCrystals">0</span></strong>
         </div>
         <div id="cardSlotsGrid" class="cards-grid" style="margin-bottom: 30px;"></div>
         <button id="pullCardBtn" class="primary-btn" style="background: linear-gradient(135deg, #b375ff, #ff5c9b);">Вытянуть карту (20 ♦)</button>
@@ -268,7 +268,7 @@
         <div class="sub-head">
           <button class="back-btn" data-screen="menuScreen">Назад</button>
           <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-skins" style="width:28px; height:28px;"></i> Скины башни</h2>
-          <strong id="customMedals" style="color: var(--accent-orange);">0 Медалей</strong>
+          <strong class="resource-pill resource-medals"><i class="sprite-icon icon-medal" aria-hidden="true"></i><span id="customMedals">0</span></strong>
         </div>
         <div class="info-panel"><strong>Форма Ядра</strong><span>Измени физическую форму башни.</span></div>
         <div id="customShapes" class="cards-grid" style="margin-bottom: 24px;"></div>
@@ -280,7 +280,7 @@
         <div class="sub-head">
           <button class="back-btn" data-screen="menuScreen">Назад</button>
           <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-modules" style="width:28px; height:28px;"></i> Модули ядра</h2>
-          <strong id="modulesParts" style="color: #a0a5b5;">0 ⚙</strong>
+          <strong class="resource-pill resource-parts"><i class="sprite-icon icon-parts" aria-hidden="true"></i><span id="modulesParts">0</span></strong>
         </div>
         <div id="moduleSlotsGrid" class="cards-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 20px;"></div>
         <div class="btn-split">
@@ -295,9 +295,9 @@
         <div class="sub-head">
           <button class="back-btn" data-screen="menuScreen">Назад</button>
           <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-ultimate" style="width:28px; height:28px;"></i> Ультимативное оружие</h2>
-          <strong id="ultimateCoins">0</strong>
+          <strong class="resource-pill resource-coins"><i class="sprite-icon icon-coin" aria-hidden="true"></i><span id="ultimateCoins">0</span></strong>
         </div>
-        <div class="info-panel"><strong>Улучшения за Камни Силы</strong><span id="ultimateStones">0 🔮</span></div>
+        <div class="info-panel"><strong>Улучшения за Камни Силы</strong><span class="resource-inline resource-stones"><i class="sprite-icon icon-stone" aria-hidden="true"></i><span id="ultimateStones">0</span></span></div>
         <div id="stoneShopList" class="shop-list" style="margin-bottom: 16px;"></div>
         <div id="ultimateLoadoutInfo" class="info-panel"></div>
         <div id="ultimateList" class="shop-list"></div>
@@ -307,7 +307,7 @@
         <div class="sub-head">
           <button class="back-btn" data-screen="menuScreen">Назад</button>
           <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-events" style="width:28px; height:28px;"></i> События</h2>
-          <strong id="eventMedals">0</strong>
+          <strong class="resource-pill resource-medals"><i class="sprite-icon icon-medal" aria-hidden="true"></i><span id="eventMedals">0</span></strong>
         </div>
         <div id="dailyQuestsList" class="shop-list"></div>
         <div id="eventModes" class="shop-list"></div>
