@@ -347,6 +347,7 @@ let gameSpeed = 1;
 let activeRunUpgradeCategory = "attack";
 let wasPausedForInfo = false;
 let offlineMsCalculated = 0;
+let arenaGridOffset = { x: 0, y: 0 };
 
 // --- ИНТЕГРАЦИЯ TELEGRAM ---
 const tg = window.Telegram?.WebApp;
@@ -377,11 +378,41 @@ function getArenaWorldCenter() {
   };
 }
 
+
+function scaleWorldPoint(point, scaleX, scaleY) {
+  if (!point || typeof point.x !== "number" || typeof point.y !== "number") return;
+  point.x *= scaleX;
+  point.y *= scaleY;
+}
+
+function shiftWorldPoint(point, dx, dy) {
+  if (!point || typeof point.x !== "number" || typeof point.y !== "number") return;
+  point.x += dx;
+  point.y += dy;
+}
+
+function shiftArenaWorld(dx, dy) {
+  if (!game || (!dx && !dy)) return;
+  shiftWorldPoint(game.tower, dx, dy);
+  game.enemies?.forEach((enemy) => shiftWorldPoint(enemy, dx, dy));
+  game.projectiles?.forEach((projectile) => shiftWorldPoint(projectile, dx, dy));
+  game.enemyProjectiles?.forEach((projectile) => shiftWorldPoint(projectile, dx, dy));
+  game.missiles?.forEach((missile) => shiftWorldPoint(missile, dx, dy));
+  game.landmines?.forEach((mine) => shiftWorldPoint(mine, dx, dy));
+  game.effects?.forEach((effect) => {
+    shiftWorldPoint(effect, dx, dy);
+    effect.pts?.forEach((point) => shiftWorldPoint(point, dx, dy));
+  });
+  game.texts?.forEach((text) => shiftWorldPoint(text, dx, dy));
+  shiftWorldPoint(game.blackHole, dx, dy);
+  arenaGridOffset.x += dx;
+  arenaGridOffset.y += dy;
+}
+
 function positionTowerInVisibleArena() {
   if (!game?.tower) return;
   const center = getArenaWorldCenter();
-  game.tower.x = center.x;
-  game.tower.y = center.y;
+  shiftArenaWorld(center.x - game.tower.x, center.y - game.tower.y);
 }
 
 function redrawAfterTowerPositionUpdate() {
@@ -418,23 +449,21 @@ function resizeGameCanvas() {
   if (game?.tower) {
     const scaleX = prevWidth ? width / prevWidth : 1;
     const scaleY = prevHeight ? height / prevHeight : 1;
+    scaleWorldPoint(game.tower, scaleX, scaleY);
+    game.enemies?.forEach((enemy) => scaleWorldPoint(enemy, scaleX, scaleY));
+    game.projectiles?.forEach((projectile) => scaleWorldPoint(projectile, scaleX, scaleY));
+    game.enemyProjectiles?.forEach((projectile) => scaleWorldPoint(projectile, scaleX, scaleY));
+    game.missiles?.forEach((missile) => scaleWorldPoint(missile, scaleX, scaleY));
+    game.landmines?.forEach((mine) => scaleWorldPoint(mine, scaleX, scaleY));
+    game.effects?.forEach((effect) => {
+      scaleWorldPoint(effect, scaleX, scaleY);
+      effect.pts?.forEach((point) => scaleWorldPoint(point, scaleX, scaleY));
+    });
+    game.texts?.forEach((text) => scaleWorldPoint(text, scaleX, scaleY));
+    scaleWorldPoint(game.blackHole, scaleX, scaleY);
+    arenaGridOffset.x *= scaleX;
+    arenaGridOffset.y *= scaleY;
     positionTowerInVisibleArena();
-    game.enemies?.forEach((enemy) => {
-      enemy.x *= scaleX;
-      enemy.y *= scaleY;
-    });
-    game.projectiles?.forEach((projectile) => {
-      projectile.x *= scaleX;
-      projectile.y *= scaleY;
-    });
-    game.landmines?.forEach((mine) => {
-      mine.x *= scaleX;
-      mine.y *= scaleY;
-    });
-    game.texts?.forEach((text) => {
-      text.x *= scaleX;
-      text.y *= scaleY;
-    });
   }
 
   if (game && !game.ended) drawGame();
@@ -986,6 +1015,7 @@ function getUniqueModulePower(id) {
 function startRun(options = {}) {
   cancelAnimationFrame(animationId);
   resizeGameCanvas();
+  arenaGridOffset = { x: 0, y: 0 };
   activeRunUpgradeCategory = "attack";
   const tier = Number(document.getElementById("tierSelect").value || 1);
   const p = progress.permanent;
@@ -3705,16 +3735,18 @@ function drawArena() {
   ctx.save();
 
   const gridStep = 48;
+  const startX = ((arenaGridOffset.x % gridStep) + gridStep) % gridStep;
+  const startY = ((arenaGridOffset.y % gridStep) + gridStep) % gridStep;
   ctx.globalAlpha = 0.2;
   ctx.strokeStyle = "#55ecff";
   ctx.lineWidth = 1;
-  for (let x = 0; x <= canvas.width; x += gridStep) {
+  for (let x = startX - gridStep; x <= canvas.width + gridStep; x += gridStep) {
     ctx.beginPath();
     ctx.moveTo(x, 0);
     ctx.lineTo(x, canvas.height);
     ctx.stroke();
   }
-  for (let y = 0; y <= canvas.height; y += gridStep) {
+  for (let y = startY - gridStep; y <= canvas.height + gridStep; y += gridStep) {
     ctx.beginPath();
     ctx.moveTo(0, y);
     ctx.lineTo(canvas.width, y);
