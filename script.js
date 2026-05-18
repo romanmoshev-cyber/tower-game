@@ -388,8 +388,8 @@ function getArenaWorldCenter() {
   const arenaRect = arenaWrap?.getBoundingClientRect();
   const viewportWidth = Math.max(320, Math.round(arenaRect?.width || canvas.clientWidth || 760));
   const viewportHeight = Math.max(240, Math.round(arenaRect?.height || canvas.clientHeight || 920));
-  const scaleX = canvas.width / viewportWidth || ARENA_CAMERA_ZOOM_OUT;
-  const scaleY = canvas.height / viewportHeight || ARENA_CAMERA_ZOOM_OUT;
+  const scaleX = ARENA_CAMERA_ZOOM_OUT;
+  const scaleY = ARENA_CAMERA_ZOOM_OUT;
   const upgradePanel = document.querySelector(".upgrade-panel");
   const panelRect = upgradePanel?.getBoundingClientRect();
   let visibleBottom = viewportHeight;
@@ -466,13 +466,20 @@ function scheduleTowerPositionUpdate() {
 
 function resizeGameCanvas() {
   const rect = arenaWrap?.getBoundingClientRect();
-  const devicePixelRatio = window.devicePixelRatio || 1;
+  let devicePixelRatio = window.devicePixelRatio || 1;
+  if (devicePixelRatio > 2.5) devicePixelRatio = 2.5; // Ограничение для избежания краша по памяти на Android
+
   const viewportWidth = Math.max(320, Math.round(rect?.width || canvas.clientWidth || 760));
   const viewportHeight = Math.max(240, Math.round(rect?.height || canvas.clientHeight || 920));
-  // The canvas is rendered into the same CSS viewport, but the playable world is
-  // 2.5 times larger so the arena camera stays pulled back without becoming tiny.
-  const width = Math.round(viewportWidth * ARENA_CAMERA_ZOOM_OUT * devicePixelRatio);
-  const height = Math.round(viewportHeight * ARENA_CAMERA_ZOOM_OUT * devicePixelRatio);
+  
+  const logicalWidth = viewportWidth * ARENA_CAMERA_ZOOM_OUT;
+  const logicalHeight = viewportHeight * ARENA_CAMERA_ZOOM_OUT;
+
+  // Физический размер холста теперь строго равен размеру экрана (с учетом DPR),
+  // а зум достигается через ctx.scale, чтобы не превысить лимиты текстур на мобилках.
+  const width = Math.round(viewportWidth * devicePixelRatio);
+  const height = Math.round(viewportHeight * devicePixelRatio);
+  
   const prevWidth = canvas.width;
   const prevHeight = canvas.height;
 
@@ -485,15 +492,21 @@ function resizeGameCanvas() {
 
   canvas.width = width;
   canvas.height = height;
-  canvas.style.width = viewportWidth * ARENA_CAMERA_ZOOM_OUT + "px";
-  canvas.style.height = viewportHeight * ARENA_CAMERA_ZOOM_OUT + "px";
-  if (ctx && devicePixelRatio !== 1) {
-    ctx.scale(devicePixelRatio, devicePixelRatio);
+  canvas.style.width = "100%";
+  canvas.style.height = "100%";
+  
+  if (ctx) {
+    const scale = devicePixelRatio / ARENA_CAMERA_ZOOM_OUT;
+    ctx.scale(scale, scale);
   }
 
   if (game?.tower) {
-    const scaleX = prevWidth ? width / prevWidth : 1;
-    const scaleY = prevHeight ? height / prevHeight : 1;
+    const prevLogicalWidth = canvas._logicalWidth || (prevWidth ? prevWidth / devicePixelRatio : logicalWidth);
+    const prevLogicalHeight = canvas._logicalHeight || (prevHeight ? prevHeight / devicePixelRatio : logicalHeight);
+    
+    const scaleX = logicalWidth / prevLogicalWidth;
+    const scaleY = logicalHeight / prevLogicalHeight;
+    
     scaleWorldPoint(game.tower, scaleX, scaleY);
     game.enemies?.forEach((enemy) => scaleWorldPoint(enemy, scaleX, scaleY));
     game.projectiles?.forEach((projectile) => scaleWorldPoint(projectile, scaleX, scaleY));
@@ -510,6 +523,9 @@ function resizeGameCanvas() {
     arenaGridOffset.y *= scaleY;
     positionTowerInVisibleArena();
   }
+
+  canvas._logicalWidth = logicalWidth;
+  canvas._logicalHeight = logicalHeight;
 
   if (game && !game.ended) drawGame();
   else drawIdleArena();
