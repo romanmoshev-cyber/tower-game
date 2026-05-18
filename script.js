@@ -370,8 +370,18 @@ const tg = window.Telegram?.WebApp;
 
 function applyTelegramPlatformClasses() {
   const platform = (tg?.platform || "browser").toLowerCase();
+  const isMobile = !["iPad", "tdesktop", "macos", "web"].some(p => navigator.userAgent.includes(p));
   document.body.classList.toggle("is-telegram", Boolean(tg));
+  document.body.classList.toggle("is-telegram-mobile", Boolean(tg) && isMobile);
   document.body.classList.toggle("is-telegram-desktop", ["tdesktop", "macos", "web", "weba", "webk"].includes(platform));
+  
+  // Установка viewport метаданных Telegram
+  if (tg?.setViewportExpandable) {
+    tg.setViewportExpandable?.(true);
+  }
+  if (tg?.disableVerticalSwipes) {
+    tg.disableVerticalSwipes?.(false);
+  }
 }
 
 function getArenaWorldCenter() {
@@ -456,12 +466,13 @@ function scheduleTowerPositionUpdate() {
 
 function resizeGameCanvas() {
   const rect = arenaWrap?.getBoundingClientRect();
+  const devicePixelRatio = window.devicePixelRatio || 1;
   const viewportWidth = Math.max(320, Math.round(rect?.width || canvas.clientWidth || 760));
   const viewportHeight = Math.max(240, Math.round(rect?.height || canvas.clientHeight || 920));
   // The canvas is rendered into the same CSS viewport, but the playable world is
   // 2.5 times larger so the arena camera stays pulled back without becoming tiny.
-  const width = Math.round(viewportWidth * ARENA_CAMERA_ZOOM_OUT);
-  const height = Math.round(viewportHeight * ARENA_CAMERA_ZOOM_OUT);
+  const width = Math.round(viewportWidth * ARENA_CAMERA_ZOOM_OUT * devicePixelRatio);
+  const height = Math.round(viewportHeight * ARENA_CAMERA_ZOOM_OUT * devicePixelRatio);
   const prevWidth = canvas.width;
   const prevHeight = canvas.height;
 
@@ -474,6 +485,11 @@ function resizeGameCanvas() {
 
   canvas.width = width;
   canvas.height = height;
+  canvas.style.width = viewportWidth * ARENA_CAMERA_ZOOM_OUT + "px";
+  canvas.style.height = viewportHeight * ARENA_CAMERA_ZOOM_OUT + "px";
+  if (ctx && devicePixelRatio !== 1) {
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
 
   if (game?.tower) {
     const scaleX = prevWidth ? width / prevWidth : 1;
@@ -507,9 +523,14 @@ function syncTelegramViewport() {
 }
 
 syncTelegramViewport();
-window.addEventListener("resize", syncTelegramViewport);
-window.addEventListener("orientationchange", syncTelegramViewport);
-window.visualViewport?.addEventListener("resize", syncTelegramViewport);
+window.addEventListener("resize", syncTelegramViewport, { passive: true });
+window.addEventListener("orientationchange", syncTelegramViewport, { passive: true });
+window.visualViewport?.addEventListener("resize", syncTelegramViewport, { passive: true });
+// Для iOS: отслеживаем изменения safe area
+if (CSS.supports("padding", "env(safe-area-inset-top)")) {
+  const mediaQuery = window.matchMedia("(orientation: portrait)");
+  mediaQuery.addEventListener("change", syncTelegramViewport, { passive: true });
+}
 
 if (tg) {
   tg.ready?.();
@@ -843,7 +864,9 @@ function bindUi() {
     }
   };
   document.addEventListener("touchstart", unlockAudio, { once: true, passive: true });
+  document.addEventListener("touchend", unlockAudio, { once: true, passive: true });
   document.addEventListener("keydown", unlockAudio, { once: true, passive: true });
+  document.addEventListener("click", unlockAudio, { once: true });
 
   document.addEventListener("click", (e) => {
     unlockAudio();
