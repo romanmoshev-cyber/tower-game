@@ -1961,7 +1961,7 @@ input[type="range"]::-webkit-slider-thumb {
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
-  --shell-width: min(100vw, 520px);
+  --shell-width: min(100vw, 480px);
   --screen-pad-x: clamp(10px, 3.2vw, 18px);
   --screen-pad-y: clamp(10px, 2.2vh, 16px);
   --game-tabbar-height: clamp(46px, 7.2dvh, 56px);
@@ -1992,7 +1992,7 @@ body {
 
 .app-shell {
   width: var(--shell-width);
-  max-width: 520px;
+  max-width: 480px;
   height: var(--tg-viewport-height);
   min-height: 0;
   max-height: 100dvh;
@@ -2476,7 +2476,7 @@ button {
 
 @media (min-width: 768px) {
   :root {
-    --shell-width: min(100vw, 560px);
+    --shell-width: min(100vw, 460px);
     --upgrade-panel-visible: 320px;
   }
 
@@ -2486,7 +2486,7 @@ button {
   }
 
   .app-shell {
-    max-width: 560px;
+    max-width: 460px;
     height: min(100dvh, var(--tg-viewport-height));
     border-left: 1px solid rgba(85, 236, 255, 0.16);
     border-right: 1px solid rgba(85, 236, 255, 0.16);
@@ -2598,3 +2598,14 @@ button {
 }
 
 .resource-cash { color: var(--accent-green); }
+
+
+body.is-telegram-desktop .app-shell {
+  width: min(100vw, 430px);
+  max-width: 430px;
+}
+
+body.is-telegram .app-shell {
+  height: var(--tg-viewport-height);
+  max-height: var(--tg-viewport-height);
+}
