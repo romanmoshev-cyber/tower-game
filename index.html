@@ -2,7 +2,7 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>Страж Ядра</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="style.css" />
@@ -406,13 +406,5 @@
     </main>
 
     <script src="script.js"></script>
-    <script>
-      // Инициализация Telegram Mini App после загрузки интерфейса
-      if (window.Telegram && window.Telegram.WebApp) {
-        const telegramApp = window.Telegram.WebApp;
-        telegramApp.ready();
-        telegramApp.expand();
-      }
-    </script>
   </body>
 </html>
