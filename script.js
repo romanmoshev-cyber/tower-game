@@ -2,9 +2,10 @@
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-
+const arenaWrap = document.querySelector(".arena-wrap");
 const STORAGE_KEY = "coreSentinelSaveV1";
 const TWO_PI = Math.PI * 2;
+const ARENA_CAMERA_ZOOM_OUT = 2.5;
 
 const balance = {
   waveEnemyBase: 4,
@@ -205,6 +206,18 @@ const runUpgradeDefs = [
   { id: "waveSkip", name: "Пропуск волны", category: "utility", base: 420, growth: 1.68, max: 50, desc: "Шанс мгновенно зачесть следующую волну и ускорить фарм." },
 ];
 
+const runUpgradeRequirements = {
+  bounceTargets: "bounceShot",
+  bounceRange: "bounceShot",
+  superCritMult: "superCritChance",
+  rapidFireDuration: "rapidFireChance",
+  orbSpeed: "orbCount",
+  knockbackStrength: "knockback",
+  landmineDamage: "landmineChance",
+  maxInterest: "interestRate",
+  packageMax: "packageChance",
+};
+
 const runUpgradeCategories = {
   attack: { label: "Атака", icon: "⚔" },
   defense: { label: "Защита", icon: "🛡" },
@@ -343,14 +356,165 @@ let lastFrame = 0;
 let animationId = 0;
 let paused = false;
 let gameSpeed = 1;
+const gameSpeedSteps = [1, 1.5, 2, 3, 4, 5];
 let activeRunUpgradeCategory = "attack";
+let runUpgradeScrollPositions = {};
+let isRestoringRunUpgradeScroll = false;
 let wasPausedForInfo = false;
 let offlineMsCalculated = 0;
+let arenaGridOffset = { x: 0, y: 0 };
+let towerPositionAnimationId = 0;
 
 // --- ИНТЕГРАЦИЯ TELEGRAM ---
 const tg = window.Telegram?.WebApp;
-if (tg && tg.initDataUnsafe?.user) {
-  tg.expand(); // Разворачиваем игру на весь экран в TG
+
+function applyTelegramPlatformClasses() {
+  const platform = (tg?.platform || "browser").toLowerCase();
+  document.body.classList.toggle("is-telegram", Boolean(tg));
+  document.body.classList.toggle("is-telegram-desktop", ["tdesktop", "macos", "web", "weba", "webk"].includes(platform));
+}
+
+function getArenaWorldCenter() {
+  const arenaRect = arenaWrap?.getBoundingClientRect();
+  const viewportWidth = Math.max(320, Math.round(arenaRect?.width || canvas.clientWidth || 760));
+  const viewportHeight = Math.max(240, Math.round(arenaRect?.height || canvas.clientHeight || 920));
+  const scaleX = canvas.width / viewportWidth || ARENA_CAMERA_ZOOM_OUT;
+  const scaleY = canvas.height / viewportHeight || ARENA_CAMERA_ZOOM_OUT;
+  const upgradePanel = document.querySelector(".upgrade-panel");
+  const panelRect = upgradePanel?.getBoundingClientRect();
+  let visibleBottom = viewportHeight;
+
+  if (arenaRect && panelRect) {
+    visibleBottom = Math.max(120, Math.min(viewportHeight, panelRect.top - arenaRect.top));
+  }
+
+  return {
+    x: (viewportWidth / 2) * scaleX,
+    y: (visibleBottom / 2) * scaleY,
+  };
+}
+
+
+function scaleWorldPoint(point, scaleX, scaleY) {
+  if (!point || typeof point.x !== "number" || typeof point.y !== "number") return;
+  point.x *= scaleX;
+  point.y *= scaleY;
+}
+
+function shiftWorldPoint(point, dx, dy) {
+  if (!point || typeof point.x !== "number" || typeof point.y !== "number") return;
+  point.x += dx;
+  point.y += dy;
+}
+
+function shiftArenaWorld(dx, dy) {
+  if (!game || (!dx && !dy)) return;
+  shiftWorldPoint(game.tower, dx, dy);
+  game.enemies?.forEach((enemy) => shiftWorldPoint(enemy, dx, dy));
+  game.projectiles?.forEach((projectile) => shiftWorldPoint(projectile, dx, dy));
+  game.enemyProjectiles?.forEach((projectile) => shiftWorldPoint(projectile, dx, dy));
+  game.missiles?.forEach((missile) => shiftWorldPoint(missile, dx, dy));
+  game.landmines?.forEach((mine) => shiftWorldPoint(mine, dx, dy));
+  game.effects?.forEach((effect) => {
+    shiftWorldPoint(effect, dx, dy);
+    effect.pts?.forEach((point) => shiftWorldPoint(point, dx, dy));
+  });
+  game.texts?.forEach((text) => shiftWorldPoint(text, dx, dy));
+  shiftWorldPoint(game.blackHole, dx, dy);
+  arenaGridOffset.x += dx;
+  arenaGridOffset.y += dy;
+}
+
+function positionTowerInVisibleArena() {
+  if (!game?.tower) return;
+  const center = getArenaWorldCenter();
+  shiftArenaWorld(center.x - game.tower.x, center.y - game.tower.y);
+}
+
+function redrawAfterTowerPositionUpdate() {
+  positionTowerInVisibleArena();
+  if (game && !game.ended) drawGame();
+}
+
+function scheduleTowerPositionUpdate() {
+  if (towerPositionAnimationId) cancelAnimationFrame(towerPositionAnimationId);
+  const startedAt = performance.now();
+  const duration = 280;
+
+  const followPanel = (now) => {
+    redrawAfterTowerPositionUpdate();
+    if (now - startedAt < duration) {
+      towerPositionAnimationId = requestAnimationFrame(followPanel);
+      return;
+    }
+    towerPositionAnimationId = 0;
+    redrawAfterTowerPositionUpdate();
+  };
+
+  towerPositionAnimationId = requestAnimationFrame(followPanel);
+}
+
+function resizeGameCanvas() {
+  const rect = arenaWrap?.getBoundingClientRect();
+  const viewportWidth = Math.max(320, Math.round(rect?.width || canvas.clientWidth || 760));
+  const viewportHeight = Math.max(240, Math.round(rect?.height || canvas.clientHeight || 920));
+  // The canvas is rendered into the same CSS viewport, but the playable world is
+  // 2.5 times larger so the arena camera stays pulled back without becoming tiny.
+  const width = Math.round(viewportWidth * ARENA_CAMERA_ZOOM_OUT);
+  const height = Math.round(viewportHeight * ARENA_CAMERA_ZOOM_OUT);
+  const prevWidth = canvas.width;
+  const prevHeight = canvas.height;
+
+  if (prevWidth === width && prevHeight === height) {
+    positionTowerInVisibleArena();
+    if (game && !game.ended) drawGame();
+    else drawIdleArena();
+    return;
+  }
+
+  canvas.width = width;
+  canvas.height = height;
+
+  if (game?.tower) {
+    const scaleX = prevWidth ? width / prevWidth : 1;
+    const scaleY = prevHeight ? height / prevHeight : 1;
+    scaleWorldPoint(game.tower, scaleX, scaleY);
+    game.enemies?.forEach((enemy) => scaleWorldPoint(enemy, scaleX, scaleY));
+    game.projectiles?.forEach((projectile) => scaleWorldPoint(projectile, scaleX, scaleY));
+    game.enemyProjectiles?.forEach((projectile) => scaleWorldPoint(projectile, scaleX, scaleY));
+    game.missiles?.forEach((missile) => scaleWorldPoint(missile, scaleX, scaleY));
+    game.landmines?.forEach((mine) => scaleWorldPoint(mine, scaleX, scaleY));
+    game.effects?.forEach((effect) => {
+      scaleWorldPoint(effect, scaleX, scaleY);
+      effect.pts?.forEach((point) => scaleWorldPoint(point, scaleX, scaleY));
+    });
+    game.texts?.forEach((text) => scaleWorldPoint(text, scaleX, scaleY));
+    scaleWorldPoint(game.blackHole, scaleX, scaleY);
+    arenaGridOffset.x *= scaleX;
+    arenaGridOffset.y *= scaleY;
+    positionTowerInVisibleArena();
+  }
+
+  if (game && !game.ended) drawGame();
+  else drawIdleArena();
+}
+
+function syncTelegramViewport() {
+  const height = tg?.viewportStableHeight || tg?.viewportHeight || window.visualViewport?.height || window.innerHeight;
+  if (height) document.documentElement.style.setProperty("--tg-viewport-height", `${Math.round(height)}px`);
+  applyTelegramPlatformClasses();
+  window.requestAnimationFrame(resizeGameCanvas);
+}
+
+syncTelegramViewport();
+window.addEventListener("resize", syncTelegramViewport);
+window.addEventListener("orientationchange", syncTelegramViewport);
+window.visualViewport?.addEventListener("resize", syncTelegramViewport);
+
+if (tg) {
+  tg.ready?.();
+  tg.expand?.(); // Разворачиваем игру на весь экран в TG
+  tg.onEvent?.("viewportChanged", syncTelegramViewport);
 }
 
 // --- АУДИО ДВИЖОК (Web Audio API) ---
@@ -611,6 +775,7 @@ function initGame() {
   checkWelcomeBack();
   checkDailyQuests();
   renderMenu();
+  resizeGameCanvas();
   if (tg?.CloudStorage) {
     document.getElementById("tgCloudBlock").classList.remove("hidden");
   }
@@ -642,6 +807,9 @@ function bindUi() {
   document.getElementById("hudPlayPauseBtn").addEventListener("click", togglePause);
   document.getElementById("hudSpeedUpBtn").addEventListener("click", increaseSpeed);
   document.getElementById("hudSpeedDownBtn").addEventListener("click", decreaseSpeed);
+  document.getElementById("runUpgradeGrid").addEventListener("scroll", () => {
+    if (!isRestoringRunUpgradeScroll) saveRunUpgradeScrollPosition();
+  }, { passive: true });
   document.getElementById("closeUpgradeInfoBtn").addEventListener("click", () => {
     document.getElementById("upgradeInfoOverlay").classList.add("hidden");
     if (wasPausedForInfo) {
@@ -776,17 +944,54 @@ function trackDailyQuest(type, amount) {
 
 function selectRunUpgradeCategory(category) {
   if (!runUpgradeCategories[category]) return;
+  if (category === activeRunUpgradeCategory) {
+    toggleUpgradePanel();
+    return;
+  }
+  saveRunUpgradeScrollPosition();
   activeRunUpgradeCategory = category;
+  setUpgradePanelCollapsed(false);
   renderRunUpgradeTabs();
   renderRunUpgrades();
+}
+
+function saveRunUpgradeScrollPosition(category = activeRunUpgradeCategory) {
+  const grid = document.getElementById("runUpgradeGrid");
+  if (!grid || !category) return;
+  runUpgradeScrollPositions[category] = grid.scrollTop;
+}
+
+function restoreRunUpgradeScrollPosition(category = activeRunUpgradeCategory) {
+  const grid = document.getElementById("runUpgradeGrid");
+  if (!grid || !category) return;
+  grid.scrollTop = runUpgradeScrollPositions[category] || 0;
+}
+
+function finishRunUpgradeScrollRestore(category = activeRunUpgradeCategory) {
+  restoreRunUpgradeScrollPosition(category);
+  requestAnimationFrame(() => {
+    restoreRunUpgradeScrollPosition(category);
+    isRestoringRunUpgradeScroll = false;
+  });
+}
+
+function setUpgradePanelCollapsed(collapsed) {
+  const gameScreen = screens.game || document.getElementById("gameScreen");
+  if (!gameScreen) return;
+  gameScreen.classList.toggle("upgrade-panel-collapsed", collapsed);
+  scheduleTowerPositionUpdate();
+}
+
+function toggleUpgradePanel() {
+  const gameScreen = screens.game || document.getElementById("gameScreen");
+  if (!gameScreen) return;
+  setUpgradePanelCollapsed(!gameScreen.classList.contains("upgrade-panel-collapsed"));
 }
 
 function renderRunUpgradeTabs() {
   document.querySelectorAll(".tab-cell").forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.category === activeRunUpgradeCategory);
   });
-  const title = document.getElementById("upgradePanelTitle");
-  if (title) title.textContent = `УЛУЧШЕНИЯ: ${runUpgradeCategories[activeRunUpgradeCategory].label.toUpperCase()}`;
 }
 
 function renderMenu() {
@@ -795,6 +1000,8 @@ function renderMenu() {
   document.getElementById("menuMedals").textContent = progress.medals;
   document.getElementById("menuPrestige").textContent = progress.prestige || 0;
   document.getElementById("menuCrystals").textContent = progress.crystals || 0;
+  document.getElementById("menuStones").textContent = progress.powerStones || 0;
+  document.getElementById("menuParts").textContent = progress.moduleParts || 0;
   const activeRun = hasActiveRun();
   const activeRunInfo = document.getElementById("activeRunInfo");
   const continueBtn = document.getElementById("continueBtn");
@@ -859,7 +1066,10 @@ function getUniqueModulePower(id) {
 
 function startRun(options = {}) {
   cancelAnimationFrame(animationId);
+  resizeGameCanvas();
+  arenaGridOffset = { x: 0, y: 0 };
   activeRunUpgradeCategory = "attack";
+  runUpgradeScrollPositions = {};
   const tier = Number(document.getElementById("tierSelect").value || 1);
   const p = progress.permanent;
   const eventMode = options.eventMode || null;
@@ -989,10 +1199,12 @@ function startRun(options = {}) {
   updateSpeedButtons();
   document.getElementById("hudPlayPauseBtn").textContent = "⏸";
   clearRunOverlays();
+  setUpgradePanelCollapsed(false);
   renderRunUpgradeTabs();
   renderRunUpgrades();
   updateHud();
   showScreen("game");
+  positionTowerInVisibleArena();
   lastFrame = performance.now();
   animationId = requestAnimationFrame(gameLoop);
   bgm.update();
@@ -1644,7 +1856,7 @@ function updateProjectiles(dt) {
     const step = p.speed * dt;
     if (dist <= step + p.target.radius) {
       if (p.criticalCoin) p.target.criticalCoinBonus = true;
-      damageEnemy(p.target, p.damage, "projectile");
+      damageEnemy(p.target, p.damage, "projectile", { crit: p.crit, superCrit: p.superCrit });
       
       if (game.tower.lifesteal > 0 && game.tower.hp < game.tower.maxHp) {
         game.tower.hp = Math.min(game.tower.maxHp, game.tower.hp + p.damage * game.tower.lifesteal);
@@ -1709,7 +1921,7 @@ function updateEnemyProjectiles(dt) {
   game.enemyProjectiles = game.enemyProjectiles.filter((p) => !p.dead);
 }
 
-function damageEnemy(enemy, amount, source = "") {
+function damageEnemy(enemy, amount, source = "", hit = {}) {
   let finalDamage = amount;
   if (enemy.shieldHits > 0) {
     finalDamage *= 0.35;
@@ -1719,8 +1931,46 @@ function damageEnemy(enemy, amount, source = "") {
   if (source) enemy.lastHitSource = source;
   enemy.flash = 0.16;
   enemy.hitAngle = Math.atan2(enemy.y - game.tower.y, enemy.x - game.tower.x);
-  addText(Math.ceil(finalDamage), enemy.x, enemy.y - enemy.radius - 10, enemy.shieldHits > 0 ? "#e0a51a" : "#ffffff");
+  const damageText = formatDamageText(finalDamage, hit, enemy.shieldHits > 0);
+  addText(
+    damageText.value,
+    enemy.x + (Math.random() - 0.5) * 12,
+    enemy.y - enemy.radius - 10,
+    damageText.color,
+    damageText.options
+  );
   if (enemy.hp <= 0) killEnemy(enemy);
+}
+
+function formatDamageText(amount, hit = {}, shielded = false) {
+  const value = Math.ceil(amount);
+  if (hit.superCrit) {
+    return {
+      value: `Крит! -${value}`,
+      color: "#ff5caa",
+      options: { size: 32, weight: 900, life: 0.95, floatSpeed: 42, vx: (Math.random() - 0.5) * 18 },
+    };
+  }
+  if (hit.crit) {
+    return {
+      value: `Крит! -${value}`,
+      color: "#ff5caa",
+      options: { size: 28, weight: 900, life: 0.9, floatSpeed: 40, vx: (Math.random() - 0.5) * 16 },
+    };
+  }
+  if (shielded) {
+    return {
+      value: `-${value}`,
+      color: "#ffcf4f",
+      options: { size: 21, weight: 900, life: 0.78, vx: (Math.random() - 0.5) * 10 },
+    };
+  }
+  const color = value >= 100 ? "#ffb020" : (value >= 30 ? "#ff5caa" : "#55ecff");
+  return {
+    value: `-${value}`,
+    color,
+    options: { size: value >= 100 ? 24 : 21, weight: 900, life: 0.78, vx: (Math.random() - 0.5) * 10 },
+  };
 }
 
 function killEnemy(enemy) {
@@ -1986,7 +2236,8 @@ function updateVisualFeedback(dt) {
 
   game.texts.forEach((text) => {
     text.life -= dt;
-    text.y -= 34 * dt;
+    text.y -= (text.floatSpeed || 34) * dt;
+    text.x += (text.vx || 0) * dt;
   });
   game.texts = game.texts.filter((text) => text.life > 0);
 }
@@ -2108,9 +2359,22 @@ function addEffect(type, x, y, life, color, angle = 0) {
   game.effects.push({ type, x, y, life, maxLife: life, color, angle });
 }
 
-function addText(value, x, y, color) {
+function addText(value, x, y, color, options = {}) {
   if (!progress.settings.damageNumbers || !game) return;
-  game.texts.push({ value, x, y, color, life: 0.75, maxLife: 0.75 });
+  game.texts.push({
+    value,
+    x,
+    y,
+    color,
+    life: options.life || 0.75,
+    maxLife: options.life || 0.75,
+    size: options.size || 20,
+    weight: options.weight || 800,
+    glow: options.glow ?? true,
+    vx: options.vx || 0,
+    floatSpeed: options.floatSpeed || 34,
+    stroke: options.stroke ?? true,
+  });
 }
 
 function triggerShake() {
@@ -2125,6 +2389,7 @@ function buyRunUpgrade(id) {
   const def = runUpgradeDefs.find((u) => u.id === id);
   const level = game.runUpgrades[id];
   const cost = getRunUpgradeCost(def, level);
+  if (!isRunUpgradeRequirementMet(def)) return;
   if (game.cash < cost || level >= def.max) return;
   game.cash -= cost;
   game.runUpgrades[id] += 1;
@@ -2132,6 +2397,11 @@ function buyRunUpgrade(id) {
 
   applyUpgradeStat(id);
   renderRunUpgrades();
+}
+
+function isRunUpgradeRequirementMet(def) {
+  const requiredId = runUpgradeRequirements[def?.id];
+  return !requiredId || (game?.runUpgrades?.[requiredId] || 0) > 0;
 }
 
 function applyUpgradeStat(id) {
@@ -2215,6 +2485,8 @@ function renderRunUpgrades() {
 
   // Создаем кнопки с нуля, только если мы переключили вкладку (категорию)
   if (grid.dataset.category !== activeRunUpgradeCategory) {
+    saveRunUpgradeScrollPosition(grid.dataset.category);
+    isRestoringRunUpgradeScroll = true;
     grid.innerHTML = "";
     grid.dataset.category = activeRunUpgradeCategory;
     
@@ -2223,11 +2495,32 @@ function renderRunUpgrades() {
       btn.id = `upgrade-btn-${def.id}`;
       btn.className = "upgrade-card";
       
-      const head = document.createElement("div");
-      head.className = "upgrade-head";
+      const iconWrap = document.createElement("div");
+      iconWrap.className = "run-upgrade-icon";
+      const iconPlaceholder = document.createElement("span");
+      iconPlaceholder.className = "run-upgrade-icon-placeholder";
+      iconWrap.append(iconPlaceholder);
+
+      const body = document.createElement("div");
+      body.className = "run-upgrade-body";
 
       const title = document.createElement("strong");
+      title.className = "run-upgrade-title";
       title.textContent = def.name;
+
+      const desc = document.createElement("span");
+      desc.className = "run-upgrade-desc";
+      desc.textContent = def.desc;
+      body.append(title, desc);
+
+      const meta = document.createElement("div");
+      meta.className = "run-upgrade-meta";
+      const levelPill = document.createElement("span");
+      levelPill.id = `upgrade-level-${def.id}`;
+      levelPill.className = "run-upgrade-level";
+      const costPill = document.createElement("span");
+      costPill.id = `upgrade-info-${def.id}`;
+      costPill.className = "run-upgrade-cost";
       
       const infoIcon = document.createElement("div");
       infoIcon.className = "upgrade-info-btn";
@@ -2237,38 +2530,45 @@ function renderRunUpgrades() {
         openUpgradeInfo(def);
       });
 
-      head.append(title, infoIcon);
-
-      const info = document.createElement("span");
-      info.id = `upgrade-info-${def.id}`;
-      info.style.display = "block";
-      info.style.marginTop = "2px";
-      info.style.fontSize = "0.85rem";
+      iconWrap.append(infoIcon);
+      meta.append(levelPill, costPill);
       
-      btn.append(head, info);
+      btn.append(iconWrap, body, meta);
       btn.addEventListener("click", () => buyRunUpgrade(def.id));
       grid.append(btn);
     });
+    finishRunUpgradeScrollRestore();
   }
 
   // Обновляем данные на уже существующих кнопках (без их пересоздания)
   activeDefs.forEach((def) => {
     const btn = document.getElementById(`upgrade-btn-${def.id}`);
     const info = document.getElementById(`upgrade-info-${def.id}`);
-    if (!btn || !info) return;
+    const levelPill = document.getElementById(`upgrade-level-${def.id}`);
+    if (!btn || !info || !levelPill) return;
     
     const level = game?.runUpgrades?.[def.id] || 0;
     const isMax = level >= def.max;
     const cost = getRunUpgradeCost(def, level);
-    const locked = !game || game.ended || Boolean(game.cash < cost);
+    const requirementMet = isRunUpgradeRequirementMet(def);
+    const locked = !game || game.ended || !requirementMet || Boolean(game.cash < cost);
+    const state = isMax ? "max" : (!game || game.ended || !requirementMet ? "locked" : (locked ? "default" : "available"));
     
     if (btn.disabled !== (locked || isMax)) btn.disabled = locked || isMax;
-    const newClass = `upgrade-card ${(locked || isMax) ? "disabled" : ""}`;
+    const newClass = `upgrade-card is-${state} ${(locked || isMax) ? "disabled" : ""}`;
     if (btn.className !== newClass) btn.className = newClass;
     
     const infoText = isMax ? `Ур.${level} (МАКС)` : `Ур.${level} · $${cost}`;
     if (info.textContent !== infoText) {
       info.textContent = infoText;
+    }
+    const levelText = `Ур. ${level} / ${def.max}`;
+    if (levelPill.textContent !== levelText) levelPill.textContent = levelText;
+    if (isMax) {
+      if (info.textContent !== "MAX") info.textContent = "MAX";
+    } else {
+      const costText = `<span class="run-upgrade-coin" aria-hidden="true"></span>${cost}`;
+      if (info.innerHTML !== costText) info.innerHTML = costText;
     }
   });
 }
@@ -2324,7 +2624,7 @@ function getNextUpgradeEffectString(id, level) {
   switch(id) {
     case "damage": return `+${(4 + level * 1.4).toFixed(1)} к базовому урону`;
     case "attackSpeed": return `x1.12 к скорости атаки`;
-    case "range": return `+16 px`;
+    case "range": return `+12 px`;
     case "critChance": return `+3.5%`;
     case "critDamage": return `+0.22x`;
     case "superCritChance": return `+1.0%`;
@@ -2604,7 +2904,7 @@ function unlockCardSlot() {
 }
 
 function renderCards() {
-  document.getElementById("cardsCrystals").textContent = `${progress.crystals || 0} ♦`;
+  document.getElementById("cardsCrystals").textContent = progress.crystals || 0;
   
   const slotsGrid = document.getElementById("cardSlotsGrid");
   slotsGrid.innerHTML = "";
@@ -2704,7 +3004,7 @@ function mergeModules() {
 }
 
 function renderModules() {
-  document.getElementById("modulesParts").textContent = `${progress.moduleParts || 0} ⚙`;
+  document.getElementById("modulesParts").textContent = progress.moduleParts || 0;
   const slotsGrid = document.getElementById("moduleSlotsGrid");
   slotsGrid.innerHTML = "";
   moduleTypes.forEach(def => {
@@ -2834,7 +3134,7 @@ function renderUltimateShop() {
   const selectedIds = getSelectedUltimateIds();
   const synergies = getActiveSynergies();
   
-  document.getElementById("ultimateStones").textContent = `${progress.powerStones || 0} 🔮`;
+  document.getElementById("ultimateStones").textContent = progress.powerStones || 0;
   const stoneShop = document.getElementById("stoneShopList");
   stoneShop.innerHTML = `
     <div class="shop-card"><div><strong>Урон УО (+5%)</strong><span style="display:block; font-size:0.8rem; margin-top:2px;">Ур.${progress.stoneUpgrades.dmg || 0} • 10 🔮</span></div>
@@ -3529,17 +3829,24 @@ function togglePause() {
 }
 
 function increaseSpeed() {
-  if (gameSpeed < 5) gameSpeed += 0.5;
+  const index = gameSpeedSteps.findIndex((speed) => speed > gameSpeed + 0.001);
+  if (index !== -1) gameSpeed = gameSpeedSteps[index];
   updateSpeedButtons();
 }
 
 function decreaseSpeed() {
-  if (gameSpeed > 1) gameSpeed -= 0.5;
+  for (let i = gameSpeedSteps.length - 1; i >= 0; i -= 1) {
+    if (gameSpeedSteps[i] < gameSpeed - 0.001) {
+      gameSpeed = gameSpeedSteps[i];
+      break;
+    }
+  }
   updateSpeedButtons();
 }
 
 function updateSpeedButtons() {
-  document.getElementById("hudSpeedUpBtn").textContent = "▶ x" + (Number.isInteger(gameSpeed) ? gameSpeed + ".0" : gameSpeed);
+  const speedLabel = Number.isInteger(gameSpeed) ? String(gameSpeed) : String(gameSpeed).replace(".", ",");
+  document.getElementById("hudSpeedUpBtn").textContent = "▶ x" + speedLabel;
   document.getElementById("hudSpeedDownBtn").classList.toggle("hidden", gameSpeed <= 1);
 }
 
@@ -3574,28 +3881,78 @@ function drawIdleArena() {
 
 function drawArena() {
   ctx.save();
-  const gradient = ctx.createRadialGradient(canvas.width / 2, canvas.height * 0.45, 20, canvas.width / 2, canvas.height * 0.45, canvas.height * 0.6);
-  gradient.addColorStop(0, "#11142d");
-  gradient.addColorStop(0.48, "#080817");
-  gradient.addColorStop(1, "#05050c");
-  ctx.fillStyle = gradient;
+
+  const backdrop = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  backdrop.addColorStop(0, "#05091a");
+  backdrop.addColorStop(0.46, "#071129");
+  backdrop.addColorStop(1, "#02040d");
+  ctx.fillStyle = backdrop;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  const glow = ctx.createRadialGradient(
+    canvas.width * 0.5,
+    canvas.height * 0.38,
+    0,
+    canvas.width * 0.5,
+    canvas.height * 0.38,
+    Math.max(canvas.width, canvas.height) * 0.72
+  );
+  glow.addColorStop(0, "rgba(85, 236, 255, 0.12)");
+  glow.addColorStop(0.28, "rgba(110, 72, 255, 0.08)");
+  glow.addColorStop(1, "rgba(1, 4, 11, 0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const gridStep = 48;
+  const startX = ((arenaGridOffset.x % gridStep) + gridStep) % gridStep;
+  const startY = ((arenaGridOffset.y % gridStep) + gridStep) % gridStep;
   ctx.globalAlpha = 0.18;
   ctx.strokeStyle = "#55ecff";
   ctx.lineWidth = 1;
-  for (let x = 60; x < canvas.width; x += 120) {
+  for (let x = startX - gridStep; x <= canvas.width + gridStep; x += gridStep) {
     ctx.beginPath();
     ctx.moveTo(x, 0);
     ctx.lineTo(x, canvas.height);
     ctx.stroke();
   }
-  for (let y = 80; y < canvas.height; y += 120) {
+  for (let y = startY - gridStep; y <= canvas.height + gridStep; y += gridStep) {
     ctx.beginPath();
     ctx.moveTo(0, y);
     ctx.lineTo(canvas.width, y);
     ctx.stroke();
   }
+
+  ctx.globalAlpha = 0.08;
+  ctx.strokeStyle = "#ff5caa";
+  ctx.lineWidth = 2;
+  const majorStep = gridStep * 4;
+  const majorX = ((arenaGridOffset.x % majorStep) + majorStep) % majorStep;
+  const majorY = ((arenaGridOffset.y % majorStep) + majorStep) % majorStep;
+  for (let x = majorX - majorStep; x <= canvas.width + majorStep; x += majorStep) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, canvas.height);
+    ctx.stroke();
+  }
+  for (let y = majorY - majorStep; y <= canvas.height + majorStep; y += majorStep) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(canvas.width, y);
+    ctx.stroke();
+  }
+
+  ctx.globalAlpha = 0.16;
+  ctx.strokeStyle = "rgba(85, 236, 255, 0.5)";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(12, 12, canvas.width - 24, canvas.height - 24);
+
+  ctx.globalAlpha = 0.12;
+  ctx.strokeStyle = "rgba(255, 92, 170, 0.75)";
+  ctx.beginPath();
+  ctx.moveTo(canvas.width * 0.72, 0);
+  ctx.lineTo(canvas.width * 0.58, canvas.height);
+  ctx.stroke();
+
   ctx.restore();
 }
 
@@ -3611,13 +3968,32 @@ function drawTower() {
   ctx.beginPath();
   ctx.arc(t.x, t.y, t.range, 0, TWO_PI);
   ctx.fillStyle = mainColor;
-  ctx.globalAlpha = 0.02;
+  ctx.globalAlpha = 0.035;
   ctx.fill();
   ctx.strokeStyle = mainColor;
-  ctx.globalAlpha = 0.32;
-  ctx.lineWidth = 3;
+  ctx.globalAlpha = 0.34;
+  ctx.lineWidth = 4;
+  ctx.stroke();
+  ctx.globalAlpha = 0.11;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(t.x, t.y, t.range * 0.68, 0, TWO_PI);
   ctx.stroke();
   ctx.globalAlpha = 1.0;
+
+  ctx.save();
+  ctx.translate(t.x, t.y);
+  ctx.rotate(performance.now() / 1800);
+  ctx.strokeStyle = "rgba(85, 236, 255, 0.35)";
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 6; i += 1) {
+    ctx.rotate(TWO_PI / 6);
+    ctx.beginPath();
+    ctx.moveTo(34, 0);
+    ctx.lineTo(48, 0);
+    ctx.stroke();
+  }
+  ctx.restore();
 
   ctx.beginPath();
   for (let i = 0; i < sides; i += 1) {
@@ -3633,8 +4009,22 @@ function drawTower() {
   ctx.strokeStyle = mainColor;
   ctx.lineWidth = 3;
   ctx.shadowColor = mainColor;
-  ctx.shadowBlur = 10;
+  ctx.shadowBlur = 16;
   ctx.stroke();
+
+  ctx.beginPath();
+  for (let i = 0; i < sides; i += 1) {
+    const angle = Math.PI / sides + (i / sides) * TWO_PI;
+    const x = t.x + Math.cos(angle) * 12;
+    const y = t.y + Math.sin(angle) * 12;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = "rgba(233, 253, 255, 0.92)";
+  ctx.shadowBlur = 18;
+  ctx.fill();
+  ctx.shadowBlur = 0;
 
   if (game?.goldenCoreTimer > 0) {
     ctx.beginPath();
@@ -3653,8 +4043,8 @@ function drawTower() {
   if (game?.tower.orbCount > 0) {
     ctx.beginPath();
     ctx.arc(t.x, t.y, 180, 0, TWO_PI);
-    ctx.strokeStyle = "rgba(255,255,255,0.08)";
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(85, 236, 255, 0.16)";
+    ctx.lineWidth = 2;
     ctx.stroke();
 
     for (let i = 0; i < game.tower.orbCount; i++) {
@@ -3904,13 +4294,25 @@ function drawFloatingTexts() {
   if (!game || !game.texts.length) return;
   ctx.save();
   ctx.textAlign = "center";
-  ctx.font = "700 20px 'Exo 2', system-ui";
+  ctx.textBaseline = "middle";
   game.texts.forEach((text) => {
-    ctx.globalAlpha = Math.max(0, text.life / text.maxLife);
-    ctx.fillStyle = "rgba(22, 32, 47, 0.45)";
-    ctx.fillText(text.value, text.x + 2, text.y + 2);
+    const alpha = Math.max(0, text.life / text.maxLife);
+    const lift = 1 - alpha;
+    ctx.globalAlpha = Math.min(1, alpha * 1.25);
+    ctx.font = `${text.weight || 800} ${text.size || 20}px 'Exo 2', system-ui`;
+    ctx.lineJoin = "round";
+    if (text.stroke) {
+      ctx.strokeStyle = "rgba(3, 5, 14, 0.9)";
+      ctx.lineWidth = Math.max(3, (text.size || 20) * 0.16);
+      ctx.strokeText(text.value, text.x + 2, text.y + 2);
+    }
+    if (text.glow) {
+      ctx.shadowColor = text.color;
+      ctx.shadowBlur = 10 + lift * 8;
+    }
     ctx.fillStyle = text.color;
     ctx.fillText(text.value, text.x, text.y);
+    ctx.shadowBlur = 0;
   });
   ctx.restore();
 }
