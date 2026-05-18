@@ -2,6 +2,13 @@
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+const arenaWrap = document.querySelector(".arena-wrap");
+const arenaBackground = new Image();
+arenaBackground.src = "image/back.png";
+arenaBackground.addEventListener("load", () => {
+  if (!game || game.ended) drawIdleArena();
+});
+
 
 const STORAGE_KEY = "coreSentinelSaveV1";
 const TWO_PI = Math.PI * 2;
@@ -350,13 +357,61 @@ let offlineMsCalculated = 0;
 // --- ИНТЕГРАЦИЯ TELEGRAM ---
 const tg = window.Telegram?.WebApp;
 
+function applyTelegramPlatformClasses() {
+  const platform = (tg?.platform || "browser").toLowerCase();
+  document.body.classList.toggle("is-telegram", Boolean(tg));
+  document.body.classList.toggle("is-telegram-desktop", ["tdesktop", "macos", "web", "weba", "webk"].includes(platform));
+}
+
+function resizeGameCanvas() {
+  const rect = arenaWrap?.getBoundingClientRect();
+  const width = Math.max(320, Math.round(rect?.width || canvas.clientWidth || 760));
+  const height = Math.max(240, Math.round(rect?.height || canvas.clientHeight || 920));
+  const prevWidth = canvas.width;
+  const prevHeight = canvas.height;
+
+  if (prevWidth === width && prevHeight === height) return;
+
+  canvas.width = width;
+  canvas.height = height;
+
+  if (game?.tower) {
+    const scaleX = prevWidth ? width / prevWidth : 1;
+    const scaleY = prevHeight ? height / prevHeight : 1;
+    game.tower.x = width / 2;
+    game.tower.y = height / 2;
+    game.enemies?.forEach((enemy) => {
+      enemy.x *= scaleX;
+      enemy.y *= scaleY;
+    });
+    game.projectiles?.forEach((projectile) => {
+      projectile.x *= scaleX;
+      projectile.y *= scaleY;
+    });
+    game.landmines?.forEach((mine) => {
+      mine.x *= scaleX;
+      mine.y *= scaleY;
+    });
+    game.texts?.forEach((text) => {
+      text.x *= scaleX;
+      text.y *= scaleY;
+    });
+  }
+
+  if (game && !game.ended) drawGame();
+  else drawIdleArena();
+}
+
 function syncTelegramViewport() {
   const height = tg?.viewportStableHeight || tg?.viewportHeight || window.visualViewport?.height || window.innerHeight;
   if (height) document.documentElement.style.setProperty("--tg-viewport-height", `${Math.round(height)}px`);
+  applyTelegramPlatformClasses();
+  window.requestAnimationFrame(resizeGameCanvas);
 }
 
 syncTelegramViewport();
 window.addEventListener("resize", syncTelegramViewport);
+window.addEventListener("orientationchange", syncTelegramViewport);
 window.visualViewport?.addEventListener("resize", syncTelegramViewport);
 
 if (tg) {
@@ -623,6 +678,7 @@ function initGame() {
   checkWelcomeBack();
   checkDailyQuests();
   renderMenu();
+  resizeGameCanvas();
   if (tg?.CloudStorage) {
     document.getElementById("tgCloudBlock").classList.remove("hidden");
   }
@@ -889,6 +945,7 @@ function getUniqueModulePower(id) {
 
 function startRun(options = {}) {
   cancelAnimationFrame(animationId);
+  resizeGameCanvas();
   activeRunUpgradeCategory = "attack";
   const tier = Number(document.getElementById("tierSelect").value || 1);
   const p = progress.permanent;
@@ -3605,14 +3662,42 @@ function drawIdleArena() {
 
 function drawArena() {
   ctx.save();
-  const gradient = ctx.createRadialGradient(canvas.width / 2, canvas.height * 0.45, 20, canvas.width / 2, canvas.height * 0.45, canvas.height * 0.6);
-  gradient.addColorStop(0, "#11142d");
-  gradient.addColorStop(0.48, "#080817");
-  gradient.addColorStop(1, "#05050c");
+  const gradient = ctx.createRadialGradient(canvas.width / 2, canvas.height * 0.45, 20, canvas.width / 2, canvas.height * 0.45, canvas.height * 0.72);
+  gradient.addColorStop(0, "#17276f");
+  gradient.addColorStop(0.46, "#090d2d");
+  gradient.addColorStop(1, "#03040a");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.globalAlpha = 0.18;
+  if (arenaBackground.complete && arenaBackground.naturalWidth) {
+    const scale = Math.min(canvas.width / arenaBackground.naturalWidth, canvas.height / arenaBackground.naturalHeight);
+    const bgWidth = arenaBackground.naturalWidth * scale;
+    const bgHeight = arenaBackground.naturalHeight * scale;
+    const bgX = (canvas.width - bgWidth) / 2;
+    const bgY = (canvas.height - bgHeight) / 2;
+
+    ctx.globalAlpha = 0.58;
+    ctx.drawImage(arenaBackground, bgX, bgY, bgWidth, bgHeight);
+    ctx.globalAlpha = 1;
+
+    const sideFade = ctx.createLinearGradient(0, 0, canvas.width, 0);
+    sideFade.addColorStop(0, "rgba(3, 4, 10, 0.88)");
+    sideFade.addColorStop(0.22, "rgba(3, 4, 10, 0.16)");
+    sideFade.addColorStop(0.5, "rgba(3, 4, 10, 0)");
+    sideFade.addColorStop(0.78, "rgba(3, 4, 10, 0.16)");
+    sideFade.addColorStop(1, "rgba(3, 4, 10, 0.88)");
+    ctx.fillStyle = sideFade;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  const vignette = ctx.createRadialGradient(canvas.width / 2, canvas.height * 0.5, canvas.height * 0.12, canvas.width / 2, canvas.height * 0.5, canvas.height * 0.78);
+  vignette.addColorStop(0, "rgba(85, 236, 255, 0.06)");
+  vignette.addColorStop(0.62, "rgba(3, 4, 10, 0.1)");
+  vignette.addColorStop(1, "rgba(3, 4, 10, 0.72)");
+  ctx.fillStyle = vignette;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.globalAlpha = 0.15;
   ctx.strokeStyle = "#55ecff";
   ctx.lineWidth = 1;
   for (let x = 60; x < canvas.width; x += 120) {
