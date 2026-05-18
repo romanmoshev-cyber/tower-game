@@ -224,6 +224,34 @@ const runUpgradeCategories = {
   utility: { label: "Тактика", icon: "★" },
 };
 
+const runUpgradeIconMap = {
+  damage: "icon-damage",
+  attackSpeed: "icon-attack-speed",
+  range: "icon-range",
+  critChance: "icon-crit-chance",
+  critDamage: "icon-crit-damage",
+  multiShot: "icon-multishot",
+  bounceShot: "icon-bounce-shot",
+  bounceTargets: "icon-bounce-targets",
+  bounceRange: "icon-bounce-range",
+  rapidFireChance: "icon-rapid-fire-chance",
+  rapidFireDuration: "icon-rapid-fire-duration",
+  damageMeter: "icon-damage-meter",
+  superCritChance: "icon-super-crit-chance",
+  superCritMult: "icon-super-crit-mult",
+  orbCount: "icon-orb-count",
+  orbSpeed: "icon-orb-speed",
+  maxHealth: "icon-health",
+  regen: "icon-health",
+  cashBonus: "icon-coin",
+  cashWave: "icon-coin",
+  runCoinBonus: "icon-coin",
+  coinWave: "icon-coin",
+  interestRate: "icon-coin",
+  maxInterest: "icon-coin",
+};
+const defaultRunUpgradeIconClass = "icon-tower-upgrade";
+
 const ultimateDefs = [
   { id: "stormChain", name: "Chain Lightning", cost: 800, cooldown: 11, desc: "Молния перескакивает между врагами.", getUpgradeInfo: (lvl) => `Целей: ${4+lvl} -> ${4+lvl+1} | Урон: x${4+lvl}` },
   { id: "timeField", name: "Chrono Field", cost: 900, cooldown: 18, desc: "Замедляет врагов вокруг башни.", getUpgradeInfo: (lvl) => `Замедление: постоянно` },
@@ -411,6 +439,14 @@ function scaleWorldPoint(point, scaleX, scaleY) {
   point.y *= scaleY;
 }
 
+function getCanvasEffectiveWidth() {
+  return canvas._logicalWidth || canvas.width;
+}
+
+function getCanvasEffectiveHeight() {
+  return canvas._logicalHeight || canvas.height;
+}
+
 function shiftWorldPoint(point, dx, dy) {
   if (!point || typeof point.x !== "number" || typeof point.y !== "number") return;
   point.x += dx;
@@ -497,7 +533,7 @@ function resizeGameCanvas() {
   
   if (ctx) {
     const scale = devicePixelRatio / ARENA_CAMERA_ZOOM_OUT;
-    ctx.scale(scale, scale);
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
   }
 
   if (game?.tower) {
@@ -1136,8 +1172,8 @@ function startRun(options = {}) {
     cash: (p.startingCash * 10 + medalStart * 15 + labStartCash) * getModuleMult("economy"),
     totalCash: 0,
     tower: {
-      x: canvas.width / 2,
-      y: canvas.height / 2,
+      x: getCanvasEffectiveWidth() / 2,
+      y: getCanvasEffectiveHeight() / 2,
       hp: maxHealth * cardHpMult * getModuleMult("health"),
       maxHp: maxHealth * cardHpMult * getModuleMult("health"),
       damage: (10 + p.baseDamage + medalDamage) * prestigeMult * labDamageMult * getModuleMult("damage"),
@@ -1461,12 +1497,14 @@ function spawnEnemy(type, override = {}) {
 }
 
 function getSpawnPoint() {
+  const width = getCanvasEffectiveWidth();
+  const height = getCanvasEffectiveHeight();
   const margin = 34;
   const side = Math.floor(Math.random() * 4);
-  if (side === 0) return { x: Math.random() * canvas.width, y: -margin };
-  if (side === 1) return { x: canvas.width + margin, y: Math.random() * canvas.height };
-  if (side === 2) return { x: Math.random() * canvas.width, y: canvas.height + margin };
-  return { x: -margin, y: Math.random() * canvas.height };
+  if (side === 0) return { x: Math.random() * width, y: -margin };
+  if (side === 1) return { x: width + margin, y: Math.random() * height };
+  if (side === 2) return { x: Math.random() * width, y: height + margin };
+  return { x: -margin, y: Math.random() * height };
 }
 
 function gameLoop(now) {
@@ -2536,9 +2574,10 @@ function renderRunUpgrades() {
       
       const iconWrap = document.createElement("div");
       iconWrap.className = "run-upgrade-icon";
-      const iconPlaceholder = document.createElement("span");
-      iconPlaceholder.className = "run-upgrade-icon-placeholder";
-      iconWrap.append(iconPlaceholder);
+      const iconClass = runUpgradeIconMap[def.id] || defaultRunUpgradeIconClass;
+      const iconImg = document.createElement("span");
+      iconImg.className = `run-upgrade-icon-img ${iconClass}`;
+      iconWrap.append(iconImg);
 
       const body = document.createElement("div");
       body.className = "run-upgrade-body";
@@ -3903,7 +3942,9 @@ function showWaveToast(text) {
 }
 
 function drawGame() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const width = getCanvasEffectiveWidth();
+  const height = getCanvasEffectiveHeight();
+  ctx.clearRect(0, 0, width, height);
   drawArena();
   drawEffects();
   drawTower();
@@ -3913,34 +3954,38 @@ function drawGame() {
 }
 
 function drawIdleArena() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const width = getCanvasEffectiveWidth();
+  const height = getCanvasEffectiveHeight();
+  ctx.clearRect(0, 0, width, height);
   drawArena();
   drawTower();
 }
 
 function drawArena() {
+  const width = getCanvasEffectiveWidth();
+  const height = getCanvasEffectiveHeight();
   ctx.save();
 
-  const backdrop = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  const backdrop = ctx.createLinearGradient(0, 0, width, height);
   backdrop.addColorStop(0, "#05091a");
   backdrop.addColorStop(0.46, "#071129");
   backdrop.addColorStop(1, "#02040d");
   ctx.fillStyle = backdrop;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0, 0, width, height);
 
   const glow = ctx.createRadialGradient(
-    canvas.width * 0.5,
-    canvas.height * 0.38,
+    width * 0.5,
+    height * 0.38,
     0,
-    canvas.width * 0.5,
-    canvas.height * 0.38,
-    Math.max(canvas.width, canvas.height) * 0.72
+    width * 0.5,
+    height * 0.38,
+    Math.max(width, height) * 0.72
   );
   glow.addColorStop(0, "rgba(85, 236, 255, 0.12)");
   glow.addColorStop(0.28, "rgba(110, 72, 255, 0.08)");
   glow.addColorStop(1, "rgba(1, 4, 11, 0)");
   ctx.fillStyle = glow;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0, 0, width, height);
 
   const gridStep = 48;
   const startX = ((arenaGridOffset.x % gridStep) + gridStep) % gridStep;
@@ -3948,16 +3993,16 @@ function drawArena() {
   ctx.globalAlpha = 0.18;
   ctx.strokeStyle = "#55ecff";
   ctx.lineWidth = 1;
-  for (let x = startX - gridStep; x <= canvas.width + gridStep; x += gridStep) {
+  for (let x = startX - gridStep; x <= width + gridStep; x += gridStep) {
     ctx.beginPath();
     ctx.moveTo(x, 0);
-    ctx.lineTo(x, canvas.height);
+    ctx.lineTo(x, height);
     ctx.stroke();
   }
-  for (let y = startY - gridStep; y <= canvas.height + gridStep; y += gridStep) {
+  for (let y = startY - gridStep; y <= height + gridStep; y += gridStep) {
     ctx.beginPath();
     ctx.moveTo(0, y);
-    ctx.lineTo(canvas.width, y);
+    ctx.lineTo(width, y);
     ctx.stroke();
   }
 
@@ -3967,36 +4012,36 @@ function drawArena() {
   const majorStep = gridStep * 4;
   const majorX = ((arenaGridOffset.x % majorStep) + majorStep) % majorStep;
   const majorY = ((arenaGridOffset.y % majorStep) + majorStep) % majorStep;
-  for (let x = majorX - majorStep; x <= canvas.width + majorStep; x += majorStep) {
+  for (let x = majorX - majorStep; x <= width + majorStep; x += majorStep) {
     ctx.beginPath();
     ctx.moveTo(x, 0);
-    ctx.lineTo(x, canvas.height);
+    ctx.lineTo(x, height);
     ctx.stroke();
   }
-  for (let y = majorY - majorStep; y <= canvas.height + majorStep; y += majorStep) {
+  for (let y = majorY - majorStep; y <= height + majorStep; y += majorStep) {
     ctx.beginPath();
     ctx.moveTo(0, y);
-    ctx.lineTo(canvas.width, y);
+    ctx.lineTo(width, y);
     ctx.stroke();
   }
 
   ctx.globalAlpha = 0.16;
   ctx.strokeStyle = "rgba(85, 236, 255, 0.5)";
   ctx.lineWidth = 3;
-  ctx.strokeRect(12, 12, canvas.width - 24, canvas.height - 24);
+  ctx.strokeRect(12, 12, width - 24, height - 24);
 
   ctx.globalAlpha = 0.12;
   ctx.strokeStyle = "rgba(255, 92, 170, 0.75)";
   ctx.beginPath();
-  ctx.moveTo(canvas.width * 0.72, 0);
-  ctx.lineTo(canvas.width * 0.58, canvas.height);
+  ctx.moveTo(width * 0.72, 0);
+  ctx.lineTo(width * 0.58, height);
   ctx.stroke();
 
   ctx.restore();
 }
 
 function drawTower() {
-  const t = game?.tower || { x: canvas.width / 2, y: canvas.height / 2, range: 160, hp: 100, maxHp: 100 };
+  const t = game?.tower || { x: getCanvasEffectiveWidth() / 2, y: getCanvasEffectiveHeight() / 2, range: 160, hp: 100, maxHp: 100 };
   const shapeDef = cosmeticDefs.shapes.find(s => s.id === progress?.customization?.shape) || cosmeticDefs.shapes[0];
   const colorDef = cosmeticDefs.colors.find(c => c.id === progress?.customization?.color) || cosmeticDefs.colors[0];
   const sides = shapeDef.sides;

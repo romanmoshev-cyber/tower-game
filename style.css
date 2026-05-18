@@ -779,7 +779,8 @@ button:disabled {
   padding: 8px 12px;
   border-radius: 8px;
   border: 1px solid var(--border-light);
-  backdrop-filter: blur(4px);
+  /* Оптимизация Android: отключен тяжелый backdrop-filter */
+  background: rgba(0, 0, 0, 0.75);
 }
 .top-left-currencies span { font-size: 0.9rem; color: var(--text-muted); }
 .top-left-currencies strong { color: var(--accent-green); font-size: 1.1rem; }
@@ -907,7 +908,8 @@ button:disabled {
   gap: 8px;
   z-index: 20;
   box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-  backdrop-filter: blur(8px);
+  /* Оптимизация Android: отключен тяжелый backdrop-filter */
+  background: rgba(3, 12, 29, 0.95);
 }
 .mini-btn {
   padding: 12px 20px;
@@ -925,7 +927,8 @@ button:disabled {
   width: 100%;
   height: 366px;
   background: linear-gradient(to top, #0b0d17 60%, rgba(11,13,23,0.6) 100%);
-  backdrop-filter: blur(12px);
+  /* Оптимизация Android: отключен тяжелый backdrop-filter */
+  background: linear-gradient(to top, #0b0d17 75%, rgba(11,13,23,0.95) 100%);
   z-index: 10;
   padding: 10px 16px 10px;
   display: flex;
@@ -1053,7 +1056,8 @@ button:disabled {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(4px);
+  /* Оптимизация Android: отключен тяжелый backdrop-filter */
+  background: rgba(0, 0, 0, 0.95);
   z-index: 100;
   display: flex;
   justify-content: center;
@@ -3151,6 +3155,32 @@ input[type="range"] {
   opacity: 0.9;
   box-shadow: 0 0 12px currentColor, inset 0 0 10px rgba(85, 236, 255, 0.25);
 }
+
+/* --- Новые иконки апгрейдов --- */
+.run-upgrade-icon-img {
+  width: 100%;
+  height: 100%;
+  background-size: 85%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.icon-attack-speed { background-image: url("image/ui/icon_attack_speed.png"); }
+.icon-damage { background-image: url("image/ui/icon_damage.png"); }
+.icon-crit-chance { background-image: url("image/ui/icon_crit_chance.png"); }
+.icon-crit-damage { background-image: url("image/ui/icon_crit_damage.png"); }
+.icon-health { background-image: url("image/ui/icon_health.png"); }
+.icon-bounce-range { background-image: url("image/ui/icon_bounce_range.png"); }
+.icon-bounce-shot { background-image: url("image/ui/icon_bounce_shot.png"); }
+.icon-bounce-targets { background-image: url("image/ui/icon_bounce_targets.png"); }
+.icon-range { background-image: url("image/ui/icon_range.png"); }
+.icon-multishot { background-image: url("image/ui/icon_multishot.png"); }
+.icon-rapid-fire-chance { background-image: url("image/ui/icon_rapid_fire_chance.png"); }
+.icon-rapid-fire-duration { background-image: url("image/ui/icon_rapid_fire_duration.png"); }
+.icon-damage-meter { background-image: url("image/ui/icon_damage_meter.png"); }
+.icon-super-crit-mult { background-image: url("image/ui/icon_super_crit_mult.png"); }
+.icon-orb-count { background-image: url("image/ui/icon_orb_count.png"); }
+.icon-orb-speed { background-image: url("image/ui/icon_orb_speed.png"); }
+.icon-tower-upgrade { background-image: url("image/ui/icon_tower_upgrade.png"); }
 
 .upgrade-card.is-available .run-upgrade-icon-placeholder {
   color: #7dff55;
