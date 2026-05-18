@@ -928,6 +928,7 @@ button:disabled {
   gap: 12px;
   border-top: 1px solid var(--accent-cyan-dim);
   pointer-events: auto;
+  transition: transform 0.24s ease;
 }
 .panel-title { font-size: 0.85rem; color: var(--accent-cyan); font-weight: bold; letter-spacing: 1px; }
 .tower-stats { font-size: 0.8rem; color: var(--text-muted); }
@@ -1965,6 +1966,7 @@ input[type="range"]::-webkit-slider-thumb {
   --screen-pad-y: clamp(10px, 2.2vh, 16px);
   --game-tabbar-height: clamp(46px, 7.2dvh, 56px);
   --upgrade-panel-visible: clamp(232px, 38dvh, 330px);
+  --upgrade-panel-peek: clamp(38px, 6.5dvh, 46px);
 }
 
 html,
@@ -2064,8 +2066,9 @@ button {
 }
 
 .menu-stats {
-  margin-bottom: 0;
+  margin: 0 calc(-1 * (var(--screen-pad-x) + var(--safe-right))) 0 calc(-1 * (var(--screen-pad-x) + var(--safe-left)));
   border-width: 8px;
+  border-radius: 0;
 }
 
 .menu-stats .stat-card {
@@ -2126,15 +2129,24 @@ button {
 }
 
 .menu-feature-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, clamp(74px, 21vw, 108px));
+  justify-content: center;
   gap: clamp(4px, 1.4vw, 7px);
   margin: 0;
 }
 
 .menu-feature-card {
+  width: 100%;
+  min-width: 0;
+  max-width: 108px;
   min-height: clamp(118px, 20dvh, 154px);
   padding: clamp(12px, 3vw, 18px) clamp(5px, 1.8vw, 9px);
   border-width: 0;
+}
+
+#upgradesBtn {
+  flex: 0 0 auto;
+  justify-self: center;
 }
 
 .menu-feature-card span {
@@ -2173,6 +2185,10 @@ button {
   padding: 0;
   overflow: hidden;
   --game-bottom-ui: calc(var(--upgrade-panel-visible) + var(--game-tabbar-height) + var(--safe-bottom));
+}
+
+.game-screen.upgrade-panel-collapsed {
+  --game-bottom-ui: calc(var(--upgrade-panel-peek) + var(--game-tabbar-height) + var(--safe-bottom));
 }
 
 .arena-wrap {
@@ -2279,8 +2295,34 @@ button {
   gap: 7px;
 }
 
+.game-screen.upgrade-panel-collapsed .upgrade-panel {
+  transform: translateY(calc(var(--upgrade-panel-visible) - var(--upgrade-panel-peek)));
+}
+
 .panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: calc(var(--upgrade-panel-peek) - 14px);
   font-size: clamp(0.72rem, 2.5vw, 0.85rem);
+}
+
+.upgrade-panel-toggle {
+  flex: 0 0 auto;
+  width: 34px;
+  min-height: 28px;
+  padding: 0;
+  border-radius: 999px;
+  color: var(--accent-cyan);
+  background: rgba(85, 236, 255, 0.12);
+  border: 1px solid rgba(85, 236, 255, 0.32);
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.game-screen.upgrade-panel-collapsed .upgrade-panel-toggle {
+  transform: rotate(180deg);
 }
 
 .tower-stats {
@@ -2476,14 +2518,19 @@ button {
 /* Sticky secondary-screen header and compact resource badges. */
 .screen:not(.game-screen):not(.menu-screen) .sub-head {
   position: sticky;
-  top: 0;
+  top: calc(-1 * (var(--screen-pad-y) + var(--safe-top)));
   z-index: 20;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
+  margin: calc(-1 * (var(--screen-pad-y) + var(--safe-top))) calc(-1 * (var(--screen-pad-x) + var(--safe-right))) 18px calc(-1 * (var(--screen-pad-x) + var(--safe-left)));
+  padding: calc(10px + var(--safe-top)) calc(var(--screen-pad-x) + var(--safe-right)) 10px calc(var(--screen-pad-x) + var(--safe-left));
   background: rgba(4, 13, 30, 0.94);
   backdrop-filter: blur(10px);
+  border-left-width: 0;
+  border-right-width: 0;
+  border-top-width: 0;
 }
 
 .screen:not(.game-screen):not(.menu-screen) .sub-head h2 {
@@ -2491,6 +2538,10 @@ button {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.screen:not(.game-screen):not(.menu-screen) .sub-head h2 .sprite-icon {
+  display: none;
 }
 
 .screen:not(.game-screen):not(.menu-screen) .back-btn {
