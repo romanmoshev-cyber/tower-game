@@ -3662,51 +3662,32 @@ function drawIdleArena() {
 
 function drawArena() {
   ctx.save();
-  const gradient = ctx.createRadialGradient(canvas.width / 2, canvas.height * 0.45, 20, canvas.width / 2, canvas.height * 0.45, canvas.height * 0.72);
-  gradient.addColorStop(0, "#17276f");
-  gradient.addColorStop(0.46, "#090d2d");
-  gradient.addColorStop(1, "#03040a");
-  ctx.fillStyle = gradient;
+  ctx.fillStyle = "#03040a";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   if (arenaBackground.complete && arenaBackground.naturalWidth) {
-    const scale = Math.min(canvas.width / arenaBackground.naturalWidth, canvas.height / arenaBackground.naturalHeight);
+    const scale = Math.max(canvas.width / arenaBackground.naturalWidth, canvas.height / arenaBackground.naturalHeight);
     const bgWidth = arenaBackground.naturalWidth * scale;
     const bgHeight = arenaBackground.naturalHeight * scale;
     const bgX = (canvas.width - bgWidth) / 2;
     const bgY = (canvas.height - bgHeight) / 2;
 
-    ctx.globalAlpha = 0.58;
+    ctx.globalAlpha = 0.9;
     ctx.drawImage(arenaBackground, bgX, bgY, bgWidth, bgHeight);
     ctx.globalAlpha = 1;
-
-    const sideFade = ctx.createLinearGradient(0, 0, canvas.width, 0);
-    sideFade.addColorStop(0, "rgba(3, 4, 10, 0.88)");
-    sideFade.addColorStop(0.22, "rgba(3, 4, 10, 0.16)");
-    sideFade.addColorStop(0.5, "rgba(3, 4, 10, 0)");
-    sideFade.addColorStop(0.78, "rgba(3, 4, 10, 0.16)");
-    sideFade.addColorStop(1, "rgba(3, 4, 10, 0.88)");
-    ctx.fillStyle = sideFade;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
-  const vignette = ctx.createRadialGradient(canvas.width / 2, canvas.height * 0.5, canvas.height * 0.12, canvas.width / 2, canvas.height * 0.5, canvas.height * 0.78);
-  vignette.addColorStop(0, "rgba(85, 236, 255, 0.06)");
-  vignette.addColorStop(0.62, "rgba(3, 4, 10, 0.1)");
-  vignette.addColorStop(1, "rgba(3, 4, 10, 0.72)");
-  ctx.fillStyle = vignette;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.globalAlpha = 0.15;
+  const gridStep = 48;
+  ctx.globalAlpha = 0.2;
   ctx.strokeStyle = "#55ecff";
   ctx.lineWidth = 1;
-  for (let x = 60; x < canvas.width; x += 120) {
+  for (let x = 0; x <= canvas.width; x += gridStep) {
     ctx.beginPath();
     ctx.moveTo(x, 0);
     ctx.lineTo(x, canvas.height);
     ctx.stroke();
   }
-  for (let y = 80; y < canvas.height; y += 120) {
+  for (let y = 0; y <= canvas.height; y += gridStep) {
     ctx.beginPath();
     ctx.moveTo(0, y);
     ctx.lineTo(canvas.width, y);
