@@ -349,8 +349,20 @@ let offlineMsCalculated = 0;
 
 // --- ИНТЕГРАЦИЯ TELEGRAM ---
 const tg = window.Telegram?.WebApp;
-if (tg && tg.initDataUnsafe?.user) {
-  tg.expand(); // Разворачиваем игру на весь экран в TG
+
+function syncTelegramViewport() {
+  const height = tg?.viewportStableHeight || tg?.viewportHeight || window.visualViewport?.height || window.innerHeight;
+  if (height) document.documentElement.style.setProperty("--tg-viewport-height", `${Math.round(height)}px`);
+}
+
+syncTelegramViewport();
+window.addEventListener("resize", syncTelegramViewport);
+window.visualViewport?.addEventListener("resize", syncTelegramViewport);
+
+if (tg) {
+  tg.ready?.();
+  tg.expand?.(); // Разворачиваем игру на весь экран в TG
+  tg.onEvent?.("viewportChanged", syncTelegramViewport);
 }
 
 // --- АУДИО ДВИЖОК (Web Audio API) ---
