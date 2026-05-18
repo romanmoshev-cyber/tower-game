@@ -9,18 +9,18 @@ const ARENA_CAMERA_ZOOM_OUT = 2.5;
 
 const balance = {
   waveEnemyBase: 3,
-  waveEnemyGrowth: 0.88,
+  waveEnemyGrowth: 1.05,
   waveHpGrowth: 1.068,
   waveDamageGrowth: 1.052,
   waveSpeedGrowth: 0.006,
-  spawnBaseDelay: 0.78,
-  spawnMinDelay: 0.3,
-  spawnDelayWaveReduction: 0.008,
-  coinCashRate: 0.025,
-  coinWaveBonus: 1.25,
-  coinKillRate: 0.05,
-  coinBossBonus: 12,
-  bossHpGrowth: 1.85,
+  spawnBaseDelay: 0.95,
+  spawnMinDelay: 0.42,
+  spawnDelayWaveReduction: 0.006,
+  coinCashRate: 0.016,
+  coinWaveBonus: 0.9,
+  coinKillRate: 0.03,
+  coinBossBonus: 7,
+  bossHpGrowth: 2.1,
   bossDamageGrowth: 1.28,
   bossRewardGrowth: 0.25,
   bossTierReward: 0.28,
@@ -180,8 +180,8 @@ const runUpgradeDefs = [
   { id: "damageMeter", name: "Урон/метр", category: "attack", base: 110, growth: 1.42, max: 120, desc: "Снаряды наносят больше урона дальним целям." },
   { id: "superCritChance", name: "Супер-крит (%)", category: "attack", base: 1500, growth: 1.8, max: 100, desc: "Шанс превратить критический урон в супер-крит." },
   { id: "superCritMult", name: "Супер-крит (x)", category: "attack", base: 2000, growth: 1.85, max: 150, desc: "Дополнительный множитель для супер-критов." },
-  { id: "orbCount", name: "Сферы (шт)", category: "attack", base: 750, growth: 2.05, max: 4, desc: "Количество орбитальных сфер вокруг башни." },
-  { id: "orbSpeed", name: "Скорость сфер", category: "attack", base: 360, growth: 1.52, max: 50, desc: "Скорость вращения орбитальных сфер." },
+  { id: "orbCount", name: "Сферы (шт)", category: "attack", base: 2250, growth: 2.25, max: 4, desc: "Количество орбитальных сфер вокруг башни." },
+  { id: "orbSpeed", name: "Скорость сфер", category: "attack", base: 1080, growth: 1.62, max: 50, desc: "Скорость вращения орбитальных сфер." },
   { id: "maxHealth", name: "Макс. здоровье", category: "defense", base: 15, growth: 1.32, max: 5000, desc: "Увеличивает максимальный запас здоровья." },
   { id: "regen", name: "Регенерация", category: "defense", base: 20, growth: 1.38, max: 5000, desc: "Восстанавливает здоровье каждую секунду." },
   { id: "absDefense", name: "Абс. защита", category: "defense", base: 10, growth: 1.25, max: 5000, desc: "Вычитает фиксированное значение из урона врагов." },
@@ -202,7 +202,7 @@ const runUpgradeDefs = [
   { id: "maxInterest", name: "Макс. инвест.", category: "utility", base: 100, growth: 1.55, max: 150, desc: "Максимальный лимит начисления $ с инвестиций." },
   { id: "packageChance", name: "Шанс посылки", category: "utility", base: 200, growth: 1.5, max: 100, desc: "Шанс получить лечение (оверхил) после волны." },
   { id: "packageMax", name: "Макс. оверхил", category: "utility", base: 300, growth: 1.65, max: 100, desc: "Максимальный множитель оверхила от пакетов." },
-  { id: "shockWave", name: "Ударная волна", category: "utility", base: 260, growth: 1.55, max: 60, desc: "Периодически отталкивает врагов от башни, загоняя их под сферы." },
+  { id: "shockWave", name: "Ударная волна", category: "utility", base: 880, growth: 1.7, max: 60, desc: "Периодически отталкивает врагов от башни, загоняя их под сферы." },
   { id: "enemyAttackSkip", name: "Пропуск ATK врагов", category: "utility", base: 340, growth: 1.6, max: 80, desc: "Снижает рост урона врагов в текущем забеге." },
   { id: "enemyHealthSkip", name: "Пропуск HP врагов", category: "utility", base: 340, growth: 1.6, max: 80, desc: "Снижает рост здоровья врагов в текущем забеге." },
   { id: "waveSkip", name: "Пропуск волны", category: "utility", base: 420, growth: 1.68, max: 50, desc: "Шанс мгновенно зачесть следующую волну и ускорить фарм." },
@@ -261,7 +261,7 @@ const ultimateDefs = [
   { id: "solarBeam", name: "Солнечный луч", cost: 1400, cooldown: 45, desc: "Мощный луч на 360 градусов.", getUpgradeInfo: (lvl) => `Урон/сек: x${15+lvl*5} -> x${15+(lvl+1)*5}` },
   { id: "goldenCore", name: "Golden Tower", cost: 1600, cooldown: 35, desc: "Умножает $ и монеты во время активности.", getUpgradeInfo: (lvl) => `Длительность: ${10+lvl*2}с -> ${10+(lvl+1)*2}с` },
   { id: "blackHole", name: "Black Hole", cost: 1850, cooldown: 42, desc: "Стягивает врагов и увеличивает награды за убийства внутри.", getUpgradeInfo: (lvl) => `Длительность: ${6+lvl}с -> ${6+lvl+1}с` },
-  { id: "deathWave", name: "Death Wave", cost: 3300, cooldown: 74, desc: "Короткая волна энергии вокруг башни.", getUpgradeInfo: (lvl) => `Урон: x${(2.4+lvl*0.55).toFixed(1)} -> x${(2.4+(lvl+1)*0.55).toFixed(1)}` },
+  { id: "deathWave", name: "Death Wave", cost: 5600, cooldown: 90, desc: "Короткая волна энергии вокруг башни.", getUpgradeInfo: (lvl) => `Урон: x${(1.7+lvl*0.35).toFixed(1)} -> x${(1.7+(lvl+1)*0.35).toFixed(1)}` },
   { id: "poisonSwamp", name: "Poison Swamp", cost: 2200, cooldown: 18, desc: "Создает токсичные лужи.", getUpgradeInfo: (lvl) => `Луж: ${3+lvl} -> ${3+lvl+1}` },
 ];
 
@@ -377,7 +377,7 @@ const enemyDefs = {
   armored: { name: "Броненосец", hp: 85, speed: 13, reward: 18, damage: 18, radius: 14, color: "#8a94a6" },
   assassin: { name: "Ассасин", hp: 6, speed: 65, reward: 8, damage: 25, radius: 8, color: "#ff2a2a" },
   healer: { name: "Целитель", hp: 35, speed: 18, reward: 15, damage: 5, radius: 12, color: "#24b47e" },
-  boss: { name: "Босс", hp: 1260, speed: 13, reward: 115, damage: 28, radius: 40, color: "#f8f2ff" },
+  boss: { name: "Босс", hp: 3780, speed: 13, reward: 115, damage: 28, radius: 54, color: "#f8f2ff" },
   horn: { name: "Рога", hp: 38, speed: 9, reward: 16, damage: 0, radius: 12, color: "#a9a9a9" },
 };
 
@@ -980,7 +980,7 @@ function checkWelcomeBack() {
   if (offlineMins >= 240) {
     const hours = Math.min(24, offlineMins / 60); // Максимум 24 часа
     // Базовая ставка: 10 монет/мин + 2 монеты за каждую пройденную лучшую волну
-    const coinRatePerMin = Math.min(8.33, 0.8 + (progress.bestWave || 0) * 0.05); 
+    const coinRatePerMin = Math.min(8.33, 0.2 + (progress.bestWave || 0) * 0.018); 
     const labMult = 1 + (progress.labs.levels.labCoins || 0) * 0.015;
     const earned = Math.floor(offlineMins * coinRatePerMin * labMult);
     
@@ -1520,12 +1520,12 @@ function spawnEnemy(type, override = {}) {
   }
   if (enemy.mega) {
     enemy.name = "Множитель";
-    enemy.hp *= 2.8;
-    enemy.maxHp *= 2.8;
+    enemy.hp *= 8.4;
+    enemy.maxHp *= 8.4;
     enemy.speed *= 0.9;
     enemy.damage = Math.ceil(enemy.damage * 1.8);
     enemy.reward = Math.ceil(enemy.reward * 3.4);
-    enemy.radius += 14;
+    enemy.radius += 22;
   }
   if (enemy.type === "horn") {
     enemy.hidden = true;
@@ -1680,8 +1680,8 @@ function triggerDeathRay() {
     const py = enemy.y - origin.y;
     const forward = px * Math.cos(angle) + py * Math.sin(angle);
     const side = Math.abs(px * Math.sin(angle) - py * Math.cos(angle));
-    if (forward > -40 && forward < 300 + lvl * 30 && side < width) {
-      const dmg = enemy.type === "boss" ? enemy.maxHp * (0.025 + lvl * 0.01) : enemy.maxHp * (0.48 + lvl * 0.08);
+    if (forward > -40 && forward < 220 + lvl * 16 && side < width) {
+      const dmg = enemy.type === "boss" ? enemy.maxHp * (0.015 + lvl * 0.006) : enemy.maxHp * (0.34 + lvl * 0.05);
       damageEnemy(enemy, dmg, "deathRay");
     }
   });
@@ -1697,7 +1697,7 @@ function updateShockWave(dt) {
   game.enemies.forEach((enemy) => {
     if (enemy.type === "boss") return;
     const dist = Math.hypot(enemy.x - game.tower.x, enemy.y - game.tower.y);
-    if (dist <= game.tower.shockWaveSize) {
+    if (dist <= Math.max(130, game.tower.shockWaveSize * 0.62)) {
       knockbackEnemy(enemy, strength);
       enemy.slow = Math.min(enemy.slow, 0.72);
     }
@@ -1738,8 +1738,8 @@ function updateEnemies(dt) {
 
   // Обработка Сфер
   if (game.tower.orbCount > 0) {
-    game.tower.orbAngle += game.tower.orbSpeed * dt;
-    const orbRadius = 220;
+    game.tower.orbAngle += (game.tower.orbSpeed * 0.72) * dt;
+    const orbRadius = 270;
     for (let i = 0; i < game.tower.orbCount; i++) {
       const angle = game.tower.orbAngle + (i / game.tower.orbCount) * TWO_PI;
       const ox = game.tower.x + Math.cos(angle) * orbRadius;
@@ -1814,7 +1814,7 @@ function updateEnemies(dt) {
     }
 
     // Для треугольников (разведчик/ассасин) всегда держим острый угол строго к башне
-    if (enemy.type === "scout" || enemy.type === "assassin") {
+    if (enemy.type === "scout" || enemy.type === "assassin" || enemy.type === "horn") {
       enemy.angle = Math.atan2(dy, dx) + Math.PI / 2;
       enemy.angularVelocity = 0;
       return;
@@ -2426,7 +2426,7 @@ function triggerUltimate(ultimate) {
       const dist = Math.hypot(enemy.x - game.tower.x, enemy.y - game.tower.y);
       if (dist > waveRadius) return;
       const compressed = enemy.inBlackHole && hasSynergy("Сжатая волна") ? 1.45 : 1;
-      damageEnemy(enemy, game.tower.damage * (2.4 + level * 0.55) * dmgBonus * compressed * triSync, "deathWave");
+      damageEnemy(enemy, game.tower.damage * (1.7 + level * 0.35) * dmgBonus * compressed * triSync, "deathWave");
       knockbackEnemy(enemy, 38);
     });
     addEffect("deathWave", game.tower.x, game.tower.y, 1.0, "#ff5c9b");
