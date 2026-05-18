@@ -3,16 +3,9 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const arenaWrap = document.querySelector(".arena-wrap");
-const arenaBackground = new Image();
-arenaBackground.src = "image/back.png";
-arenaBackground.addEventListener("load", () => {
-  if (!game || game.ended) drawIdleArena();
-});
-
-
 const STORAGE_KEY = "coreSentinelSaveV1";
 const TWO_PI = Math.PI * 2;
-const ARENA_CAMERA_ZOOM_OUT = 5;
+const ARENA_CAMERA_ZOOM_OUT = 2.5;
 
 const balance = {
   waveEnemyBase: 4,
@@ -364,18 +357,60 @@ function applyTelegramPlatformClasses() {
   document.body.classList.toggle("is-telegram-desktop", ["tdesktop", "macos", "web", "weba", "webk"].includes(platform));
 }
 
+function getArenaWorldCenter() {
+  const arenaRect = arenaWrap?.getBoundingClientRect();
+  const viewportWidth = Math.max(320, Math.round(arenaRect?.width || canvas.clientWidth || 760));
+  const viewportHeight = Math.max(240, Math.round(arenaRect?.height || canvas.clientHeight || 920));
+  const scaleX = canvas.width / viewportWidth || ARENA_CAMERA_ZOOM_OUT;
+  const scaleY = canvas.height / viewportHeight || ARENA_CAMERA_ZOOM_OUT;
+  const upgradePanel = document.querySelector(".upgrade-panel");
+  const panelRect = upgradePanel?.getBoundingClientRect();
+  let visibleBottom = viewportHeight;
+
+  if (arenaRect && panelRect) {
+    visibleBottom = Math.max(120, Math.min(viewportHeight, panelRect.top - arenaRect.top));
+  }
+
+  return {
+    x: (viewportWidth / 2) * scaleX,
+    y: (visibleBottom / 2) * scaleY,
+  };
+}
+
+function positionTowerInVisibleArena() {
+  if (!game?.tower) return;
+  const center = getArenaWorldCenter();
+  game.tower.x = center.x;
+  game.tower.y = center.y;
+}
+
+function redrawAfterTowerPositionUpdate() {
+  positionTowerInVisibleArena();
+  if (game && !game.ended) drawGame();
+}
+
+function scheduleTowerPositionUpdate() {
+  window.requestAnimationFrame(redrawAfterTowerPositionUpdate);
+  window.setTimeout(redrawAfterTowerPositionUpdate, 260);
+}
+
 function resizeGameCanvas() {
   const rect = arenaWrap?.getBoundingClientRect();
   const viewportWidth = Math.max(320, Math.round(rect?.width || canvas.clientWidth || 760));
   const viewportHeight = Math.max(240, Math.round(rect?.height || canvas.clientHeight || 920));
   // The canvas is rendered into the same CSS viewport, but the playable world is
-  // five times larger so the arena camera feels pulled back instead of cramped.
-  const width = viewportWidth * ARENA_CAMERA_ZOOM_OUT;
-  const height = viewportHeight * ARENA_CAMERA_ZOOM_OUT;
+  // 2.5 times larger so the arena camera stays pulled back without becoming tiny.
+  const width = Math.round(viewportWidth * ARENA_CAMERA_ZOOM_OUT);
+  const height = Math.round(viewportHeight * ARENA_CAMERA_ZOOM_OUT);
   const prevWidth = canvas.width;
   const prevHeight = canvas.height;
 
-  if (prevWidth === width && prevHeight === height) return;
+  if (prevWidth === width && prevHeight === height) {
+    positionTowerInVisibleArena();
+    if (game && !game.ended) drawGame();
+    else drawIdleArena();
+    return;
+  }
 
   canvas.width = width;
   canvas.height = height;
@@ -383,8 +418,7 @@ function resizeGameCanvas() {
   if (game?.tower) {
     const scaleX = prevWidth ? width / prevWidth : 1;
     const scaleY = prevHeight ? height / prevHeight : 1;
-    game.tower.x = width / 2;
-    game.tower.y = height / 2;
+    positionTowerInVisibleArena();
     game.enemies?.forEach((enemy) => {
       enemy.x *= scaleX;
       enemy.y *= scaleY;
@@ -862,6 +896,7 @@ function setUpgradePanelCollapsed(collapsed) {
   gameScreen.classList.toggle("upgrade-panel-collapsed", collapsed);
   toggle.setAttribute("aria-expanded", String(!collapsed));
   toggle.setAttribute("aria-label", collapsed ? "Развернуть панель улучшений" : "Свернуть панель улучшений");
+  scheduleTowerPositionUpdate();
 }
 
 function toggleUpgradePanel() {
@@ -1086,6 +1121,7 @@ function startRun(options = {}) {
   renderRunUpgrades();
   updateHud();
   showScreen("game");
+  positionTowerInVisibleArena();
   lastFrame = performance.now();
   animationId = requestAnimationFrame(gameLoop);
   bgm.update();
@@ -3667,20 +3703,6 @@ function drawIdleArena() {
 
 function drawArena() {
   ctx.save();
-  ctx.fillStyle = "#03040a";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  if (arenaBackground.complete && arenaBackground.naturalWidth) {
-    const scale = Math.max(canvas.width / arenaBackground.naturalWidth, canvas.height / arenaBackground.naturalHeight);
-    const bgWidth = arenaBackground.naturalWidth * scale;
-    const bgHeight = arenaBackground.naturalHeight * scale;
-    const bgX = (canvas.width - bgWidth) / 2;
-    const bgY = (canvas.height - bgHeight) / 2;
-
-    ctx.globalAlpha = 0.9;
-    ctx.drawImage(arenaBackground, bgX, bgY, bgWidth, bgHeight);
-    ctx.globalAlpha = 1;
-  }
 
   const gridStep = 48;
   ctx.globalAlpha = 0.2;
