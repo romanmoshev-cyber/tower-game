@@ -807,6 +807,8 @@ function renderMenu() {
   document.getElementById("menuMedals").textContent = progress.medals;
   document.getElementById("menuPrestige").textContent = progress.prestige || 0;
   document.getElementById("menuCrystals").textContent = progress.crystals || 0;
+  document.getElementById("menuStones").textContent = progress.powerStones || 0;
+  document.getElementById("menuParts").textContent = progress.moduleParts || 0;
   const activeRun = hasActiveRun();
   const activeRunInfo = document.getElementById("activeRunInfo");
   const continueBtn = document.getElementById("continueBtn");

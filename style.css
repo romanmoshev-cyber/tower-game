@@ -1364,6 +1364,8 @@ input[type="range"]::-webkit-slider-thumb {
 .icon-medal { background-image: url("image/ui/icon_medals.png"); }
 .icon-prestige { background-image: url("image/ui/icon_prestige.png"); }
 .icon-crystal { background-image: url("image/ui/icon_crystals.png"); }
+.icon-stone { background-image: url("image/ui/icon_energy_core.png"); background-size: contain; background-position: center; }
+.icon-parts { background-image: url("image/ui/icon_module_core.png"); background-size: contain; background-position: center; }
 .icon-core { background-image: url("image/ui/icon_core.png"); }
 .icon-play { background-image: url("image/ui/icon_play.png"); }
 .icon-profile { background-image: url("image/ui/icon_profile.png"); }
@@ -1379,7 +1381,7 @@ input[type="range"]::-webkit-slider-thumb {
 .icon-rank-star { background-image: url("image/ui/icon_rank_star.png"); background-size: contain; background-position: center; }
 .menu-stats {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 0;
   margin: 0 0 12px;
   padding: 0px;
@@ -1679,7 +1681,7 @@ input[type="range"]::-webkit-slider-thumb {
   justify-content: center;
   overflow: hidden;
   isolation: isolate;
-  background: url("image/back2.png") right center / cover no-repeat;
+  background: url("image/back2.png") left center / cover no-repeat;
 }
 .menu-hero::before {
   display: block;
@@ -1731,14 +1733,15 @@ input[type="range"]::-webkit-slider-thumb {
 .menu-hero-art {
   display: block;
   position: absolute;
-  right: 0px;
+  left: 0px;
+  right: auto;
   top: -8px;
   bottom: -8px;
   width: 112%;
   z-index: -1;
   background:
     radial-gradient(circle at 53% 48%, rgba(85, 236, 255, 0.95) 0 5%, rgba(85, 236, 255, 0.35) 6% 13%, transparent 24%),
-    url("image/back2.png") 58% top / auto 430px no-repeat;
+    url("image/back2.png") left top / auto 430px no-repeat;
   filter: saturate(1.1) contrast(1.08);
   pointer-events: none;
 }
@@ -1808,7 +1811,7 @@ input[type="range"]::-webkit-slider-thumb {
     margin-right: -12px;
     padding-left: 16px;
     padding-right: 16px;
-    background: url("image/back2.png") right center / cover no-repeat;
+    background: url("image/back2.png") left center / cover no-repeat;
   }
   .menu-screen .brand-block {
     width: 54%;
@@ -1822,7 +1825,8 @@ input[type="range"]::-webkit-slider-thumb {
     font-size: 0.82rem;
   }
   .menu-hero-art {
-    right: -74px;
+    left: -74px;
+    right: auto;
     width: 72%;
     background-size: auto 410px;
   }
@@ -2122,27 +2126,27 @@ button {
 }
 
 .menu-feature-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(6px, 1.8vw, 9px);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(4px, 1.4vw, 7px);
   margin: 0;
 }
 
 .menu-feature-card {
-  min-height: clamp(104px, 18dvh, 140px);
-  padding: clamp(12px, 3vw, 18px) clamp(8px, 2.6vw, 12px);
+  min-height: clamp(118px, 20dvh, 154px);
+  padding: clamp(12px, 3vw, 18px) clamp(5px, 1.8vw, 9px);
   border-width: 0;
 }
 
 .menu-feature-card span {
   min-height: 0;
-  font-size: clamp(0.72rem, 3.2vw, 0.98rem);
-  letter-spacing: -0.4px;
+  font-size: clamp(0.58rem, 2.45vw, 0.78rem);
+  letter-spacing: -0.9px;
 }
 
 .menu-feature-card small {
   min-height: 0;
-  font-size: clamp(0.58rem, 2.35vw, 0.72rem);
-  line-height: 1.16;
+  font-size: clamp(0.5rem, 1.95vw, 0.62rem);
+  line-height: 1.12;
 }
 
 .menu-utility-row {
