@@ -2203,18 +2203,18 @@ button {
 }
 
 .menu-small-btn {
-  grid-template-columns: clamp(22px, 7vw, 32px) minmax(0, 1fr);
-  min-height: clamp(46px, 7.5vh, 56px);
-  padding: 7px clamp(5px, 1.8vw, 9px);
-  gap: clamp(3px, 1.4vw, 6px);
-  font-size: clamp(0.58rem, 2.4vw, 0.78rem);
+  grid-template-columns: clamp(20px, 6.2vw, 28px) minmax(0, 1fr);
+  min-height: clamp(44px, 6.9vh, 52px);
+  padding: 5px clamp(4px, 1.4vw, 7px);
+  gap: clamp(2px, 1vw, 4px);
+  font-size: clamp(0.56rem, 2.2vw, 0.74rem);
   white-space: normal;
   overflow-wrap: anywhere;
 }
 
 .menu-small-btn .sprite-icon {
-  width: clamp(18px, 5.6vw, 24px);
-  height: clamp(18px, 5.6vw, 24px);
+  width: clamp(16px, 5vw, 22px);
+  height: clamp(16px, 5vw, 22px);
 }
 
 
@@ -2222,13 +2222,14 @@ button {
 .boss-bar {
   position: absolute;
   top: 8px;
-  left: 10px;
-  right: 10px;
+  left: 50%;
+  width: min(25vw, 160px);
+  transform: translateX(-50%);
   z-index: 14;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 6px 8px;
+  padding: 4px 6px;
   border-radius: 10px;
   background: linear-gradient(180deg, rgba(18, 8, 24, 0.88), rgba(6, 4, 14, 0.92));
   border: 1px solid rgba(255, 116, 189, 0.6);
@@ -2244,7 +2245,7 @@ button {
 
 .boss-bar > div {
   width: 100%;
-  height: 8px;
+  height: 6px;
   border-radius: 999px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.14);
@@ -2279,7 +2280,7 @@ button {
   top: calc(8px + var(--safe-top));
   left: calc(8px + var(--safe-left));
   gap: 2px;
-  padding: 6px 8px;
+  padding: 4px 6px;
 }
 
 .top-left-currencies span {
