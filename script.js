@@ -377,7 +377,7 @@ const enemyDefs = {
   armored: { name: "Броненосец", hp: 85, speed: 13, reward: 18, damage: 18, radius: 14, color: "#8a94a6" },
   assassin: { name: "Ассасин", hp: 6, speed: 65, reward: 8, damage: 25, radius: 8, color: "#ff2a2a" },
   healer: { name: "Целитель", hp: 35, speed: 18, reward: 15, damage: 5, radius: 12, color: "#24b47e" },
-  boss: { name: "Босс", hp: 3780, speed: 13, reward: 115, damage: 28, radius: 54, color: "#f8f2ff" },
+  boss: { name: "Босс", hp: 3400, speed: 13, reward: 115, damage: 28, radius: 54, color: "#f8f2ff" },
   horn: { name: "Рога", hp: 38, speed: 9, reward: 16, damage: 0, radius: 12, color: "#a9a9a9" },
 };
 
@@ -3770,9 +3770,15 @@ function renderProfile() {
 }
 
 function getBestiaryIconSvg(type, color) {
-  if (type === "scout" || type === "assassin") return `<svg class="bestiary-icon" viewBox="0 0 32 32"><polygon points="16,4 27,27 5,27" fill="${color}"/></svg>`;
-  if (type === "grunt" || type === "brute" || type === "boss" || type === "armored") return `<svg class="bestiary-icon" viewBox="0 0 32 32"><rect x="5" y="5" width="22" height="22" fill="${color}"/></svg>`;
-  if (type === "healer") return `<svg class="bestiary-icon" viewBox="0 0 32 32"><polygon points="16,4 28,16 16,28 4,16" fill="${color}"/></svg>`;
+  if (type === "scout") return `<svg class="bestiary-icon" viewBox="0 0 32 32"><polygon points="16,3 29,28 3,28" fill="${color}"/></svg>`;
+  if (type === "assassin") return `<svg class="bestiary-icon" viewBox="0 0 32 32"><polygon points="16,3 24,28 8,28" fill="${color}"/></svg>`;
+  if (type === "grunt") return `<svg class="bestiary-icon" viewBox="0 0 32 32"><rect x="7" y="7" width="18" height="18" transform="rotate(45 16 16)" fill="${color}"/></svg>`;
+  if (type === "brute" || type === "boss" || type === "armored") return `<svg class="bestiary-icon" viewBox="0 0 32 32"><rect x="4" y="4" width="24" height="24" fill="${color}"/></svg>`;
+  if (type === "shooter") return `<svg class="bestiary-icon" viewBox="0 0 32 32"><polygon points="16,3 24.7,8 24.7,18 16,29 7.3,18 7.3,8" fill="${color}"/></svg>`;
+  if (type === "splitter") return `<svg class="bestiary-icon" viewBox="0 0 32 32"><polygon points="16,3 19.5,11.2 28.5,11.8 21.5,17.6 24,27 16,21.8 8,27 10.5,17.6 3.5,11.8 12.5,11.2" fill="${color}"/></svg>`;
+  if (type === "shield") return `<svg class="bestiary-icon" viewBox="0 0 32 32"><polygon points="16,3 28,12 24,28 8,28 4,12" fill="${color}"/></svg>`;
+  if (type === "healer") return `<svg class="bestiary-icon" viewBox="0 0 32 32"><polygon points="16,3 29,16 16,29 3,16" fill="${color}"/></svg>`;
+  if (type === "vampire") return `<svg class="bestiary-icon" viewBox="0 0 32 32"><path d="M16 5 C24 5 28 10 28 16 C28 22 24 27 16 29 C8 27 4 22 4 16 C4 10 8 5 16 5Z" fill="${color}"/></svg>`;
   return `<svg class="bestiary-icon" viewBox="0 0 32 32"><circle cx="16" cy="16" r="11" fill="${color}"/></svg>`;
 }
 
