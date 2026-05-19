@@ -3260,6 +3260,30 @@ input[type="range"] {
 .icon-super-crit-mult { background-image: url("image/ui/icon_super_crit_mult.png"); }
 .icon-orb-count { background-image: url("image/ui/icon_orb_count.png"); }
 .icon-orb-speed { background-image: url("image/ui/icon_orb_speed.png"); }
+.icon-max-health { background-image: url("image/ui/icon_max_health.png"); }
+.icon-regen { background-image: url("image/ui/icon_regen.png"); }
+.icon-absolute-defense { background-image: url("image/ui/icon_absolute_defense.png"); }
+.icon-knockback { background-image: url("image/ui/icon_knockback.png"); }
+.icon-knockback-strength { background-image: url("image/ui/icon_knockback_strength.png"); }
+.icon-lifesteal { background-image: url("image/ui/icon_lifesteal.png"); }
+.icon-defense-percent { background-image: url("image/ui/icon_defense_percent.png"); }
+.icon-thorns { background-image: url("image/ui/icon_thorns.png"); }
+.icon-death-defy { background-image: url("image/ui/icon_death_defy.png"); }
+.icon-landmine-chance { background-image: url("image/ui/icon_landmine_chance.png"); }
+.icon-landmine-damage { background-image: url("image/ui/icon_landmine_damage.png"); }
+.icon-cash-bonus { background-image: url("image/ui/icon_cash_bonus.png"); }
+.icon-cash-wave { background-image: url("image/ui/icon_cash_wave.png"); }
+.icon-run-coin-bonus { background-image: url("image/ui/icon_run_coin_bonus.png"); }
+.icon-coin-wave { background-image: url("image/ui/icon_coin_wave.png"); }
+.icon-interest-rate { background-image: url("image/ui/icon_interest_rate.png"); }
+.icon-max-interest { background-image: url("image/ui/icon_max_interest.png"); }
+.icon-free-upgrade { background-image: url("image/ui/icon_free_upgrade.png"); }
+.icon-package-chance { background-image: url("image/ui/icon_package_chance.png"); }
+.icon-package-max { background-image: url("image/ui/icon_package_max.png"); }
+.icon-shock-wave { background-image: url("image/ui/icon_shock_wave.png"); }
+.icon-enemy-attack-skip { background-image: url("image/ui/icon_enemy_attack_skip.png"); }
+.icon-enemy-health-skip { background-image: url("image/ui/icon_enemy_health_skip.png"); }
+.icon-wave-skip { background-image: url("image/ui/icon_wave_skip.png"); }
 .icon-tower-upgrade { background-image: url("image/ui/icon_tower_upgrade.png"); }
 
 .upgrade-card.is-available .run-upgrade-icon-placeholder {

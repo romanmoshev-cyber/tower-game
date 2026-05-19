@@ -243,14 +243,30 @@ const runUpgradeIconMap = {
   superCritMult: "icon-super-crit-mult",
   orbCount: "icon-orb-count",
   orbSpeed: "icon-orb-speed",
-  maxHealth: "icon-health",
-  regen: "icon-health",
-  cashBonus: "icon-coin",
-  cashWave: "icon-coin",
-  runCoinBonus: "icon-coin",
-  coinWave: "icon-coin",
-  interestRate: "icon-coin",
-  maxInterest: "icon-coin",
+  maxHealth: "icon-max-health",
+  regen: "icon-regen",
+  absDefense: "icon-absolute-defense",
+  knockback: "icon-knockback",
+  knockbackStrength: "icon-knockback-strength",
+  lifesteal: "icon-lifesteal",
+  defensePercent: "icon-defense-percent",
+  thorns: "icon-thorns",
+  deathDefy: "icon-death-defy",
+  landmineChance: "icon-landmine-chance",
+  landmineDamage: "icon-landmine-damage",
+  cashBonus: "icon-cash-bonus",
+  cashWave: "icon-cash-wave",
+  runCoinBonus: "icon-run-coin-bonus",
+  coinWave: "icon-coin-wave",
+  interestRate: "icon-interest-rate",
+  maxInterest: "icon-max-interest",
+  freeUpgrade: "icon-free-upgrade",
+  packageChance: "icon-package-chance",
+  packageMax: "icon-package-max",
+  shockWave: "icon-shock-wave",
+  enemyAttackSkip: "icon-enemy-attack-skip",
+  enemyHealthSkip: "icon-enemy-health-skip",
+  waveSkip: "icon-wave-skip",
 };
 const defaultRunUpgradeIconClass = "icon-tower-upgrade";
 
@@ -380,6 +396,33 @@ const enemyDefs = {
   boss: { name: "Босс", hp: 3400, speed: 13, reward: 115, damage: 28, radius: 54, color: "#f8f2ff" },
   horn: { name: "Рога", hp: 38, speed: 9, reward: 16, damage: 0, radius: 12, color: "#a9a9a9" },
 };
+
+const enemySpriteSources = {
+  scout: "image/ui/enemy_scout.png",
+  grunt: "image/ui/enemy_grunt.png",
+  brute: "image/ui/enemy_brute.png",
+  shooter: "image/ui/enemy_shooter.png",
+  splitter: "image/ui/enemy_splitter.png",
+  shard: "image/ui/enemy_shard.png",
+  shield: "image/ui/enemy_shield.png",
+  vampire: "image/ui/enemy_vampire.png",
+  armored: "image/ui/enemy_armored.png",
+  assassin: "image/ui/enemy_assassin.png",
+  healer: "image/ui/enemy_healer.png",
+  boss: "image/ui/enemy_boss.png",
+  horn: "image/ui/enemy_horn.png",
+};
+
+const enemySprites = Object.fromEntries(
+  Object.entries(enemySpriteSources).map(([type, src]) => {
+    const image = new Image();
+    image.src = src;
+    image.addEventListener("load", () => {
+      if (game && !game.ended) drawGame();
+    });
+    return [type, image];
+  })
+);
 
 let progress;
 let game;
@@ -4295,6 +4338,41 @@ function drawTower() {
   ctx.restore();
 }
 
+function getEnemySpriteAngle(enemy) {
+  if (game?.tower) return Math.atan2(game.tower.y - enemy.y, game.tower.x - enemy.x);
+  return (enemy.angle || 0) - Math.PI / 2;
+}
+
+function drawEnemySprite(enemy) {
+  const sprite = enemySprites[enemy.type];
+  if (!sprite?.complete || !sprite.naturalWidth) return false;
+
+  const maxSide = enemy.radius * (enemy.type === "boss" ? 2.65 : 3.05);
+  const aspect = sprite.naturalWidth / sprite.naturalHeight || 1;
+  const drawW = aspect >= 1 ? maxSide : maxSide * aspect;
+  const drawH = aspect >= 1 ? maxSide / aspect : maxSide;
+
+  ctx.save();
+  ctx.rotate(getEnemySpriteAngle(enemy));
+  ctx.shadowColor = enemy.color;
+  ctx.shadowBlur = enemy.flash > 0 ? 18 : 10;
+  ctx.filter = enemy.flash > 0 ? "brightness(2.4) saturate(0.15)" : "none";
+  ctx.drawImage(sprite, -drawW / 2, -drawH / 2, drawW, drawH);
+  ctx.filter = "none";
+  ctx.shadowBlur = 0;
+  ctx.restore();
+
+  if (enemy.shieldHits > 0) {
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(0, 0, enemy.radius + 4, 0, TWO_PI);
+    ctx.stroke();
+  }
+
+  return true;
+}
+
 function drawEnemies() {
   if (!game) return;
   game.enemies.forEach((enemy) => {
@@ -4309,74 +4387,76 @@ function drawEnemies() {
       ctx.stroke();
     }
     
-    ctx.save();
-    ctx.rotate(enemy.angle || 0);
+    if (!drawEnemySprite(enemy)) {
+      ctx.save();
+      ctx.rotate(enemy.angle || 0);
 
-    ctx.fillStyle = enemy.flash > 0 ? "#ffffff" : enemy.color;
-    ctx.strokeStyle = enemy.shieldHits > 0 ? "#ffffff" : "#ff7ab8";
-    ctx.lineWidth = enemy.shieldHits > 0 ? 4 : 2;
-    ctx.shadowColor = enemy.color;
-    ctx.shadowBlur = enemy.flash > 0 ? 18 : 10;
-    ctx.beginPath();
-    if (enemy.type === "scout") {
-      ctx.moveTo(0, -enemy.radius);
-      ctx.lineTo(enemy.radius, enemy.radius);
-      ctx.lineTo(-enemy.radius, enemy.radius);
-      ctx.closePath();
-    } else if (enemy.type === "grunt") {
-      ctx.rotate(Math.PI / 4);
-      ctx.rect(-enemy.radius * 0.78, -enemy.radius * 0.78, enemy.radius * 1.56, enemy.radius * 1.56);
-      ctx.rotate(-Math.PI / 4);
-    } else if (enemy.type === "brute" || enemy.type === "boss" || enemy.type === "armored") {
-      ctx.rect(-enemy.radius, -enemy.radius, enemy.radius * 2, enemy.radius * 2);
-    } else if (enemy.type === "shooter") {
-      for (let i = 0; i < 6; i += 1) {
-        const a = (i / 6) * TWO_PI;
-        const x = Math.cos(a) * enemy.radius;
-        const y = Math.sin(a) * enemy.radius;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+      ctx.fillStyle = enemy.flash > 0 ? "#ffffff" : enemy.color;
+      ctx.strokeStyle = enemy.shieldHits > 0 ? "#ffffff" : "#ff7ab8";
+      ctx.lineWidth = enemy.shieldHits > 0 ? 4 : 2;
+      ctx.shadowColor = enemy.color;
+      ctx.shadowBlur = enemy.flash > 0 ? 18 : 10;
+      ctx.beginPath();
+      if (enemy.type === "scout") {
+        ctx.moveTo(0, -enemy.radius);
+        ctx.lineTo(enemy.radius, enemy.radius);
+        ctx.lineTo(-enemy.radius, enemy.radius);
+        ctx.closePath();
+      } else if (enemy.type === "grunt") {
+        ctx.rotate(Math.PI / 4);
+        ctx.rect(-enemy.radius * 0.78, -enemy.radius * 0.78, enemy.radius * 1.56, enemy.radius * 1.56);
+        ctx.rotate(-Math.PI / 4);
+      } else if (enemy.type === "brute" || enemy.type === "boss" || enemy.type === "armored") {
+        ctx.rect(-enemy.radius, -enemy.radius, enemy.radius * 2, enemy.radius * 2);
+      } else if (enemy.type === "shooter") {
+        for (let i = 0; i < 6; i += 1) {
+          const a = (i / 6) * TWO_PI;
+          const x = Math.cos(a) * enemy.radius;
+          const y = Math.sin(a) * enemy.radius;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+      } else if (enemy.type === "splitter") {
+        for (let i = 0; i < 5; i += 1) {
+          const a = -Math.PI / 2 + (i / 5) * TWO_PI;
+          const r = i % 2 === 0 ? enemy.radius : enemy.radius * 0.55;
+          const x = Math.cos(a) * r;
+          const y = Math.sin(a) * r;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+      } else if (enemy.type === "shield") {
+        ctx.moveTo(0, -enemy.radius);
+        ctx.lineTo(enemy.radius * 0.95, -enemy.radius * 0.2);
+        ctx.lineTo(enemy.radius * 0.68, enemy.radius);
+        ctx.lineTo(-enemy.radius * 0.68, enemy.radius);
+        ctx.lineTo(-enemy.radius * 0.95, -enemy.radius * 0.2);
+        ctx.closePath();
+      } else if (enemy.type === "assassin") {
+        ctx.moveTo(0, -enemy.radius);
+        ctx.lineTo(enemy.radius * 0.7, enemy.radius);
+        ctx.lineTo(-enemy.radius * 0.7, enemy.radius);
+        ctx.closePath();
+      } else if (enemy.type === "healer") {
+        ctx.moveTo(0, -enemy.radius);
+        ctx.lineTo(enemy.radius, 0);
+        ctx.lineTo(0, enemy.radius);
+        ctx.lineTo(-enemy.radius, 0);
+        ctx.closePath();
+      } else if (enemy.type === "vampire") {
+        ctx.moveTo(0, -enemy.radius);
+        ctx.bezierCurveTo(enemy.radius, -enemy.radius * 0.8, enemy.radius, enemy.radius * 0.3, 0, enemy.radius);
+        ctx.bezierCurveTo(-enemy.radius, enemy.radius * 0.3, -enemy.radius, -enemy.radius * 0.8, 0, -enemy.radius);
+      } else {
+        ctx.arc(0, 0, enemy.radius, 0, TWO_PI);
       }
-      ctx.closePath();
-    } else if (enemy.type === "splitter") {
-      for (let i = 0; i < 5; i += 1) {
-        const a = -Math.PI / 2 + (i / 5) * TWO_PI;
-        const r = i % 2 === 0 ? enemy.radius : enemy.radius * 0.55;
-        const x = Math.cos(a) * r;
-        const y = Math.sin(a) * r;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.closePath();
-    } else if (enemy.type === "shield") {
-      ctx.moveTo(0, -enemy.radius);
-      ctx.lineTo(enemy.radius * 0.95, -enemy.radius * 0.2);
-      ctx.lineTo(enemy.radius * 0.68, enemy.radius);
-      ctx.lineTo(-enemy.radius * 0.68, enemy.radius);
-      ctx.lineTo(-enemy.radius * 0.95, -enemy.radius * 0.2);
-      ctx.closePath();
-    } else if (enemy.type === "assassin") {
-      ctx.moveTo(0, -enemy.radius);
-      ctx.lineTo(enemy.radius * 0.7, enemy.radius);
-      ctx.lineTo(-enemy.radius * 0.7, enemy.radius);
-      ctx.closePath();
-    } else if (enemy.type === "healer") {
-      ctx.moveTo(0, -enemy.radius);
-      ctx.lineTo(enemy.radius, 0);
-      ctx.lineTo(0, enemy.radius);
-      ctx.lineTo(-enemy.radius, 0);
-      ctx.closePath();
-    } else if (enemy.type === "vampire") {
-      ctx.moveTo(0, -enemy.radius);
-      ctx.bezierCurveTo(enemy.radius, -enemy.radius * 0.8, enemy.radius, enemy.radius * 0.3, 0, enemy.radius);
-      ctx.bezierCurveTo(-enemy.radius, enemy.radius * 0.3, -enemy.radius, -enemy.radius * 0.8, 0, -enemy.radius);
-    } else {
-      ctx.arc(0, 0, enemy.radius, 0, TWO_PI);
+      ctx.fill();
+      ctx.stroke();
+      
+      ctx.restore(); // Сбрасываем вращение для иконки Элиты и полоски ХП
     }
-    ctx.fill();
-    ctx.stroke();
-    
-    ctx.restore(); // Сбрасываем вращение для иконки Элиты и полоски ХП
 
     if (enemy.elite) {
       ctx.strokeStyle = "#ffb020";
