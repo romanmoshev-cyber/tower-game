@@ -2213,8 +2213,50 @@ button {
 }
 
 .menu-small-btn .sprite-icon {
-  width: clamp(22px, 7vw, 30px);
-  height: clamp(22px, 7vw, 30px);
+  width: clamp(18px, 5.6vw, 24px);
+  height: clamp(18px, 5.6vw, 24px);
+}
+
+
+
+.boss-bar {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  right: 10px;
+  z-index: 14;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(18, 8, 24, 0.88), rgba(6, 4, 14, 0.92));
+  border: 1px solid rgba(255, 116, 189, 0.6);
+  box-shadow: 0 0 14px rgba(255, 92, 155, 0.35);
+}
+
+.boss-bar > span {
+  font-size: 0.62rem;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #ff9bcd;
+}
+
+.boss-bar > div {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+#bossFill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ff4f8f, #ffb14a);
+  box-shadow: 0 0 9px rgba(255, 96, 157, 0.7);
 }
 
 /* Game HUD: keep the arena stable while panels expand/collapse. */
@@ -2736,7 +2778,7 @@ button {
   top: calc(10px + var(--safe-top));
   left: calc(var(--screen-pad-x) + var(--safe-left));
   right: calc(var(--screen-pad-x) + var(--safe-right));
-  font-size: clamp(0.62rem, 2.4vw, 0.74rem);
+  font-size: clamp(0.54rem, 2.1vw, 0.64rem);
   letter-spacing: 2px;
   color: #62f1ff;
 }
@@ -2744,7 +2786,7 @@ button {
 .menu-hero {
   min-height: clamp(246px, 33dvh, 318px);
   margin: calc(-6px - var(--safe-top)) calc(-1 * (var(--screen-pad-x) + var(--safe-right))) 0 calc(-1 * (var(--screen-pad-x) + var(--safe-left)));
-  padding: calc(48px + var(--safe-top)) var(--screen-pad-x) 28px;
+  padding: calc(34px + var(--safe-top)) var(--screen-pad-x) 28px;
   background:
     linear-gradient(90deg, rgba(1, 5, 14, 0.98) 0 39%, rgba(1, 5, 14, 0.58) 57%, rgba(1, 5, 14, 0.12) 100%),
     url("image/back2.png") center top / cover no-repeat;
@@ -2772,7 +2814,7 @@ button {
 .menu-screen .eyebrow {
   max-width: 300px;
   color: #ff78bd;
-  font-size: clamp(0.72rem, 2.7vw, 0.9rem);
+  font-size: clamp(0.68rem, 2.45vw, 0.82rem);
   font-weight: 900;
 }
 
