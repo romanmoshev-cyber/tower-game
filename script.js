@@ -3745,14 +3745,18 @@ function updateBossBar() {
 }
 
 function getUltimateIcon(id) {
-  if (id === "goldenCore") return "💎";
-  if (id === "blackHole") return "BH";
-  if (id === "deathWave") return "🌊";
-  if (id === "stormChain") return "⚡";
-  if (id === "timeField") return "⏳";
-  if (id === "missileSwarm") return "🚀";
-  if (id === "solarBeam") return "☀️";
-  return "✨";
+  const iconClassMap = {
+    stormChain: "icon-ultimate-storm-chain",
+    timeField: "icon-ultimate-time-field",
+    missileSwarm: "icon-ultimate-missile-swarm",
+    solarBeam: "icon-ultimate-solar-beam",
+    goldenCore: "icon-ultimate-golden-core",
+    blackHole: "icon-ultimate-black-hole",
+    deathWave: "icon-ultimate-death-wave",
+    poisonSwamp: "icon-ultimate-poison-swamp",
+  };
+  const iconClass = iconClassMap[id] || "icon-tower-upgrade";
+  return `<i class="sprite-icon ${iconClass}" aria-hidden="true"></i>`;
 }
 
 function renderProfile() {

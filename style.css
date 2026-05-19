@@ -1044,9 +1044,27 @@ button:disabled {
   z-index: 2;
 }
 .ultimate-icon {
-  font-size: 1.4rem;
-  filter: drop-shadow(0 0 5px rgba(255,255,255,0.4));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  filter: drop-shadow(0 0 5px rgba(255,255,255,0.45));
 }
+.ultimate-icon .sprite-icon {
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-position: center;
+}
+.icon-ultimate-storm-chain { background-image: url("image/ui/icon_storm_chain.png"); }
+.icon-ultimate-time-field { background-image: url("image/ui/icon_time_field.png"); }
+.icon-ultimate-missile-swarm { background-image: url("image/ui/icon_missile_swarm.png"); }
+.icon-ultimate-solar-beam { background-image: url("image/ui/icon_solar_beam.png"); }
+.icon-ultimate-golden-core { background-image: url("image/ui/icon_golden_core.png"); }
+.icon-ultimate-black-hole { background-image: url("image/ui/icon_black_hole.png"); }
+.icon-ultimate-death-wave { background-image: url("image/ui/icon_death_wave.png"); }
+.icon-ultimate-poison-swamp { background-image: url("image/ui/icon_poison_swamp.png"); }
 .ultimate-circle.ready {
   box-shadow: 0 0 20px var(--accent-cyan), inset 0 0 10px var(--accent-cyan);
 }
@@ -3238,6 +3256,7 @@ input[type="range"] {
 .icon-rapid-fire-chance { background-image: url("image/ui/icon_rapid_fire_chance.png"); }
 .icon-rapid-fire-duration { background-image: url("image/ui/icon_rapid_fire_duration.png"); }
 .icon-damage-meter { background-image: url("image/ui/icon_damage_meter.png"); }
+.icon-super-crit-chance { background-image: url("image/ui/icon_super_crit_chance.png"); }
 .icon-super-crit-mult { background-image: url("image/ui/icon_super_crit_mult.png"); }
 .icon-orb-count { background-image: url("image/ui/icon_orb_count.png"); }
 .icon-orb-speed { background-image: url("image/ui/icon_orb_speed.png"); }
