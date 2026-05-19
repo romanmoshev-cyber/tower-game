@@ -382,47 +382,20 @@ const perkDefs = [
 ];
 
 const enemyDefs = {
-  scout: { name: "Разведчик", hp: 11, speed: 47, reward: 6, damage: 4, radius: 9, color: "#41e7ff" },
-  grunt: { name: "Боец", hp: 19, speed: 25, reward: 5, damage: 7, radius: 11, color: "#ff6cab" },
-  brute: { name: "Громила", hp: 72, speed: 15, reward: 15, damage: 16, radius: 15, color: "#ff9a3d" },
-  shooter: { name: "Стрелок", hp: 28, speed: 20, reward: 12, damage: 6, radius: 11, color: "#b375ff" },
-  splitter: { name: "Делитель", hp: 32, speed: 23, reward: 11, damage: 8, radius: 12, color: "#22ffd0" },
-  shard: { name: "Осколок", hp: 9, speed: 41, reward: 2, damage: 3, radius: 7, color: "#7cff8b" },
-  shield: { name: "Щитовой", hp: 40, speed: 19, reward: 14, damage: 9, radius: 12, color: "#ffe75c" },
-  vampire: { name: "Вампир", hp: 36, speed: 24, reward: 13, damage: 10, radius: 12, color: "#ff4e78" },
-  armored: { name: "Броненосец", hp: 85, speed: 13, reward: 18, damage: 18, radius: 14, color: "#8a94a6" },
-  assassin: { name: "Ассасин", hp: 6, speed: 65, reward: 8, damage: 25, radius: 8, color: "#ff2a2a" },
-  healer: { name: "Целитель", hp: 35, speed: 18, reward: 15, damage: 5, radius: 12, color: "#24b47e" },
-  boss: { name: "Босс", hp: 3400, speed: 13, reward: 115, damage: 28, radius: 54, color: "#f8f2ff" },
-  horn: { name: "Рога", hp: 38, speed: 9, reward: 16, damage: 0, radius: 12, color: "#a9a9a9" },
+  scout: { name: "Разведчик", hp: 11, speed: 52, reward: 6, damage: 4, radius: 11, color: "#41e7ff" },
+  grunt: { name: "Боец", hp: 19, speed: 28, reward: 5, damage: 7, radius: 13, color: "#ff6cab" },
+  brute: { name: "Громила", hp: 72, speed: 17, reward: 15, damage: 16, radius: 17, color: "#ff9a3d" },
+  shooter: { name: "Стрелок", hp: 28, speed: 22, reward: 12, damage: 6, radius: 13, color: "#b375ff" },
+  splitter: { name: "Делитель", hp: 32, speed: 25, reward: 11, damage: 8, radius: 14, color: "#22ffd0" },
+  shard: { name: "Осколок", hp: 9, speed: 45, reward: 2, damage: 3, radius: 8, color: "#7cff8b" },
+  shield: { name: "Щитовой", hp: 40, speed: 21, reward: 14, damage: 9, radius: 14, color: "#ffe75c" },
+  vampire: { name: "Вампир", hp: 36, speed: 27, reward: 13, damage: 10, radius: 14, color: "#ff4e78" },
+  armored: { name: "Броненосец", hp: 85, speed: 15, reward: 18, damage: 18, radius: 16, color: "#8a94a6" },
+  assassin: { name: "Ассасин", hp: 6, speed: 72, reward: 8, damage: 25, radius: 10, color: "#ff2a2a" },
+  healer: { name: "Целитель", hp: 35, speed: 20, reward: 15, damage: 5, radius: 14, color: "#24b47e" },
+  boss: { name: "Босс", hp: 3400, speed: 14, reward: 115, damage: 28, radius: 60, color: "#f8f2ff" },
+  horn: { name: "Рога", hp: 38, speed: 10, reward: 16, damage: 0, radius: 14, color: "#a9a9a9" },
 };
-
-const enemySpriteSources = {
-  scout: "image/ui/enemy_scout.png",
-  grunt: "image/ui/enemy_grunt.png",
-  brute: "image/ui/enemy_brute.png",
-  shooter: "image/ui/enemy_shooter.png",
-  splitter: "image/ui/enemy_splitter.png",
-  shard: "image/ui/enemy_shard.png",
-  shield: "image/ui/enemy_shield.png",
-  vampire: "image/ui/enemy_vampire.png",
-  armored: "image/ui/enemy_armored.png",
-  assassin: "image/ui/enemy_assassin.png",
-  healer: "image/ui/enemy_healer.png",
-  boss: "image/ui/enemy_boss.png",
-  horn: "image/ui/enemy_horn.png",
-};
-
-const enemySprites = Object.fromEntries(
-  Object.entries(enemySpriteSources).map(([type, src]) => {
-    const image = new Image();
-    image.src = src;
-    image.addEventListener("load", () => {
-      if (game && !game.ended) drawGame();
-    });
-    return [type, image];
-  })
-);
 
 let progress;
 let game;
@@ -3802,6 +3775,20 @@ function getUltimateIcon(id) {
   return `<i class="sprite-icon ${iconClass}" aria-hidden="true"></i>`;
 }
 
+function getUltimateIconClass(id) {
+  const iconClassMap = {
+    stormChain: "icon-ultimate-storm-chain",
+    timeField: "icon-ultimate-time-field",
+    missileSwarm: "icon-ultimate-missile-swarm",
+    solarBeam: "icon-ultimate-solar-beam",
+    goldenCore: "icon-ultimate-golden-core",
+    blackHole: "icon-ultimate-black-hole",
+    deathWave: "icon-ultimate-death-wave",
+    poisonSwamp: "icon-ultimate-poison-swamp",
+  };
+  return iconClassMap[id] || "icon-tower-upgrade";
+}
+
 function renderProfile() {
   document.getElementById("playerIdDisplay").textContent = "ID: " + progress.playerId;
   
@@ -3868,11 +3855,14 @@ function renderUltimateHud() {
   hud.innerHTML = game.ultimates
     .map((u) => {
       const progressPct = Math.max(0, Math.min(1, 1 - (u.timer / u.maxTimer)));
-      const degree = progressPct * 360;
-      const icon = getUltimateIcon(u.id);
-      return `<div class="ultimate-circle ${u.timer <= 0.2 ? "ready" : ""}" style="background: conic-gradient(var(--accent-cyan) ${degree}deg, rgba(255,255,255,0.1) ${degree}deg);">
+      const revealPct = Math.round(progressPct * 100);
+      const iconClass = getUltimateIconClass(u.id);
+      return `<div class="ultimate-circle ${u.timer <= 0.2 ? "ready" : ""}">
           <div class="ultimate-inner">
-            <span class="ultimate-icon">${icon}</span>
+            <span class="ultimate-icon" aria-hidden="true">
+              <i class="sprite-icon ultimate-icon-base ${iconClass}"></i>
+              <i class="sprite-icon ultimate-icon-ready ${iconClass}" style="clip-path: inset(${100 - revealPct}% 0 0 0);"></i>
+            </span>
           </div>
         </div>`;
     })
@@ -4338,41 +4328,6 @@ function drawTower() {
   ctx.restore();
 }
 
-function getEnemySpriteAngle(enemy) {
-  if (game?.tower) return Math.atan2(game.tower.y - enemy.y, game.tower.x - enemy.x);
-  return (enemy.angle || 0) - Math.PI / 2;
-}
-
-function drawEnemySprite(enemy) {
-  const sprite = enemySprites[enemy.type];
-  if (!sprite?.complete || !sprite.naturalWidth) return false;
-
-  const maxSide = enemy.radius * (enemy.type === "boss" ? 2.65 : 3.05);
-  const aspect = sprite.naturalWidth / sprite.naturalHeight || 1;
-  const drawW = aspect >= 1 ? maxSide : maxSide * aspect;
-  const drawH = aspect >= 1 ? maxSide / aspect : maxSide;
-
-  ctx.save();
-  ctx.rotate(getEnemySpriteAngle(enemy));
-  ctx.shadowColor = enemy.color;
-  ctx.shadowBlur = enemy.flash > 0 ? 18 : 10;
-  ctx.filter = enemy.flash > 0 ? "brightness(2.4) saturate(0.15)" : "none";
-  ctx.drawImage(sprite, -drawW / 2, -drawH / 2, drawW, drawH);
-  ctx.filter = "none";
-  ctx.shadowBlur = 0;
-  ctx.restore();
-
-  if (enemy.shieldHits > 0) {
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(0, 0, enemy.radius + 4, 0, TWO_PI);
-    ctx.stroke();
-  }
-
-  return true;
-}
-
 function drawEnemies() {
   if (!game) return;
   game.enemies.forEach((enemy) => {
@@ -4387,8 +4342,7 @@ function drawEnemies() {
       ctx.stroke();
     }
     
-    if (!drawEnemySprite(enemy)) {
-      ctx.save();
+    ctx.save();
       ctx.rotate(enemy.angle || 0);
 
       ctx.fillStyle = enemy.flash > 0 ? "#ffffff" : enemy.color;
@@ -4456,7 +4410,6 @@ function drawEnemies() {
       ctx.stroke();
       
       ctx.restore(); // Сбрасываем вращение для иконки Элиты и полоски ХП
-    }
 
     if (enemy.elite) {
       ctx.strokeStyle = "#ffb020";

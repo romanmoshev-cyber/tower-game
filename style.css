@@ -769,21 +769,21 @@ button:disabled {
 
 .top-left-currencies {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: calc(6px + var(--safe-top));
+  left: calc(6px + var(--safe-left));
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 1px;
   z-index: 15;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border-light);
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  border: 0;
   /* Оптимизация Android: отключен тяжелый backdrop-filter */
-  background: rgba(0, 0, 0, 0.75);
+  background: transparent;
 }
-.top-left-currencies span { font-size: 0.9rem; color: var(--text-muted); }
-.top-left-currencies strong { color: var(--accent-green); font-size: 1.1rem; }
+.top-left-currencies span { font-size: 0.68rem; color: var(--text-muted); }
+.top-left-currencies strong { color: var(--accent-green); font-size: 0.78rem; }
 
 .top-hud {
   position: absolute;
@@ -1024,38 +1024,51 @@ button:disabled {
   pointer-events: none;
 }
 .ultimate-circle {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  border-radius: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 .ultimate-inner {
-  width: 40px;
-  height: 40px;
-  background: var(--bg-panel);
-  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  background: transparent;
+  border-radius: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 2;
+  box-shadow: none;
 }
 .ultimate-icon {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 26px;
   height: 26px;
-  filter: drop-shadow(0 0 5px rgba(255,255,255,0.45));
 }
 .ultimate-icon .sprite-icon {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   background-size: contain;
   background-position: center;
+  transition: clip-path 0.18s linear;
+}
+.ultimate-icon-base {
+  filter: grayscale(1) saturate(0.1) brightness(0.48);
+  opacity: 0.78;
+}
+.ultimate-icon-ready {
+  filter: drop-shadow(0 0 5px rgba(85, 236, 255, 0.45));
 }
 .icon-ultimate-storm-chain { background-image: url("image/ui/icon_storm_chain.png"); }
 .icon-ultimate-time-field { background-image: url("image/ui/icon_time_field.png"); }
@@ -1066,7 +1079,7 @@ button:disabled {
 .icon-ultimate-death-wave { background-image: url("image/ui/icon_death_wave.png"); }
 .icon-ultimate-poison-swamp { background-image: url("image/ui/icon_poison_swamp.png"); }
 .ultimate-circle.ready {
-  box-shadow: 0 0 20px var(--accent-cyan), inset 0 0 10px var(--accent-cyan);
+  filter: none;
 }
 
 /* --- Награды за Босса --- */
@@ -2295,18 +2308,18 @@ button {
 }
 
 .top-left-currencies {
-  top: calc(8px + var(--safe-top));
-  left: calc(8px + var(--safe-left));
-  gap: 2px;
-  padding: 4px 6px;
+  top: calc(6px + var(--safe-top));
+  left: calc(6px + var(--safe-left));
+  gap: 1px;
+  padding: 0;
 }
 
 .top-left-currencies span {
-  font-size: clamp(0.68rem, 2.5vw, 0.86rem);
+  font-size: clamp(0.58rem, 2vw, 0.68rem);
 }
 
 .top-left-currencies strong {
-  font-size: clamp(0.78rem, 2.9vw, 1rem);
+  font-size: clamp(0.66rem, 2.25vw, 0.78rem);
 }
 
 .game-gear {
@@ -2328,13 +2341,13 @@ button {
 }
 
 .ultimate-circle {
-  width: clamp(40px, 10vw, 48px);
-  height: clamp(40px, 10vw, 48px);
+  width: 26px;
+  height: 26px;
 }
 
 .ultimate-inner {
-  width: calc(100% - 8px);
-  height: calc(100% - 8px);
+  width: 26px;
+  height: 26px;
 }
 
 .playback-controls {
@@ -3051,11 +3064,35 @@ input[type="range"] {
 }
 
 .top-left-currencies {
-  border: 9px solid transparent;
-  border-image: url("image/ui/feature-frame.png") 24 fill stretch;
+  border: 0;
+  border-image: none;
   background: transparent;
   border-radius: 0;
-  backdrop-filter: blur(5px);
+  backdrop-filter: none;
+  top: calc(6px + var(--safe-top));
+  left: calc(6px + var(--safe-left));
+  gap: 1px;
+  padding: 0;
+}
+
+.top-left-currencies .resource-inline {
+  gap: 3px;
+  line-height: 1;
+}
+
+.top-left-currencies .resource-inline,
+.top-left-currencies .resource-inline span {
+  font-size: 0.62rem;
+}
+
+.top-left-currencies .resource-inline strong {
+  font-size: 0.72rem;
+}
+
+.top-left-currencies .resource-inline .sprite-icon {
+  width: 14px;
+  height: 14px;
+  filter: drop-shadow(0 0 4px currentColor);
 }
 
 .hud-panel,
