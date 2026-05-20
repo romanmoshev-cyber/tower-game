@@ -924,8 +924,9 @@ function initGame() {
 function bindUi() {
   document.getElementById("playBtn").addEventListener("click", () => startRun());
   document.getElementById("continueBtn").addEventListener("click", continueRun);
-  document.getElementById("againBtn").addEventListener("click", () => startRun());
-  document.getElementById("menuBtn").addEventListener("click", returnToMenu);
+  document.getElementById("againBtn").addEventListener("click", restartFromDefeat);
+  document.getElementById("menuBtn").addEventListener("click", exitDefeatToMenu);
+  document.getElementById("reviveBtn").addEventListener("click", reviveRun);
   document.getElementById("upgradesBtn").addEventListener("click", () => showScreen("permanent"));
   document.getElementById("profileBtn").addEventListener("click", () => showScreen("profile"));
   document.getElementById("labsBtn").addEventListener("click", () => showScreen("labs"));
@@ -1317,6 +1318,9 @@ function startRun(options = {}) {
     runUpgrades: Object.fromEntries(runUpgradeDefs.map((u) => [u.id, 0])),
     stats: { kills: 0, bossKills: 0, runUpgrades: 0, cashEarned: 0, protocols: 0, milestones: [], playTime: 0 },
     waveState: "pause",
+    reviveWave: 1,
+    awaitingRevive: false,
+    finalized: false,
     nextWaveTimer: 0.8,
     nextWaveDelay: 0.8,
     waveDuration: 0,
@@ -1632,6 +1636,16 @@ function gameLoop(now) {
 
 function updateGame(dt) {
   if (!game || game.ended) return;
+  if (game.deathSequence) {
+    updateVisualFeedback(dt);
+    game.deathSequence.timer -= dt;
+    if (game.deathSequence.timer <= 0) {
+      endRun(false, { finalize: false });
+      return;
+    }
+    return;
+  }
+
   if (game.waveState === "reward") {
     updateVisualFeedback(dt);
     updateHud();
@@ -1694,7 +1708,7 @@ function updateGame(dt) {
 
   if (game.tower.hp <= 0) {
     if (tryPreventTowerDeath()) return;
-    endRun();
+    beginTowerDeathSequence();
     return;
   }
   updateHud();
@@ -1723,6 +1737,39 @@ function tryPreventTowerDeath() {
     return true;
   }
   return false;
+}
+
+function triggerTowerDamageFeedback(amount = 0, color = "#ff5c6c") {
+  if (!game?.tower) return;
+  const shapeId = progress?.customization?.shape || "shape_hex";
+  const intensity = Math.min(1.45, Math.max(0.55, amount / Math.max(1, game.tower.maxHp) * 7));
+  const t = game.tower;
+  t.hitTimer = 0.36;
+  t.hitMax = 0.36;
+  t.hitIntensity = intensity;
+  t.hitColor = color;
+  t.hitAngle = Math.atan2(t.y - (game.lastTowerHitY ?? t.y - 1), t.x - (game.lastTowerHitX ?? t.x));
+  if (shapeId === "shape_square") t.hitSpin = (t.hitSpin || 0) + 0.35 * intensity;
+  if (shapeId === "shape_triangle") t.hitSpin = (t.hitSpin || 0) - 0.48 * intensity;
+  if (shapeId === "shape_octa") t.facetPulse = 0.42;
+  if (shapeId === "shape_substance") t.blobImpact = 0.46;
+}
+
+function beginTowerDeathSequence() {
+  if (!game || game.deathSequence) return;
+  game.deathSequence = { timer: 1.65, maxTimer: 1.65 };
+  game.reviveWave = Math.max(1, game.wave || 1);
+  game.tower.hp = 0;
+  game.tower.hitTimer = 0;
+  game.projectiles = [];
+  game.enemyProjectiles = [];
+  game.missiles = [];
+  game.landmines = [];
+  addEffect("towerExplosion", game.tower.x, game.tower.y, 1.25, "#ff5c6c");
+  addEffect("towerShock", game.tower.x, game.tower.y, 0.95, "#55ecff");
+  addText("Критический взрыв", game.tower.x, game.tower.y - 72, "#ffb020", { life: 1.15, size: 22, floatSpeed: 18 });
+  triggerShake();
+  audio.play("explosion");
 }
 
 function triggerDeathRay() {
@@ -1961,6 +2008,9 @@ function updateEnemies(dt) {
           game.tower.hp -= hitDamage;
           if (game.tower.hp <= 0 && tryPreventTowerDeath()) enemy.meleeTimer = 1.0;
         }
+        game.lastTowerHitX = enemy.x;
+        game.lastTowerHitY = enemy.y;
+        triggerTowerDamageFeedback(hitDamage, enemy.color || "#ff5c6c");
 
         if (game.tower.thorns > 0) {
           damageEnemy(enemy, game.tower.damage * game.tower.thorns);
@@ -2100,6 +2150,9 @@ function updateEnemyProjectiles(dt) {
         game.tower.hp -= actualDamage;
         if (game.tower.hp <= 0) tryPreventTowerDeath();
       }
+      game.lastTowerHitX = p.x;
+      game.lastTowerHitY = p.y;
+      triggerTowerDamageFeedback(actualDamage, p.color || "#ff5c6c");
       addEffect("hit", game.tower.x, game.tower.y, 0.28, p.color);
       addText(`-${Math.ceil(actualDamage)}`, game.tower.x, game.tower.y - 48, "#ff5c6c");
       triggerShake();
@@ -2392,6 +2445,12 @@ function updateUltimates(dt) {
 }
 
 function updateVisualFeedback(dt) {
+  if (game.tower) {
+    game.tower.hitTimer = Math.max(0, (game.tower.hitTimer || 0) - dt);
+    game.tower.hitSpin = (game.tower.hitSpin || 0) * Math.pow(0.03, dt);
+    game.tower.facetPulse = Math.max(0, (game.tower.facetPulse || 0) - dt);
+    game.tower.blobImpact = Math.max(0, (game.tower.blobImpact || 0) - dt);
+  }
   game.effects.forEach((effect) => (effect.life -= dt));
   game.effects = game.effects.filter((effect) => effect.life > 0);
   
@@ -3599,11 +3658,8 @@ function clearRunOverlays() {
   closeGameGearMenu();
 }
 
-function endRun(manualQuit = false) {
-  if (!game || game.ended) return;
-  game.ended = true;
-  paused = false;
-  cancelAnimationFrame(animationId);
+function buildRunSummary(commit = false) {
+  if (!game) return null;
   const reachedWave = Math.max(0, game.wave);
   const tierReward = 1 + (game.tier - 1) * 0.65;
   const coinBonus = 1 + progress.permanent.coinBonus * 0.02;
@@ -3615,41 +3671,65 @@ function endRun(manualQuit = false) {
   const earnedCoins = Math.floor((game.totalCash * balance.coinCashRate + waveCoins + killCoins + bossCoins) * tierReward * coinBonus * medalCoinBonus * labCoinMult);
   const eventScore = calculateEventScore(reachedWave);
   const earnedMedals = game.eventMode ? Math.max(1, Math.floor(eventScore / 120)) : 0;
-  const milestoneRewards = grantMilestones(reachedWave);
-  
+  const milestoneRewards = grantMilestones(reachedWave, commit);
+  const bestWave = commit ? Math.max(progress.bestWave, reachedWave) : Math.max(progress.bestWave, reachedWave);
+  return { reachedWave, earnedCoins, earnedMedals, milestoneRewards, bestWave, eventScore };
+}
+
+function finalizeRunRewards() {
+  if (!game || game.finalized) return buildRunSummary(false);
+  const summary = buildRunSummary(true);
+  game.finalized = true;
+
   if (game.eventMode === "tournament") {
-    progress.powerStones += Math.floor(reachedWave / 10);
+    progress.powerStones += Math.floor(summary.reachedWave / 10);
   }
 
   trackDailyQuest("kills", game.stats.kills);
   trackDailyQuest("bosses", game.stats.bossKills);
-  trackDailyQuest("waves", reachedWave);
+  trackDailyQuest("waves", summary.reachedWave);
   trackDailyQuest("upgrades", game.stats.runUpgrades);
 
-  progress.coins += earnedCoins;
-  progress.medals += earnedMedals;
+  progress.coins += summary.earnedCoins;
+  progress.medals += summary.earnedMedals;
   progress.playTime = (progress.playTime || 0) + game.stats.playTime;
   progress.totalKills = (progress.totalKills || 0) + game.stats.kills;
   progress.totalBosses = (progress.totalBosses || 0) + game.stats.bossKills;
-  progress.bestWave = Math.max(progress.bestWave, reachedWave);
-  progress.tiers[game.tier] = Math.max(progress.tiers[game.tier] || 0, reachedWave);
+  progress.bestWave = Math.max(progress.bestWave, summary.reachedWave);
+  progress.tiers[game.tier] = Math.max(progress.tiers[game.tier] || 0, summary.reachedWave);
   progress.events.kills += game.stats.kills;
   progress.events.bossKills += game.stats.bossKills;
   progress.events.runUpgrades += game.stats.runUpgrades;
   progress.events.maxRunUpgrades = Math.max(progress.events.maxRunUpgrades || 0, game.stats.runUpgrades);
   progress.events.cashEarned += game.stats.cashEarned;
   if (game.eventMode) {
-    progress.events.bestScore = Math.max(progress.events.bestScore || 0, eventScore);
-    progress.events[`${game.eventMode}Best`] = Math.max(progress.events[`${game.eventMode}Best`] || 0, eventScore);
+    progress.events.bestScore = Math.max(progress.events.bestScore || 0, summary.eventScore);
+    progress.events[`${game.eventMode}Best`] = Math.max(progress.events[`${game.eventMode}Best`] || 0, summary.eventScore);
   }
   saveProgress();
+  summary.bestWave = progress.bestWave;
+  return summary;
+}
 
-  document.getElementById("resultWave").textContent = reachedWave;
-  document.getElementById("resultCoins").textContent = formatRunRewards(earnedCoins, earnedMedals, milestoneRewards);
-  document.getElementById("resultBest").textContent = progress.bestWave;
+function renderDefeatScreen(summary, canRevive) {
+  document.getElementById("resultWave").textContent = summary.reachedWave;
+  document.getElementById("resultCoins").textContent = formatRunRewards(summary.earnedCoins, summary.earnedMedals, summary.milestoneRewards);
+  document.getElementById("resultBest").textContent = summary.bestWave;
   document.getElementById("resultKills").textContent = game.stats.kills;
   document.getElementById("resultBosses").textContent = game.stats.bossKills;
   document.getElementById("resultCash").textContent = Math.floor(game.totalCash);
+  document.getElementById("revivePanel").classList.toggle("hidden", !canRevive);
+}
+
+function endRun(manualQuit = false, options = {}) {
+  if (!game || game.ended) return;
+  const shouldFinalize = options.finalize !== false;
+  game.ended = true;
+  game.awaitingRevive = !shouldFinalize && !manualQuit;
+  paused = false;
+  cancelAnimationFrame(animationId);
+  const summary = shouldFinalize ? finalizeRunRewards() : buildRunSummary(false);
+  renderDefeatScreen(summary, game.awaitingRevive);
   clearRunOverlays();
   showScreen("defeat");
   bgm.update();
@@ -3668,7 +3748,7 @@ function endRun(manualQuit = false) {
       if (countdown <= 0) {
         clearInterval(restartInterval);
         againBtn.textContent = "Играть снова";
-        startRun({ eventMode: game.eventMode });
+        restartFromDefeat();
       } else {
         againBtn.textContent = `Авто-рестарт (${countdown})...`;
       }
@@ -3676,6 +3756,55 @@ function endRun(manualQuit = false) {
   } else {
     againBtn.textContent = "Играть снова";
   }
+}
+
+function restartFromDefeat() {
+  const eventMode = game?.eventMode || null;
+  if (game) finalizeRunRewards();
+  startRun({ eventMode });
+}
+
+function exitDefeatToMenu() {
+  if (game) finalizeRunRewards();
+  returnToMenu();
+}
+
+function reviveRun() {
+  if (!game?.awaitingRevive || game.finalized) return;
+  const reviveWave = Math.max(1, game.reviveWave || game.wave || 1);
+  game.ended = false;
+  game.awaitingRevive = false;
+  game.deathSequence = null;
+  game.tower.hp = Math.max(1, game.tower.maxHp * 0.42);
+  game.tower.hitTimer = 0;
+  game.tower.rapidFireTimer = 0;
+  game.enemies = [];
+  game.projectiles = [];
+  game.enemyProjectiles = [];
+  game.missiles = [];
+  game.landmines = [];
+  game.effects = [];
+  game.texts = [];
+  game.spawnQueue = [];
+  game.spawnTimer = 0;
+  game.wave = reviveWave - 1;
+  game.waveState = "pause";
+  game.nextWaveTimer = 0.7;
+  game.nextWaveDelay = 0.7;
+  game.waveDuration = 0;
+  game.waveTimeRemaining = 0;
+  paused = false;
+  document.getElementById("hudPlayPauseBtn").textContent = "⏸";
+  clearRunOverlays();
+  showScreen("game");
+  positionTowerInVisibleArena();
+  updateHud();
+  renderRunUpgrades();
+  showWaveToast(`Воскрешение: волна ${reviveWave}`);
+  lastFrame = performance.now();
+  cancelAnimationFrame(animationId);
+  animationId = requestAnimationFrame(gameLoop);
+  bgm.update();
 }
 
 function returnToMenu() {
@@ -3745,16 +3874,18 @@ function calculateEventScore(reachedWave) {
   return Math.floor((reachedWave * 20 + game.stats.kills * 2 + game.stats.bossKills * 80 + game.totalCash * 0.12) * (mode?.reward || 1));
 }
 
-function grantMilestones(reachedWave) {
+function grantMilestones(reachedWave, commit = true) {
   const gained = [];
   milestoneDefs.forEach((milestone) => {
     if (reachedWave < milestone.wave || progress.milestones[milestone.id]) return;
-    progress.milestones[milestone.id] = true;
-    progress.coins += milestone.reward.coins || 0;
-    progress.medals += milestone.reward.medals || 0;
-    progress.prestige = (progress.prestige || 0) + (milestone.reward.prestige || 0);
-    progress.crystals = (progress.crystals || 0) + (milestone.reward.crystals || 0);
-    game.stats.milestones.push(milestone.text);
+    if (commit) {
+      progress.milestones[milestone.id] = true;
+      progress.coins += milestone.reward.coins || 0;
+      progress.medals += milestone.reward.medals || 0;
+      progress.prestige = (progress.prestige || 0) + (milestone.reward.prestige || 0);
+      progress.crystals = (progress.crystals || 0) + (milestone.reward.crystals || 0);
+      game.stats.milestones.push(milestone.text);
+    }
     gained.push(milestone.text);
   });
   return gained;
@@ -4111,7 +4242,7 @@ function debugKillRun() {
     return;
   }
   game.tower.hp = 0;
-  endRun();
+  beginTowerDeathSequence();
   setDebugStatus("Текущий забег завершен.");
 }
 
@@ -4267,6 +4398,16 @@ function drawTower() {
     mainColor = "#8cff72";
     darkColor = "#2d4f1d";
   }
+  const hitK = t.hitTimer && t.hitMax ? t.hitTimer / t.hitMax : 0;
+  const hitPulse = Math.sin(hitK * Math.PI);
+  const hitIntensity = t.hitIntensity || 0;
+  const hitAngle = t.hitAngle || 0;
+  const deathK = game?.deathSequence ? 1 - (game.deathSequence.timer / game.deathSequence.maxTimer) : 0;
+  const bodyAlpha = game?.deathSequence ? Math.max(0, 1 - deathK * 1.35) : 1;
+  const bodyScale = 1 + hitPulse * 0.1 * hitIntensity + deathK * 0.55;
+  const bodyOffsetX = Math.cos(hitAngle) * hitPulse * 5 * hitIntensity;
+  const bodyOffsetY = Math.sin(hitAngle) * hitPulse * 5 * hitIntensity;
+  const bodyRotation = (t.hitSpin || 0) * hitPulse + Math.sin(hitK * Math.PI * 5) * hitPulse * 0.08 * hitIntensity;
 
   ctx.save();
   ctx.beginPath();
@@ -4286,18 +4427,11 @@ function drawTower() {
   ctx.globalAlpha = 1.0;
 
   ctx.save();
-  ctx.translate(t.x, t.y);
-  ctx.rotate(performance.now() / 1800);
-  ctx.strokeStyle = "rgba(85, 236, 255, 0.35)";
-  ctx.lineWidth = 2;
-  for (let i = 0; i < 6; i += 1) {
-    ctx.rotate(TWO_PI / 6);
-    ctx.beginPath();
-    ctx.moveTo(34, 0);
-    ctx.lineTo(48, 0);
-    ctx.stroke();
-  }
-  ctx.restore();
+  ctx.translate(t.x + bodyOffsetX, t.y + bodyOffsetY);
+  ctx.rotate(bodyRotation);
+  ctx.scale(bodyScale, shapeDef.substance ? 1 + hitPulse * 0.16 * hitIntensity : bodyScale);
+  ctx.translate(-t.x, -t.y);
+  ctx.globalAlpha = bodyAlpha;
 
   if (shapeDef.substance) {
     const time = performance.now() / 420;
@@ -4375,6 +4509,48 @@ function drawTower() {
     ctx.fill();
     ctx.shadowBlur = 0;
   }
+
+  if (hitPulse > 0.01) {
+    if (shapeDef.substance) {
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, 28 + hitPulse * 30, 0, TWO_PI);
+      ctx.strokeStyle = `rgba(180, 255, 160, ${0.55 * hitPulse})`;
+      ctx.lineWidth = 4;
+      ctx.stroke();
+    } else if (shapeDef.id === "shape_triangle") {
+      ctx.strokeStyle = `rgba(255, 255, 255, ${0.75 * hitPulse})`;
+      ctx.lineWidth = 3;
+      for (let i = 0; i < 3; i += 1) {
+        const a = -Math.PI / 2 + i * TWO_PI / 3 + hitPulse * 0.4;
+        ctx.beginPath();
+        ctx.moveTo(t.x + Math.cos(a) * 16, t.y + Math.sin(a) * 16);
+        ctx.lineTo(t.x + Math.cos(a) * (42 + hitPulse * 18), t.y + Math.sin(a) * (42 + hitPulse * 18));
+        ctx.stroke();
+      }
+    } else if (shapeDef.id === "shape_square") {
+      ctx.strokeStyle = `rgba(255, 176, 32, ${0.7 * hitPulse})`;
+      ctx.lineWidth = 3;
+      ctx.strokeRect(t.x - 30 - hitPulse * 8, t.y - 30 - hitPulse * 8, 60 + hitPulse * 16, 60 + hitPulse * 16);
+    } else if (shapeDef.id === "shape_octa") {
+      ctx.strokeStyle = `rgba(85, 236, 255, ${0.68 * hitPulse})`;
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 8; i += 1) {
+        const a = i * TWO_PI / 8;
+        ctx.beginPath();
+        ctx.moveTo(t.x, t.y);
+        ctx.lineTo(t.x + Math.cos(a) * (36 + hitPulse * 14), t.y + Math.sin(a) * (36 + hitPulse * 14));
+        ctx.stroke();
+      }
+    } else {
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, 29 + hitPulse * 17, 0, TWO_PI);
+      ctx.strokeStyle = `rgba(255, 255, 255, ${0.72 * hitPulse})`;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+  }
+
+  ctx.restore();
 
   if (game?.goldenCoreTimer > 0) {
     ctx.beginPath();
@@ -4648,6 +4824,38 @@ function drawEffects() {
       ctx.arc(effect.x, effect.y, (1 - k) * 270 + 24, 0, TWO_PI);
       ctx.strokeStyle = "rgba(85, 236, 255, 0.8)";
       ctx.stroke();
+    } else if (effect.type === "towerShock") {
+      ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.arc(effect.x, effect.y, (1 - k) * 230 + 18, 0, TWO_PI);
+      ctx.strokeStyle = `rgba(85, 236, 255, ${0.85 * k})`;
+      ctx.stroke();
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(effect.x, effect.y, (1 - k) * 135 + 8, 0, TWO_PI);
+      ctx.strokeStyle = `rgba(255, 255, 255, ${0.55 * k})`;
+      ctx.stroke();
+    } else if (effect.type === "towerExplosion") {
+      const burst = 1 - k;
+      ctx.fillStyle = `rgba(255, 92, 108, ${0.28 * k})`;
+      ctx.beginPath();
+      ctx.arc(effect.x, effect.y, 34 + burst * 95, 0, TWO_PI);
+      ctx.fill();
+      ctx.strokeStyle = `rgba(255, 176, 32, ${0.9 * k})`;
+      ctx.lineWidth = 5;
+      for (let i = 0; i < 14; i += 1) {
+        const a = i * TWO_PI / 14 + burst * 0.3;
+        const inner = 18 + burst * 28;
+        const outer = 42 + burst * (120 + (i % 3) * 16);
+        ctx.beginPath();
+        ctx.moveTo(effect.x + Math.cos(a) * inner, effect.y + Math.sin(a) * inner);
+        ctx.lineTo(effect.x + Math.cos(a) * outer, effect.y + Math.sin(a) * outer);
+        ctx.stroke();
+      }
+      ctx.fillStyle = `rgba(255, 255, 255, ${0.85 * k})`;
+      ctx.beginPath();
+      ctx.arc(effect.x, effect.y, 16 + burst * 20, 0, TWO_PI);
+      ctx.fill();
     } else if (effect.type === "spit") {
       ctx.fillStyle = effect.color;
       ctx.shadowColor = effect.color;

@@ -2453,6 +2453,13 @@ input[type="range"]::-webkit-slider-thumb {
 .icon-labs { background-image: url("image/ui/icon_laboratory.png"); background-size: contain; background-position: center; }
 .icon-cards { background-image: url("image/ui/icon_loot_cube.png"); background-size: contain; background-position: center; }
 .icon-rank-star { background-image: url("image/ui/icon_rank_star.png"); background-size: contain; background-position: center; }
+.icon-home { background-image: url("image/ui/icon_home.png"); background-size: contain; background-position: center; }
+.icon-death { background-image: url("image/ui/icon_death.png"); background-size: contain; background-position: center; }
+.icon-close { background-image: url("image/ui/icon_close.png"); background-size: contain; background-position: center; }
+.icon-recovery { background-image: url("image/ui/icon_recovery.png"); background-size: contain; background-position: center; }
+.icon-warning { background-image: url("image/ui/icon_warning.png"); background-size: contain; background-position: center; }
+.icon-coins { background-image: url("image/ui/icon_coins.png"); background-size: contain; background-position: center; }
+.icon-arrow-right { background-image: url("image/ui/icon_arrow_right.png"); background-size: contain; background-position: center; }
 .icon-damage { background-image: url("image/ui/icon_damage.png"); }
 .icon-attack-speed { background-image: url("image/ui/icon_attack_speed.png"); }
 .icon-health { background-image: url("image/ui/icon_health.png"); }
@@ -4471,9 +4478,299 @@ input[type="range"] {
   border-color: rgba(127, 135, 148, 0.28);
 }
 
+/* --- Death screen --- */
+.death-screen {
+  gap: 4px;
+  padding: calc(6px + var(--safe-top)) clamp(10px, 3.4vw, 18px) calc(8px + var(--safe-bottom));
+  background:
+    linear-gradient(180deg, rgba(0, 2, 9, 0.04), rgba(0, 2, 9, 0.34)),
+    url("image/back_death.png") center top / cover no-repeat,
+    #020510;
+}
+
+.death-screen:not(.game-screen):not(.menu-screen) {
+  background:
+    linear-gradient(180deg, rgba(0, 2, 9, 0.04), rgba(0, 2, 9, 0.34)),
+    url("image/back_death.png") center top / cover no-repeat,
+    #020510;
+  background-size: auto, cover, auto;
+}
+
+.death-screen::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 5px),
+    radial-gradient(circle at 50% 26%, rgba(255, 45, 150, 0.28), transparent 26%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 5, 16, 0.62));
+  mix-blend-mode: screen;
+  opacity: 0.45;
+}
+
+.death-screen > * {
+  position: relative;
+  z-index: 1;
+}
+
+.death-title {
+  margin: 0 0 3px;
+}
+
+.death-title-icon {
+  width: clamp(46px, 13vw, 64px);
+  height: clamp(46px, 13vw, 64px);
+  margin-bottom: 2px;
+  background-image: url("image/ui/icon_close.png");
+  background-size: contain;
+  filter: drop-shadow(0 0 16px rgba(255, 92, 155, 0.95));
+}
+
+.death-title .eyebrow {
+  color: #ff5c9b;
+  font-size: clamp(0.62rem, 2.15vw, 0.78rem);
+  text-shadow: 0 0 12px rgba(255, 92, 155, 0.72);
+}
+
+.death-title h1 {
+  font-size: clamp(1.46rem, 6.1vw, 2.28rem);
+  line-height: 0.98;
+  color: #55ecff;
+  text-shadow: 0 0 18px rgba(85, 236, 255, 0.78), 0 3px 0 rgba(8, 33, 58, 0.9);
+}
+
+.revive-panel {
+  display: grid;
+  grid-template-columns: clamp(56px, 15.5vw, 76px) minmax(0, 1fr);
+  align-items: center;
+  gap: 5px 10px;
+  min-height: 112px;
+  margin: 0 -2px 3px;
+  padding: clamp(7px, 2.2vw, 11px);
+  border: 10px solid transparent;
+  border-image: url("image/ui/panel-purple.png") 22 fill stretch;
+  background: rgba(8, 0, 22, 0.28);
+  box-shadow: inset 0 0 28px rgba(255, 92, 155, 0.16), 0 0 24px rgba(255, 92, 155, 0.2);
+}
+
+.revive-crystal {
+  width: 100%;
+  aspect-ratio: 1;
+  background:
+    radial-gradient(circle at 50% 80%, rgba(255, 92, 155, 0.42), transparent 36%),
+    url("image/ui/icon_recovery.png") center / contain no-repeat;
+  filter: drop-shadow(0 0 18px rgba(255, 92, 155, 0.86)) saturate(1.3);
+}
+
+.revive-copy {
+  min-width: 0;
+}
+
+.revive-copy strong {
+  display: block;
+  color: #ff75c0;
+  font-size: clamp(1.02rem, 4vw, 1.42rem);
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(255, 92, 155, 0.75);
+}
+
+.revive-copy span {
+  display: block;
+  margin-top: 3px;
+  color: #f5f7ff;
+  font-size: clamp(0.68rem, 2.35vw, 0.84rem);
+  font-weight: 700;
+  line-height: 1.18;
+}
+
+.revive-btn {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  justify-content: center;
+  gap: 5px;
+  min-height: 38px;
+  width: 100%;
+  padding: 4px 7px;
+  border: 8px solid transparent;
+  border-image: url("image/ui/button-menu-pink-small-empty.png") 16 fill stretch;
+  border-radius: 0;
+  background: transparent;
+  color: #ffffff;
+  font-size: clamp(0.72rem, 2.75vw, 0.96rem);
+  text-shadow: 0 0 10px rgba(255, 92, 155, 0.72);
+}
+
+.revive-btn .sprite-icon {
+  width: 21px;
+  height: 21px;
+}
+
+.revive-btn strong {
+  color: #ffffff;
+  font-size: 1.08em;
+}
+
+.revive-stars {
+  color: #ffcf35;
+  letter-spacing: 0;
+  text-shadow: 0 0 10px rgba(255, 207, 53, 0.8);
+  white-space: nowrap;
+}
+
+.death-screen .result-list {
+  gap: 4px;
+  padding-bottom: 4px;
+}
+
+.death-screen .result-list div {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  margin: 0;
+  padding: 4px 8px;
+  border-width: 6px;
+  background:
+    linear-gradient(180deg, rgba(3, 22, 46, 0.82), rgba(1, 8, 22, 0.94)),
+    repeating-linear-gradient(90deg, rgba(85, 236, 255, 0.06) 0 1px, transparent 1px 8px);
+}
+
+.death-screen .result-list .sprite-icon {
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+.death-screen .result-list span {
+  min-width: 0;
+  color: #b8c4d4;
+  font-size: clamp(0.66rem, 2.25vw, 0.82rem);
+  font-weight: 700;
+}
+
+.death-screen .result-list strong {
+  color: #ffffff;
+  font-size: clamp(0.78rem, 2.85vw, 0.96rem);
+  font-weight: 900;
+  text-align: right;
+}
+
+.death-action {
+  position: relative;
+  display: flex !important;
+  align-items: center;
+  justify-content: center !important;
+  min-height: 42px;
+  margin: 0;
+  padding: 5px 58px;
+  border-width: 8px;
+  border-radius: 0;
+  font-size: clamp(0.86rem, 3.55vw, 1.18rem);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  text-align: center !important;
+}
+
+.death-action .sprite-icon {
+  display: none;
+}
+
+.death-action span:not(.sprite-icon) {
+  min-width: 0;
+}
+
+.death-action::before,
+.death-action::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  transform: translateY(-50%);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  filter: drop-shadow(0 0 8px rgba(85, 236, 255, 0.72));
+  pointer-events: none;
+}
+
+.death-action::before {
+  left: 22px;
+}
+
+.death-action::after {
+  right: 22px;
+  background-image: url("image/ui/icon_arrow_right.png");
+}
+
+.death-screen .death-action-again {
+  color: #eefdff;
+  border-image: url("image/ui/panel-green.png") 18 fill stretch !important;
+  background: transparent;
+  text-shadow: 0 0 12px rgba(85, 236, 255, 0.72);
+}
+
+.death-screen .death-action-again::before {
+  background-image: url("image/ui/icon_death.png");
+}
+
+.death-screen .death-action-again::after {
+  transform: translateY(-50%) scaleX(-1);
+}
+
+.death-screen .death-action-menu {
+  color: #f7e9ff;
+  border-image: url("image/ui/panel-purple.png") 18 fill stretch !important;
+  background: transparent;
+  text-shadow: 0 0 12px rgba(190, 84, 255, 0.72);
+}
+
+.death-screen .death-action-menu::before {
+  background-image: url("image/ui/icon_home.png");
+}
+
+@media (max-width: 380px) {
+  .revive-panel {
+    grid-template-columns: 52px minmax(0, 1fr);
+    min-height: 106px;
+  }
+
+  .revive-btn {
+    gap: 4px;
+    font-size: 0.68rem;
+  }
+
+  .death-action {
+    padding-inline: 48px;
+    font-size: 0.84rem;
+  }
+
+  .death-action::before {
+    left: 17px;
+  }
+
+  .death-action::after {
+    right: 17px;
+  }
+}
+
 .upgrade-card.is-available .run-upgrade-level {
   color: #a7ff45;
   border-color: rgba(167, 255, 69, 0.55);
+}
+
+.screen:not(.active) {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.screen.active {
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 .upgrade-card.is-available .run-upgrade-cost {

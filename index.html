@@ -190,22 +190,34 @@
         </div>
       </section>
 
-      <section id="defeatScreen" class="screen">
-        <div class="brand-block compact">
-          <i class="sprite-icon" style="width: 64px; height: 64px; margin-bottom: 8px; background-image: url('image/ui/icon_close.png'); filter: drop-shadow(0 0 15px rgba(255, 92, 155, 0.8));"></i>
-          <p class="eyebrow">Забег завершен</p>
+      <section id="defeatScreen" class="screen death-screen">
+        <div class="brand-block compact death-title">
+          <i class="sprite-icon death-title-icon"></i>
+          <p class="eyebrow">... Забег завершен ...</p>
           <h1>Ядро отключено</h1>
         </div>
-        <div class="result-list">
-          <div><span>Достигнута волна</span><strong id="resultWave">0</strong></div>
-          <div><span>Награда</span><strong id="resultCoins">0</strong></div>
-          <div><span>Лучшая волна</span><strong id="resultBest">0</strong></div>
-          <div><span>Убийства</span><strong id="resultKills">0</strong></div>
-          <div><span>Боссы</span><strong id="resultBosses">0</strong></div>
-          <div><span>Всего $</span><strong id="resultCash">0</strong></div>
+        <div id="revivePanel" class="revive-panel">
+          <div class="revive-crystal" aria-hidden="true"></div>
+          <div class="revive-copy">
+            <strong>Воскреснуть</strong>
+            <span>Продолжить забег с текущей волны</span>
+          </div>
+          <button id="reviveBtn" class="revive-btn" type="button">
+            <span>Воскреснуть за</span>
+            <strong>3</strong>
+            <span class="revive-stars">★★★</span>
+          </button>
         </div>
-        <button id="againBtn" class="primary-btn">Играть снова</button>
-        <button id="menuBtn" class="secondary-btn wide">Главное меню</button>
+        <div class="result-list">
+          <div><i class="sprite-icon icon-wave"></i><span>Достигнута волна</span><strong id="resultWave">0</strong></div>
+          <div><i class="sprite-icon icon-coins"></i><span>Награда</span><strong id="resultCoins">0</strong></div>
+          <div><i class="sprite-icon icon-rank-star"></i><span>Лучшая волна</span><strong id="resultBest">0</strong></div>
+          <div><i class="sprite-icon icon-damage-meter"></i><span>Убийства</span><strong id="resultKills">0</strong></div>
+          <div><i class="sprite-icon icon-warning"></i><span>Боссы</span><strong id="resultBosses">0</strong></div>
+          <div><i class="sprite-icon icon-cash-wave"></i><span>Всего $</span><strong id="resultCash">0</strong></div>
+        </div>
+        <button id="againBtn" class="primary-btn death-action death-action-again"><span class="sprite-icon icon-death"></span><span>Играть снова</span><i class="sprite-icon icon-arrow-right"></i></button>
+        <button id="menuBtn" class="secondary-btn wide death-action death-action-menu"><span class="sprite-icon icon-home"></span><span>Главное меню</span><i class="sprite-icon icon-arrow-right"></i></button>
       </section>
 
       <section id="profileScreen" class="screen">
