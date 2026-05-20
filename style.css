@@ -14,6 +14,1022 @@
   --font-main: 'Exo 2', system-ui, -apple-system, sans-serif;
 }
 
+/* --- Permanent upgrades: neon asset cards --- */
+#prestigePanel.info-panel {
+  margin: 0 -10px 14px;
+  padding: 14px 16px;
+  border: 12px solid transparent;
+  border-image: url("image/ui/panel-purple.png") 18 fill stretch;
+  background: transparent;
+  box-shadow: none;
+}
+
+#prestigePanel.info-panel strong {
+  color: var(--accent-cyan);
+  font-size: 1.2rem;
+  text-shadow: 0 0 10px rgba(85, 236, 255, 0.62);
+}
+
+#prestigePanel.info-panel span {
+  color: #b7c4d9;
+  font-weight: 600;
+}
+
+#permanentList.shop-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-inline: -10px;
+  padding-bottom: 18px;
+}
+
+#ultimateList.shop-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-inline: -10px;
+  padding-bottom: 18px;
+}
+
+#ultimateOverviewPanel.info-panel {
+  margin-inline: -10px;
+  gap: 10px;
+}
+
+.ultimate-overview-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+#ultimateLoadoutInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ultimate-loadout-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(85, 236, 255, 0.18);
+}
+
+#ultimateLoadoutInfo strong {
+  color: var(--accent-cyan);
+  font-size: 0.95rem;
+}
+
+#ultimateLoadoutInfo span {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
+.ultimate-selected-icons {
+  display: grid;
+  grid-template-columns: repeat(3, 34px);
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  min-width: 112px;
+}
+
+.ultimate-selected-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  background: url("image/ui/card-purple.png") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 0 6px rgba(85, 236, 255, 0.32));
+}
+
+.ultimate-selected-icon.empty {
+  opacity: 0.34;
+  filter: none;
+}
+
+.ultimate-selected-icon .sprite-icon {
+  width: 70%;
+  height: 70%;
+}
+
+.ultimate-selected-empty {
+  color: #aebdce;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+#stoneShopList.shop-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-inline: -10px;
+}
+
+.ultimate-stone-card.shop-card {
+  min-height: clamp(138px, 35vw, 160px);
+  padding: clamp(14px, 3.3vw, 17px) clamp(11px, 2.9vw, 15px) clamp(11px, 2.7vw, 14px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 0;
+  border-image: none;
+  border-radius: 0;
+  background: url("image/ui/upgrade_card_empty.png") center / 100% 100% no-repeat;
+  box-shadow: none;
+  opacity: 1;
+  filter: none;
+}
+
+.ultimate-stone-card .ultimate-stone-head {
+  flex: 0 0 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-right: 8px;
+}
+
+.ultimate-stone-card .ultimate-stone-head strong {
+  color: #f2fbff;
+  font-size: clamp(0.72rem, 2.82vw, 0.9rem);
+  font-weight: 900;
+  line-height: 1.05;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.28);
+}
+
+.ultimate-stone-card .ultimate-stone-head span {
+  margin: 0;
+  padding: 0;
+  color: #aebdce !important;
+  font-size: clamp(0.68rem, 2.65vw, 0.84rem) !important;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.ultimate-stone-card p {
+  flex: 1;
+  margin: 0;
+  color: #d6e3f0;
+  font-size: clamp(0.68rem, 2.55vw, 0.8rem);
+  font-weight: 700;
+  line-height: 1.12;
+}
+
+.ultimate-stone-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1 1 auto;
+  min-width: 0;
+  color: #d593ff;
+  font-size: clamp(0.78rem, 2.95vw, 0.94rem);
+  font-weight: 900;
+}
+
+.ultimate-stone-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.ultimate-stone-price .sprite-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.ultimate-stone-price span {
+  margin: 0;
+  padding: 0;
+  color: #d593ff !important;
+  font-size: inherit !important;
+  font-weight: 900;
+}
+
+.ultimate-stone-btn,
+.ultimate-stone-btn:disabled {
+  flex: 0 0 44%;
+  min-height: 38px !important;
+  width: 44%;
+  padding: 3px 7px !important;
+  border: 11px solid transparent !important;
+  border-image: url("image/ui/button_buy_empty.png") 24 fill stretch !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  color: #9af7ff !important;
+  font-size: clamp(0.72rem, 2.8vw, 0.92rem) !important;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(85, 236, 255, 0.8);
+  box-shadow: none !important;
+}
+
+.ultimate-stone-btn:disabled {
+  color: rgba(175, 209, 218, 0.58) !important;
+  filter: grayscale(0.5);
+}
+
+#labActiveSlots {
+  margin: 0 -10px 16px !important;
+}
+
+#labList.shop-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-inline: -10px;
+  padding-bottom: 18px;
+}
+
+.lab-active-panel {
+  padding: 16px 18px;
+  border: 14px solid transparent;
+  border-image: url("image/ui/panel-purple.png") 21 fill stretch;
+  background: transparent;
+  box-shadow: none;
+}
+
+.lab-active-panel > strong {
+  display: block;
+  margin-bottom: 10px;
+  color: #f2fbff;
+  font-size: clamp(0.92rem, 3.45vw, 1.12rem);
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(255, 92, 214, 0.5);
+}
+
+.lab-active-empty {
+  color: #aebdce;
+  font-size: clamp(0.78rem, 2.8vw, 0.92rem);
+  font-weight: 700;
+}
+
+.lab-active-task {
+  display: grid;
+  grid-template-columns: clamp(54px, 14vw, 68px) minmax(0, 1fr);
+  grid-template-rows: 1fr auto;
+  column-gap: 12px;
+  row-gap: 3px;
+  align-items: stretch;
+  padding: 10px 0 2px;
+}
+
+.lab-active-icon {
+  width: clamp(54px, 14vw, 68px);
+  aspect-ratio: 1;
+  grid-row: 1 / 3;
+  display: grid;
+  place-items: center;
+  background: url("image/ui/card-purple.png") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 0 8px rgba(255, 92, 214, 0.34));
+}
+
+.lab-active-icon .sprite-icon {
+  width: 72%;
+  height: 72%;
+}
+
+.lab-active-body {
+  min-width: 0;
+  align-self: center;
+}
+
+.lab-active-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.lab-active-head strong {
+  min-width: 0;
+  color: #5dffa8;
+  font-size: clamp(0.9rem, 3.6vw, 1.16rem);
+  font-weight: 900;
+  line-height: 1.05;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lab-active-head span,
+.lab-active-time {
+  color: #aebdce;
+  font-size: clamp(0.68rem, 2.45vw, 0.8rem);
+  font-weight: 800;
+}
+
+.lab-active-time {
+  margin-top: 1px;
+}
+
+.lab-active-task .lab-progress {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: end;
+  width: 100%;
+  height: 7px;
+  margin-top: 0;
+  border-radius: 0;
+  overflow: hidden;
+  background: url("image/ui/upgrade_card_progress_bar.png") center / 100% 100% no-repeat;
+  position: relative;
+}
+
+.lab-active-task .lab-progress-fill {
+  display: none;
+}
+
+.lab-active-task .lab-progress::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("image/ui/upgrade_card_progress_bar_filled.png") left center / 100% 100% no-repeat;
+  clip-path: inset(0 calc(100% - var(--progress-percent, 0%)) 0 0);
+  transition: clip-path 1s linear;
+}
+
+.lab-upgrade-card.shop-card {
+  position: relative;
+  min-height: clamp(220px, 56vw, 258px);
+  padding: clamp(16px, 3.8vw, 20px) clamp(10px, 2.7vw, 14px) clamp(12px, 3vw, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  border: 0;
+  border-image: none;
+  border-radius: 0;
+  background: url("image/ui/upgrade_card_empty.png") center / 100% 100% no-repeat;
+  box-shadow: none;
+  overflow: hidden;
+  opacity: 1;
+  filter: none;
+}
+
+.lab-upgrade-card .lab-info-btn {
+  position: absolute;
+  top: 8px;
+  right: 5px;
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: url("image/ui/button_info_round.png") center / 24px 24px no-repeat;
+  color: transparent;
+  box-shadow: none;
+}
+
+.lab-card-head {
+  display: grid !important;
+  grid-template-columns: clamp(42px, 11.5vw, 52px) minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  margin-top: 5px;
+  padding-right: 20px;
+}
+
+.lab-icon-frame {
+  width: clamp(42px, 11.5vw, 52px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  background: url("image/ui/card-purple.png") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 0 8px rgba(85, 236, 255, 0.26));
+}
+
+.lab-upgrade-icon {
+  width: 74%;
+  height: 74%;
+}
+
+.lab-title-block {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lab-title-block strong {
+  color: #f2fbff;
+  font-size: clamp(0.68rem, 2.72vw, 0.88rem);
+  font-weight: 900;
+  line-height: 1.05;
+  overflow-wrap: normal;
+  word-break: normal;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.28);
+}
+
+.lab-title-block span {
+  color: #aebdce !important;
+  font-size: clamp(0.68rem, 2.65vw, 0.84rem) !important;
+  font-weight: 800;
+}
+
+.lab-upgrade-card p {
+  flex: 0 1 auto;
+  margin: 0;
+  color: #d6e3f0;
+  font-size: clamp(0.7rem, 2.62vw, 0.84rem);
+  font-weight: 700;
+  line-height: 1.14;
+}
+
+.lab-card-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.lab-effect {
+  color: var(--accent-cyan);
+  font-size: clamp(0.66rem, 2.45vw, 0.78rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.lab-card-footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border: 1px solid rgba(85, 236, 255, 0.18);
+  background: rgba(1, 7, 18, 0.48);
+}
+
+.lab-time,
+.lab-cost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  color: #d6e3f0;
+  font-size: clamp(0.62rem, 2.35vw, 0.78rem);
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.lab-meta-icon {
+  color: #aebdce;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.lab-cost {
+  color: #d593ff;
+}
+
+.lab-cost .sprite-icon {
+  width: 21px;
+  height: 21px;
+}
+
+.lab-cost span {
+  color: #d593ff !important;
+  font-size: inherit !important;
+  font-weight: 900;
+}
+
+.lab-upgrade-card.cant-study .lab-cost,
+.lab-upgrade-card.cant-study .lab-buy-btn,
+.lab-upgrade-card.researching .lab-buy-btn,
+.lab-upgrade-card.is-max .lab-buy-btn {
+  opacity: 0.5;
+  filter: grayscale(0.6);
+}
+
+.lab-upgrade-card .lab-buy-btn,
+.lab-upgrade-card .lab-buy-btn:disabled {
+  min-height: 40px !important;
+  padding: 3px 8px !important;
+  border: 11px solid transparent !important;
+  border-image: url("image/ui/button_buy_empty.png") 24 fill stretch !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  color: #9af7ff !important;
+  font-size: clamp(0.74rem, 2.9vw, 0.96rem) !important;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(85, 236, 255, 0.8);
+  box-shadow: none !important;
+}
+
+.lab-upgrade-card .lab-buy-btn:disabled {
+  color: rgba(175, 209, 218, 0.58) !important;
+}
+
+.permanent-upgrade-card.shop-card {
+  position: relative;
+  min-height: clamp(202px, 53vw, 235px);
+  padding: clamp(18px, 4.2vw, 22px) clamp(11px, 2.9vw, 15px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 0;
+  border-image: none;
+  border-radius: 0;
+  background: url("image/ui/upgrade_card_empty.png") center / 100% 100% no-repeat;
+  box-shadow: none;
+  overflow: hidden;
+  opacity: 1;
+  filter: none;
+}
+
+.shop-card.permanent-upgrade-card.disabled {
+  opacity: 1;
+  filter: none;
+}
+
+.shop-card.permanent-upgrade-card.disabled .permanent-card-head,
+.shop-card.permanent-upgrade-card.disabled p,
+.shop-card.permanent-upgrade-card.disabled .permanent-card-footer,
+.shop-card.permanent-upgrade-card.disabled .permanent-info-btn {
+  opacity: 0.62;
+  filter: saturate(0.74);
+}
+
+.shop-card.permanent-upgrade-card.disabled .permanent-progress {
+  opacity: 1;
+  filter: none;
+}
+
+.permanent-upgrade-card.can-buy {
+  filter: drop-shadow(0 0 10px rgba(85, 236, 255, 0.2));
+}
+
+.permanent-upgrade-card .permanent-info-btn {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: url("image/ui/button_info_round.png") center / 24px 24px no-repeat;
+  color: transparent;
+  box-shadow: none;
+}
+
+.permanent-card-head {
+  display: grid !important;
+  grid-template-columns: clamp(42px, 11.5vw, 52px) minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  margin-top: 5px;
+  padding-right: 18px;
+}
+
+.shop-card > .permanent-card-head:first-child,
+.shop-card > .permanent-card-head:first-child span {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.permanent-icon-frame {
+  width: clamp(42px, 11.5vw, 52px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  background: url("image/ui/card-purple.png") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 0 8px rgba(255, 92, 214, 0.3));
+}
+
+.permanent-upgrade-icon {
+  width: 74%;
+  height: 74%;
+}
+
+.permanent-title-block {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.permanent-title-block strong {
+  color: #f2fbff;
+  font-size: clamp(0.68rem, 2.72vw, 0.88rem);
+  font-weight: 900;
+  line-height: 1.05;
+  overflow-wrap: normal;
+  word-break: normal;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.28);
+}
+
+.permanent-title-block span {
+  color: #aebdce !important;
+  font-size: clamp(0.68rem, 2.65vw, 0.84rem) !important;
+  font-weight: 800;
+}
+
+.permanent-progress {
+  width: 100%;
+  height: 12px;
+  margin: 9px 0 8px;
+  position: relative;
+  overflow: hidden;
+  background: url("image/ui/upgrade_card_progress_bar.png") center / 100% 100% no-repeat;
+}
+
+.permanent-progress::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("image/ui/upgrade_card_progress_bar_filled.png") left center / 100% 100% no-repeat;
+  clip-path: inset(0 calc(100% - var(--progress-percent, 0%)) 0 0);
+}
+
+.permanent-progress i {
+  display: none;
+}
+
+.permanent-upgrade-card p {
+  flex: 1;
+  margin: 0;
+  color: #d6e3f0;
+  font-size: clamp(0.76rem, 3vw, 0.94rem);
+  font-weight: 700;
+  line-height: 1.22;
+}
+
+.permanent-card-footer {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+  padding-right: clamp(70px, 36%, 95px);
+}
+
+.permanent-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: #d593ff;
+  font-size: clamp(0.66rem, 2.6vw, 0.84rem);
+  font-weight: 900;
+  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(213, 147, 255, 0.35);
+}
+
+.permanent-price .sprite-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.permanent-price.is-max {
+  color: var(--accent-green);
+}
+
+.permanent-buy-btn {
+  position: absolute;
+  right: 14px;
+  bottom: 18px;
+  width: clamp(68px, 19.5vw, 95px);
+  min-height: 42px !important;
+  padding: 4px 8px !important;
+  border: 11px solid transparent !important;
+  border-image: url("image/ui/button_buy_empty.png") 24 fill stretch !important;
+  background: transparent !important;
+  color: #9af7ff !important;
+  border-radius: 0 !important;
+  font-size: clamp(0.82rem, 3.2vw, 1.05rem) !important;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(85, 236, 255, 0.8);
+  box-shadow: none !important;
+}
+
+.permanent-buy-btn:disabled {
+  color: rgba(175, 209, 218, 0.58) !important;
+  filter: grayscale(0.5);
+}
+
+.ultimate-upgrade-card.shop-card {
+  position: relative;
+  min-height: clamp(210px, 53vw, 248px);
+  padding: clamp(15px, 3.7vw, 19px) clamp(10px, 2.7vw, 14px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 0;
+  border-image: none;
+  border-radius: 0;
+  background: url("image/ui/upgrade_card_empty.png") center / 100% 100% no-repeat;
+  box-shadow: none;
+  overflow: hidden;
+  opacity: 1;
+  filter: none;
+}
+
+.shop-card.ultimate-upgrade-card.disabled {
+  opacity: 1;
+  filter: none;
+}
+
+.shop-card.ultimate-upgrade-card.disabled .ultimate-card-head,
+.shop-card.ultimate-upgrade-card.disabled p,
+.shop-card.ultimate-upgrade-card.disabled .ultimate-effect,
+.shop-card.ultimate-upgrade-card.disabled .ultimate-card-footer,
+.shop-card.ultimate-upgrade-card.disabled .ultimate-info-btn {
+  opacity: 0.62;
+  filter: saturate(0.74);
+}
+
+.shop-card.ultimate-upgrade-card.selected {
+  border: 0;
+  border-image: none;
+  background: url("image/ui/upgrade_card_empty.png") center / 100% 100% no-repeat;
+  box-shadow: none;
+  filter: none;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.shop-card.ultimate-upgrade-card.selected::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(93, 255, 168, 0.42), rgba(93, 255, 168, 0.18) 14%, transparent 38%, transparent 62%, rgba(93, 255, 168, 0.18) 86%, rgba(93, 255, 168, 0.42)),
+    linear-gradient(180deg, rgba(93, 255, 168, 0.38), rgba(93, 255, 168, 0.16) 18%, transparent 42%, transparent 58%, rgba(93, 255, 168, 0.16) 82%, rgba(93, 255, 168, 0.38)),
+    radial-gradient(ellipse at 50% 50%, rgba(93, 255, 168, 0.16), transparent 78%);
+  filter: blur(16px);
+  opacity: 0.62;
+}
+
+.ultimate-upgrade-card > :not(.ultimate-info-btn) {
+  position: relative;
+  z-index: 1;
+}
+
+.ultimate-upgrade-card .ultimate-info-btn {
+  position: absolute;
+  top: 10px;
+  right: 5px;
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: url("image/ui/button_info_round.png") center / 24px 24px no-repeat;
+  color: transparent;
+  box-shadow: none;
+}
+
+.ultimate-card-head {
+  display: grid !important;
+  grid-template-columns: clamp(42px, 11.5vw, 52px) minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  margin-top: 5px;
+  padding-right: 18px;
+}
+
+.ultimate-icon-frame {
+  width: clamp(42px, 11.5vw, 52px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  background: url("image/ui/card-purple.png") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 0 8px rgba(255, 92, 214, 0.3));
+}
+
+.ultimate-upgrade-icon {
+  width: 74%;
+  height: 74%;
+}
+
+.ultimate-title-block {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ultimate-title-block strong {
+  color: #f2fbff;
+  font-size: clamp(0.68rem, 2.72vw, 0.88rem);
+  font-weight: 900;
+  line-height: 1.05;
+  overflow-wrap: normal;
+  word-break: normal;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.28);
+}
+
+.ultimate-title-block span {
+  color: #aebdce !important;
+  font-size: clamp(0.68rem, 2.65vw, 0.84rem) !important;
+  font-weight: 800;
+}
+
+.permanent-title-block strong,
+.ultimate-title-block strong,
+.lab-title-block strong {
+  font-size: clamp(0.68rem, 2.72vw, 0.88rem) !important;
+  line-height: 1.05;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.permanent-title-block span,
+.ultimate-title-block span,
+.lab-title-block span {
+  font-size: clamp(0.68rem, 2.65vw, 0.84rem) !important;
+}
+
+.ultimate-upgrade-card.shop-card p {
+  flex: 0 1 auto;
+  margin: 0;
+  color: #d6e3f0;
+  font-size: clamp(0.7rem, 2.62vw, 0.84rem);
+  font-weight: 700;
+  line-height: 1.12;
+}
+
+.ultimate-effect {
+  color: var(--accent-cyan);
+  font-size: clamp(0.66rem, 2.45vw, 0.78rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.ultimate-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  color: #d593ff;
+  font-size: clamp(0.64rem, 2.45vw, 0.8rem);
+  font-weight: 900;
+}
+
+.ultimate-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.ultimate-price span {
+  margin: 0;
+  padding: 0;
+  color: #d593ff !important;
+  font-size: inherit !important;
+  font-weight: 900;
+}
+
+.shop-card.ultimate-upgrade-card.cant-upgrade .ultimate-price {
+  opacity: 0.48;
+  filter: grayscale(0.45);
+}
+
+.ultimate-price .sprite-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.ultimate-cooldown {
+  color: #9af7ff;
+  white-space: nowrap;
+}
+
+.ultimate-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5px;
+  margin-top: auto;
+}
+
+.ultimate-actions.has-toggle {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.ultimate-actions button,
+.ultimate-actions button:disabled,
+.ultimate-toggle-btn,
+.ultimate-toggle-btn.off {
+  min-height: 38px !important;
+  padding: 3px 7px !important;
+  border: 11px solid transparent !important;
+  border-image: url("image/ui/button_buy_empty.png") 24 fill stretch !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  color: #9af7ff !important;
+  font-size: clamp(0.72rem, 2.8vw, 0.92rem) !important;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(85, 236, 255, 0.8);
+  box-shadow: none !important;
+}
+
+.ultimate-actions.has-toggle button {
+  font-size: clamp(0.64rem, 2.35vw, 0.78rem) !important;
+  padding-inline: 4px !important;
+}
+
+.ultimate-actions button:disabled {
+  color: rgba(175, 209, 218, 0.58) !important;
+  filter: grayscale(0.5);
+}
+
+.ultimate-toggle-btn {
+  border-image: url("image/ui/panel-green.png") 24 fill stretch !important;
+  color: #5dffa8 !important;
+  text-shadow: 0 0 10px rgba(36, 255, 143, 0.72);
+}
+
+.ultimate-toggle-btn.off {
+  border-image: url("image/ui/panel-purple.png") 24 fill stretch !important;
+  color: #d9bcff !important;
+  text-shadow: 0 0 10px rgba(179, 117, 255, 0.72);
+}
+
+@media (max-width: 380px) {
+  #permanentList.shop-list {
+    gap: 5px;
+    margin-inline: -10px;
+  }
+
+  #ultimateList.shop-list {
+    gap: 5px;
+    margin-inline: -10px;
+  }
+
+  #stoneShopList.shop-list {
+    gap: 5px;
+    margin-inline: -10px;
+  }
+
+  #labActiveSlots,
+  #labList.shop-list {
+    margin-inline: -10px !important;
+  }
+
+  #labList.shop-list {
+    gap: 5px;
+  }
+
+  .permanent-upgrade-card.shop-card {
+    min-height: 198px;
+    padding: 13px 12px;
+  }
+
+  .ultimate-upgrade-card.shop-card {
+    min-height: 210px;
+    padding: 12px 11px;
+  }
+
+  .lab-upgrade-card.shop-card {
+    min-height: 216px;
+    padding: 12px 11px;
+  }
+
+  .permanent-card-head {
+    grid-template-columns: 50px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .ultimate-card-head {
+    grid-template-columns: 50px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .lab-card-head {
+    grid-template-columns: 50px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .permanent-icon-frame {
+    width: 50px;
+  }
+
+  .ultimate-icon-frame {
+    width: 50px;
+  }
+
+  .lab-icon-frame {
+    width: 50px;
+  }
+
+  .permanent-buy-btn {
+    right: 13px;
+    bottom: 14px;
+    width: 72px;
+  }
+}
+
 /* --- Сброс и базовые настройки --- */
 * {
   box-sizing: border-box;
@@ -1437,6 +2453,18 @@ input[type="range"]::-webkit-slider-thumb {
 .icon-labs { background-image: url("image/ui/icon_laboratory.png"); background-size: contain; background-position: center; }
 .icon-cards { background-image: url("image/ui/icon_loot_cube.png"); background-size: contain; background-position: center; }
 .icon-rank-star { background-image: url("image/ui/icon_rank_star.png"); background-size: contain; background-position: center; }
+.icon-damage { background-image: url("image/ui/icon_damage.png"); }
+.icon-attack-speed { background-image: url("image/ui/icon_attack_speed.png"); }
+.icon-health { background-image: url("image/ui/icon_health.png"); }
+.icon-cash-bonus { background-image: url("image/ui/icon_cash_bonus.png"); }
+.icon-crit-chance { background-image: url("image/ui/icon_crit_chance.png"); }
+.icon-damage-meter { background-image: url("image/ui/icon_damage_meter.png"); }
+.icon-lifesteal { background-image: url("image/ui/icon_lifesteal.png"); }
+.icon-defense-percent { background-image: url("image/ui/icon_defense_percent.png"); }
+.icon-thorns { background-image: url("image/ui/icon_thorns.png"); }
+.icon-free-upgrade { background-image: url("image/ui/icon_free_upgrade.png"); }
+.icon-orb-speed { background-image: url("image/ui/icon_orb_speed.png"); }
+.icon-loot-cube { background-image: url("image/ui/icon_loot_cube.png"); }
 .menu-stats {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -2958,6 +3986,8 @@ button {
   color: #e9fdff;
   font-size: clamp(1.08rem, 4.35vw, 1.38rem);
   letter-spacing: 1px;
+  transform: scaleX(0.86);
+  transform-origin: center;
 }
 
 .resource-pill {
@@ -3498,4 +4528,86 @@ input[type="range"] {
     width: 22px;
     height: 22px;
   }
+}
+
+#permanentScreen .permanent-title-block strong {
+  font-size: clamp(0.68rem, 2.72vw, 0.88rem);
+  line-height: 1.05;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+#permanentScreen .permanent-card-head {
+  flex: 0 0 auto;
+  display: grid !important;
+  flex-direction: initial;
+}
+
+#permanentScreen .permanent-title-block span {
+  margin-top: 0;
+  padding-top: 0;
+  color: #aebdce !important;
+  font-size: clamp(0.68rem, 2.65vw, 0.84rem) !important;
+}
+
+#permanentScreen .permanent-upgrade-card p {
+  font-size: clamp(0.76rem, 3vw, 0.94rem);
+}
+
+#permanentScreen .permanent-price {
+  font-size: clamp(0.66rem, 2.6vw, 0.84rem);
+}
+
+.shop-card .shop-actions.ultimate-actions {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 5px !important;
+  margin-top: auto;
+}
+
+.shop-card .shop-actions.ultimate-actions.has-toggle {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+}
+
+.shop-card .shop-actions.ultimate-actions button {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px !important;
+  padding: 3px 5px !important;
+  border: 11px solid transparent !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: clamp(0.62rem, 2.25vw, 0.78rem) !important;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.shop-card .shop-actions.ultimate-actions .ultimate-buy-btn {
+  border-image: url("image/ui/button_buy_empty.png") 24 fill stretch !important;
+  color: #9af7ff !important;
+  text-shadow: 0 0 10px rgba(85, 236, 255, 0.8);
+}
+
+.shop-card .shop-actions.ultimate-actions:not(.has-toggle) .ultimate-buy-btn {
+  justify-self: center;
+  width: clamp(72px, 72%, 104px);
+}
+
+.shop-card .shop-actions.ultimate-actions .ultimate-toggle-btn {
+  border-image: url("image/ui/panel-green.png") 24 fill stretch !important;
+  color: #5dffa8 !important;
+  text-shadow: 0 0 10px rgba(36, 255, 143, 0.72);
+}
+
+.shop-card .shop-actions.ultimate-actions .ultimate-toggle-btn.off {
+  border-image: url("image/ui/panel-purple.png") 24 fill stretch !important;
+  color: #d9bcff !important;
+  text-shadow: 0 0 10px rgba(179, 117, 255, 0.72);
+}
+
+.shop-card .shop-actions.ultimate-actions button:disabled {
+  color: rgba(175, 209, 218, 0.58) !important;
+  filter: grayscale(0.5);
 }

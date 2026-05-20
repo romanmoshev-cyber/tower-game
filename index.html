@@ -291,9 +291,17 @@
           <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-ultimate" style="width:28px; height:28px;"></i> Ультимативное оружие</h2>
           <strong class="resource-pill resource-coins"><i class="sprite-icon icon-coin" aria-hidden="true"></i><span id="ultimateCoins">0</span></strong>
         </div>
-        <div class="info-panel"><strong>Улучшения за Камни Силы</strong><span class="resource-inline resource-stones"><i class="sprite-icon icon-stone" aria-hidden="true"></i><span id="ultimateStones">0</span></span></div>
+        <div id="ultimateOverviewPanel" class="info-panel">
+          <div class="ultimate-overview-row">
+            <strong>Улучшения за Камни Силы</strong>
+            <span class="resource-inline resource-stones"><i class="sprite-icon icon-stone" aria-hidden="true"></i><span id="ultimateStones">0</span></span>
+          </div>
+          <div class="ultimate-loadout-row">
+            <div id="ultimateLoadoutInfo"></div>
+            <div id="ultimateSelectedIcons" class="ultimate-selected-icons" aria-hidden="true"></div>
+          </div>
+        </div>
         <div id="stoneShopList" class="shop-list" style="margin-bottom: 16px;"></div>
-        <div id="ultimateLoadoutInfo" class="info-panel"></div>
         <div id="ultimateList" class="shop-list"></div>
       </section>
 

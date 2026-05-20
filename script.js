@@ -65,6 +65,22 @@ const permanentDefs = [
   { id: "packageChance", name: "Шанс пакета", desc: "+0.5% шанс посылки после волны", getEffect: (lvl) => `+${(lvl * 0.5).toFixed(1)}%`, base: 180, scale: 1.45, max: 30 },
 ];
 
+const permanentIconMap = {
+  baseDamage: "icon-damage",
+  baseAttackSpeed: "icon-attack-speed",
+  baseHealth: "icon-health",
+  coinBonus: "icon-coin",
+  startingCash: "icon-cash-bonus",
+  criticalChance: "icon-crit-chance",
+  bossDamageBonus: "icon-damage-meter",
+  lifesteal: "icon-lifesteal",
+  defensePercent: "icon-defense-percent",
+  thorns: "icon-thorns",
+  freeUpgrade: "icon-free-upgrade",
+  orbSpeed: "icon-orb-speed",
+  packageChance: "icon-loot-cube",
+};
+
 const labDefs = [
   { id: "labDamage", name: "Урон башни", desc: "Глобальный урон башни", getEffect: (lvl) => `+${lvl}%`, baseCost: 150, costGrowth: 1.32, baseTime: 300, timeGrowth: 1.24, max: 60 },
   { id: "labAttackSpeed", name: "Скорость атаки", desc: "Множитель скорости атаки", getEffect: (lvl) => `+${(lvl * 0.6).toFixed(1)}%`, baseCost: 200, costGrowth: 1.34, baseTime: 480, timeGrowth: 1.25, max: 50 },
@@ -87,6 +103,29 @@ const labDefs = [
   { id: "labBlackHoleDuration", name: "Длительность Black Hole", desc: "Продлевает Черную Дыру", getEffect: (lvl) => `+${(lvl * 0.35).toFixed(1)}с`, baseCost: 1450, costGrowth: 1.44, baseTime: 10200, timeGrowth: 1.29, max: 20 },
   { id: "labDeathWaveHealth", name: "Здоровье Death Wave", desc: "Убийства Волной Смерти дают временный запас ОЗ", getEffect: (lvl) => `+${lvl}% лимита`, baseCost: 1600, costGrowth: 1.45, baseTime: 12000, timeGrowth: 1.3, max: 25 }
 ];
+
+const labIconMap = {
+  labDamage: "icon-damage",
+  labAttackSpeed: "icon-attack-speed",
+  labCoins: "icon-coin",
+  labStartingCash: "icon-cash-bonus",
+  labHealth: "icon-health",
+  labCritDamage: "icon-crit-damage",
+  labBossDamage: "icon-damage-meter",
+  labUpgradeDiscount: "icon-tower-upgrade",
+  labModuleParts: "icon-parts",
+  labGameSpeed: "icon-ultimate-time-field",
+  labLabSpeed: "icon-labs",
+  labLightSpeed: "icon-attack-speed",
+  labGarlicThorns: "icon-thorns",
+  labPerkWaves: "icon-tower-upgrade",
+  labGoldenBonus: "icon-ultimate-golden-core",
+  labGoldenDuration: "icon-ultimate-golden-core",
+  labBlackHoleCoins: "icon-ultimate-black-hole",
+  labBlackHoleDamage: "icon-ultimate-black-hole",
+  labBlackHoleDuration: "icon-ultimate-black-hole",
+  labDeathWaveHealth: "icon-ultimate-death-wave",
+};
 
 const cardDefs = [
   { id: "cardDamage", name: "Урон", desc: "+20% за уровень", getEffect: (lvl) => `x${(1 + lvl * 0.2).toFixed(2)}` },
@@ -2973,23 +3012,32 @@ function renderLabs() {
   document.getElementById("labCoins").textContent = Math.floor(progress.coins);
   
   const activeContainer = document.getElementById("labActiveSlots");
-  activeContainer.innerHTML = `<strong>Активные исследования (${progress.labs.active.length} / ${progress.labs.slots})</strong>`;
+  activeContainer.innerHTML = `<div class="lab-active-panel"><strong>Активные исследования (${progress.labs.active.length} / ${progress.labs.slots})</strong>`;
   if (progress.labs.active.length === 0) {
-    activeContainer.innerHTML += `<div class="lab-slot"><span style="color:var(--text-muted)">Слоты свободны. Начни исследование ниже.</span></div>`;
+    activeContainer.innerHTML += `<div class="lab-active-empty">Слоты свободны. Начни исследование ниже.</div>`;
   } else {
     const now = Date.now();
     progress.labs.active.forEach(task => {
       const def = labDefs.find(l => l.id === task.id);
+      const level = progress.labs.levels[task.id] || 0;
+      const iconClass = labIconMap[task.id] || "icon-labs";
       const remainingSec = Math.max(0, (task.finishTime - now) / 1000);
       const pct = Math.max(0, Math.min(100, 100 - (remainingSec / task.totalTime) * 100));
       activeContainer.innerHTML += `
-        <div class="lab-slot">
-          <strong>${def.name}</strong>
-          <span>Осталось: ${formatLabTime(remainingSec)}</span>
-          <div class="lab-progress"><div class="lab-progress-fill" style="width: ${pct}%"></div></div>
+        <div class="lab-active-task">
+          <div class="lab-active-icon"><i class="sprite-icon ${iconClass}"></i></div>
+          <div class="lab-active-body">
+            <div class="lab-active-head">
+              <strong>${def.name}</strong>
+              <span>Ур. ${level}</span>
+            </div>
+            <div class="lab-active-time">Осталось: ${formatLabTime(remainingSec)}</div>
+          </div>
+          <div class="lab-progress" style="--progress-percent:${pct}%"><div class="lab-progress-fill"></div></div>
         </div>`;
     });
   }
+  activeContainer.innerHTML += `</div>`;
 
   const list = document.getElementById("labList");
   list.innerHTML = "";
@@ -2997,22 +3045,35 @@ function renderLabs() {
     const level = progress.labs.levels[def.id] || 0;
     const isResearching = progress.labs.active.some(t => t.id === def.id);
     const cost = getLabCost(def, level);
+    const time = getLabTime(def, level);
+    const isMax = level >= def.max;
+    const slotBlocked = progress.labs.active.length >= progress.labs.slots;
+    const canStudy = progress.coins >= cost && !isResearching && !isMax && !slotBlocked;
+    const iconClass = labIconMap[def.id] || "icon-labs";
     const card = document.createElement("div");
-    card.className = `shop-card ${(progress.coins < cost || isResearching || level >= def.max) ? "disabled" : ""}`;
-    card.innerHTML = `<div>
-      <div class="upgrade-head">
-        <strong>${def.name} Ур.${level}</strong>
-        <div class="upgrade-info-btn" data-info-type="lab" data-info-id="${def.id}">i</div>
+    card.className = `shop-card lab-upgrade-card ${canStudy ? "can-study" : ""} ${progress.coins < cost && !isMax ? "cant-study" : ""} ${isResearching ? "researching" : ""} ${isMax ? "is-max" : ""}`;
+    card.innerHTML = `<button class="upgrade-info-btn lab-info-btn" data-info-type="lab" data-info-id="${def.id}" type="button" aria-label="Информация"></button>
+      <div class="lab-card-head">
+        <div class="lab-icon-frame"><i class="sprite-icon lab-upgrade-icon ${iconClass}"></i></div>
+        <div class="lab-title-block">
+          <strong>${def.name}</strong>
+          <span>Ур. ${level}</span>
+        </div>
       </div>
-      <div style="font-size:0.85rem; line-height:1.2; margin-bottom:4px;">${def.desc}</div>
-      <div style="color:var(--accent-cyan); font-size:0.85rem; margin-top:2px;">Эффект: ${def.getEffect(level)}</div>
-      <span style="font-size:0.8rem;">${level >= def.max ? "Макс." : formatLabTime(getLabTime(def, level))} • ${cost} монет</span>
-    </div>`;
+      <p>${def.desc}</p>
+      <div class="lab-card-bottom">
+        <div class="lab-effect">Эффект: ${def.getEffect(level)}</div>
+        <div class="lab-card-footer">
+          <div class="lab-time"><span class="lab-meta-icon">◷</span><span>${isMax ? "Макс." : formatLabTime(time)}</span></div>
+          <div class="lab-cost"><i class="sprite-icon icon-coin" aria-hidden="true"></i><span>${cost}</span></div>
+        </div>
+      </div>`;
     const btn = document.createElement("button");
+    btn.className = "lab-buy-btn";
     btn.textContent = level >= def.max ? "Макс" : (isResearching ? "В процессе" : "Изучить");
-    btn.disabled = progress.coins < cost || isResearching || level >= def.max || progress.labs.active.length >= progress.labs.slots;
+    btn.disabled = !canStudy;
     btn.addEventListener("click", () => startLabResearch(def.id));
-    card.append(btn);
+    card.querySelector(".lab-card-bottom").append(btn);
     list.append(card);
   });
 }
@@ -3251,19 +3312,29 @@ function renderPermanentShop() {
     const level = progress.permanent[def.id] || 0;
     const cost = getPermanentCost(def, level);
     const card = document.createElement("div");
-    card.className = `shop-card ${progress.coins < cost ? "disabled" : ""}`;
-    card.innerHTML = `<div>
-      <div class="upgrade-head">
-        <strong>${def.name} Ур.${level}</strong>
-        <div class="upgrade-info-btn" data-info-type="permanent" data-info-id="${def.id}">i</div>
+    const canBuy = progress.coins >= cost && level < def.max;
+    const progressPercent = Math.max(0, Math.min(100, (level / def.max) * 100));
+    const iconClass = permanentIconMap[def.id] || "icon-tower-upgrade";
+    card.className = `shop-card permanent-upgrade-card ${canBuy ? "can-buy" : "disabled"}`;
+    card.innerHTML = `<button class="upgrade-info-btn permanent-info-btn" data-info-type="permanent" data-info-id="${def.id}" type="button" aria-label="Информация"></button>
+      <div class="permanent-card-head">
+        <div class="permanent-icon-frame"><i class="sprite-icon permanent-upgrade-icon ${iconClass}"></i></div>
+        <div class="permanent-title-block">
+          <strong>${def.name}</strong>
+          <span>Ур. ${level}</span>
+        </div>
       </div>
-      <div style="font-size:0.85rem; line-height:1.2; margin-bottom:4px;">${def.desc}</div>
-      <div style="color:var(--accent-cyan); font-size:0.85rem; margin-top:2px;">Эффект: ${def.getEffect(level)}</div>
-      <span style="font-size:0.8rem;">${level >= def.max ? "Макс. уровень" : `${cost} монет`}</span>
-    </div>`;
+      <div class="permanent-progress" style="--progress-percent:${progressPercent}%" aria-hidden="true"><i></i></div>
+      <p>${def.desc}</p>
+      <div class="permanent-card-footer">
+        <div class="permanent-price ${level >= def.max ? "is-max" : ""}">
+          ${level >= def.max ? "Макс." : `<i class="sprite-icon icon-coin" aria-hidden="true"></i><span>${cost}</span>`}
+        </div>
+      </div>`;
     const btn = document.createElement("button");
+    btn.className = "permanent-buy-btn";
     btn.textContent = level >= def.max ? "Макс" : "Купить";
-    btn.disabled = level >= def.max || progress.coins < cost;
+    btn.disabled = !canBuy;
     btn.addEventListener("click", () => buyPermanentUpgrade(def.id));
     card.append(btn);
     list.append(card);
@@ -3288,45 +3359,60 @@ function buyStoneUpgrade(type) {
 function renderUltimateShop() {
   document.getElementById("ultimateCoins").textContent = Math.floor(progress.coins);
   const selectedIds = getSelectedUltimateIds();
-  const synergies = getActiveSynergies();
   
   document.getElementById("ultimateStones").textContent = progress.powerStones || 0;
   const stoneShop = document.getElementById("stoneShopList");
   stoneShop.innerHTML = `
-    <div class="shop-card"><div><strong>Урон УО (+5%)</strong><span style="display:block; font-size:0.8rem; margin-top:2px;">Ур.${progress.stoneUpgrades.dmg || 0} • 10 🔮</span></div>
-    <button class="primary-btn" onclick="buyStoneUpgrade('dmg')" ${progress.powerStones < 10 ? "disabled" : ""}>Купить</button></div>
-    <div class="shop-card"><div><strong>КД УО (-0.5с)</strong><span style="display:block; font-size:0.8rem; margin-top:2px;">Ур.${progress.stoneUpgrades.cd || 0} • 25 🔮</span></div>
-    <button class="primary-btn" onclick="buyStoneUpgrade('cd')" ${progress.powerStones < 25 ? "disabled" : ""}>Купить</button></div>
+    <div class="shop-card ultimate-stone-card"><div class="ultimate-stone-head"><strong>Урон УО</strong><span>Ур. ${progress.stoneUpgrades.dmg || 0}</span></div><p>+5% урона ультимативного оружия за уровень</p><div class="ultimate-stone-footer"><div class="ultimate-stone-price"><i class="sprite-icon icon-stone" aria-hidden="true"></i><span>10</span></div>
+    <button class="primary-btn ultimate-stone-btn" onclick="buyStoneUpgrade('dmg')" ${progress.powerStones < 10 ? "disabled" : ""}>Купить</button></div></div>
+    <div class="shop-card ultimate-stone-card"><div class="ultimate-stone-head"><strong>КД УО</strong><span>Ур. ${progress.stoneUpgrades.cd || 0}</span></div><p>-0.5с перезарядки ультимативного оружия за уровень</p><div class="ultimate-stone-footer"><div class="ultimate-stone-price"><i class="sprite-icon icon-stone" aria-hidden="true"></i><span>25</span></div>
+    <button class="primary-btn ultimate-stone-btn" onclick="buyStoneUpgrade('cd')" ${progress.powerStones < 25 ? "disabled" : ""}>Купить</button></div></div>
   `;
 
   document.getElementById("ultimateLoadoutInfo").innerHTML =
-    `<strong>Загрузка ${selectedIds.length}/${ultimateLoadoutLimit}</strong><span style="display:block; font-size:0.85rem; margin-top:4px; line-height:1.2;">Выбери до 3 открытых оружий перед забегом. Активные синергии: ${synergies.length ? synergies.map((s) => s.name).join(", ") : "нет"}</span>`;
+    `<strong>Загрузка ${selectedIds.length}/${ultimateLoadoutLimit}</strong><span>Выбери до 3 открытых оружий перед забегом.</span>`;
+  document.getElementById("ultimateSelectedIcons").innerHTML = Array.from({ length: ultimateLoadoutLimit }, (_, index) => {
+    const id = selectedIds[index];
+    return id
+      ? `<span class="ultimate-selected-icon"><i class="sprite-icon ${getUltimateIconClass(id)}"></i></span>`
+      : `<span class="ultimate-selected-icon empty"></span>`;
+  }).join("");
   const list = document.getElementById("ultimateList");
   list.innerHTML = "";
   ultimateDefs.forEach((def) => {
     const data = progress.ultimates[def.id];
     const nextCost = data.owned ? Math.floor(def.cost * Math.pow(1.9, data.level)) : def.cost;
+    const canBuy = progress.coins >= nextCost;
+    const isLockedByCost = !data.owned && !canBuy;
+    const iconClass = getUltimateIconClass(def.id);
     const card = document.createElement("div");
-    card.className = `shop-card ${progress.coins < nextCost ? "disabled" : ""} ${data.enabled && data.owned ? "selected" : ""}`;
-    card.innerHTML = `<div>
-      <div class="upgrade-head">
-        <strong>${def.name} Ур.${data.level}</strong>
-        <div class="upgrade-info-btn" data-info-type="ultimate" data-info-id="${def.id}">i</div>
+    card.className = `shop-card ultimate-upgrade-card ${canBuy ? "can-buy" : ""} ${isLockedByCost ? "disabled" : ""} ${data.owned && !canBuy ? "cant-upgrade" : ""} ${data.enabled && data.owned ? "selected" : ""}`;
+    card.innerHTML = `<button class="upgrade-info-btn ultimate-info-btn" data-info-type="ultimate" data-info-id="${def.id}" type="button" aria-label="Информация"></button>
+      <div class="ultimate-card-head">
+        <div class="ultimate-icon-frame"><i class="sprite-icon ultimate-upgrade-icon ${iconClass}"></i></div>
+        <div class="ultimate-title-block">
+          <strong>${def.name}</strong>
+          <span>${data.owned ? `Ур. ${data.level}` : "Не открыто"}</span>
+        </div>
       </div>
-      <div style="font-size:0.85rem; line-height:1.2; margin-bottom:4px;">${def.desc}</div>
-      <div style="color:var(--accent-cyan); font-size:0.85rem; margin-top:2px;">${def.getUpgradeInfo(data.level)}</div>
-      <span style="font-size:0.8rem;">КД ${def.cooldown}с - ${data.owned ? `${nextCost} монет за ур.` : `${nextCost} монет`}</span>
-    </div>`;
+      <p>${def.desc}</p>
+      <div class="ultimate-effect">${def.getUpgradeInfo(data.level)}</div>
+      <div class="ultimate-card-footer">
+        <div class="ultimate-price"><i class="sprite-icon icon-coin" aria-hidden="true"></i><span>${nextCost}</span></div>
+        <div class="ultimate-cooldown">КД ${def.cooldown}с</div>
+      </div>`;
     const actions = document.createElement("div");
-    actions.className = "shop-actions";
+    actions.className = "shop-actions ultimate-actions";
+    if (data.owned) actions.classList.add("has-toggle");
     const btn = document.createElement("button");
-    btn.textContent = data.owned ? "Уровень" : "Открыть";
-    btn.disabled = progress.coins < nextCost;
+    btn.className = "ultimate-buy-btn";
+    btn.textContent = data.owned ? "Улучшить" : "Открыть";
+    btn.disabled = !canBuy;
     btn.addEventListener("click", () => buyUltimate(def.id));
     actions.append(btn);
     if (data.owned) {
       const toggle = document.createElement("button");
-      toggle.className = `toggle-btn ${data.enabled ? "" : "off"}`;
+      toggle.className = `toggle-btn ultimate-toggle-btn ${data.enabled ? "" : "off"}`;
       toggle.textContent = data.enabled ? "В загрузке" : "Резерв";
       toggle.disabled = !data.enabled && selectedIds.length >= ultimateLoadoutLimit;
       toggle.addEventListener("click", () => toggleUltimate(def.id));
