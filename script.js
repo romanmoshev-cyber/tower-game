@@ -4813,6 +4813,92 @@ function drawTower() {
     ctx.lineWidth = 3;
     ctx.stroke();
     ctx.shadowBlur = 0;
+  } else if (shapeDef.style === "black_hole") {
+    const time = performance.now() / 520;
+    const swirl = 1 + Math.sin(time * 2.2) * 0.06;
+    ctx.save();
+    ctx.translate(t.x, t.y);
+    ctx.rotate(time * 0.6);
+    for (let i = 0; i < 3; i += 1) {
+      const ringRadius = (30 - i * 7) * swirl;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, ringRadius, ringRadius * (0.38 + i * 0.06), i * 0.6, 0, TWO_PI);
+      ctx.strokeStyle = i === 0 ? "rgba(123, 80, 255, 0.55)" : (i === 1 ? "rgba(255, 92, 178, 0.45)" : "rgba(85, 236, 255, 0.35)");
+      ctx.lineWidth = 3 - i * 0.7;
+      ctx.stroke();
+    }
+    ctx.restore();
+    const grad = ctx.createRadialGradient(t.x - 5, t.y - 5, 2, t.x, t.y, 26);
+    grad.addColorStop(0, "rgba(46, 36, 78, 0.95)");
+    grad.addColorStop(0.45, "rgba(12, 8, 30, 0.98)");
+    grad.addColorStop(1, "rgba(0, 0, 0, 1)");
+    ctx.beginPath();
+    ctx.arc(t.x, t.y, 24, 0, TWO_PI);
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(t.x, t.y, 13, 0, TWO_PI);
+    ctx.fillStyle = "rgba(0, 0, 0, 0.98)";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(t.x + 7, t.y - 8, 5, 0, TWO_PI);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.18)";
+    ctx.fill();
+  } else if (shapeDef.style === "omelette") {
+    const wobble = Math.sin(performance.now() / 300) * 1.5;
+    ctx.beginPath();
+    ctx.ellipse(t.x, t.y, 28, 23, 0.2, 0, TWO_PI);
+    ctx.fillStyle = "rgba(255, 248, 229, 0.97)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(235, 218, 170, 0.95)";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.ellipse(t.x - 6, t.y + 2, 20, 16, -0.35, 0, TWO_PI);
+    ctx.fillStyle = "rgba(252, 236, 196, 0.95)";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(t.x + 8 + wobble * 0.2, t.y - 1, 10 + wobble * 0.25, 0, TWO_PI);
+    ctx.fillStyle = "rgba(255, 176, 32, 0.98)";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(t.x + 5, t.y - 4, 3.5, 0, TWO_PI);
+    ctx.fillStyle = "rgba(255, 232, 148, 0.9)";
+    ctx.fill();
+  } else if (shapeDef.style === "eye") {
+    const blink = Math.max(0.15, Math.abs(Math.sin(performance.now() / 900)));
+    ctx.beginPath();
+    ctx.ellipse(t.x, t.y, 30, 18 * blink + 4, 0, 0, TWO_PI);
+    ctx.fillStyle = "rgba(248, 242, 255, 0.98)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255, 84, 84, 0.95)";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    for (let i = 0; i < 4; i += 1) {
+      const veinAngle = -0.7 + i * 0.45;
+      ctx.beginPath();
+      ctx.moveTo(t.x - 20 + i * 8, t.y - 2);
+      ctx.lineTo(t.x - 26 + Math.cos(veinAngle) * 8, t.y - 9 + Math.sin(veinAngle) * 6);
+      ctx.strokeStyle = "rgba(255, 88, 88, 0.55)";
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.arc(t.x, t.y, 9, 0, TWO_PI);
+    ctx.fillStyle = "rgba(255, 255, 255, 1)";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(t.x, t.y, 6, 0, TWO_PI);
+    ctx.fillStyle = "rgba(255, 70, 70, 0.98)";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(t.x, t.y, 2.8, 0, TWO_PI);
+    ctx.fillStyle = "rgba(20, 12, 20, 1)";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(t.x + 2, t.y - 2, 1.4, 0, TWO_PI);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.fill();
   } else {
     ctx.beginPath();
     for (let i = 0; i < sides; i += 1) {
