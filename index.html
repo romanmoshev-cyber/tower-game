@@ -97,18 +97,6 @@
           <button id="guideBtn" class="secondary-btn menu-small-btn accent-purple"><span class="sprite-icon icon-guide"></span>Справка</button>
           <button id="settingsBtn" class="secondary-btn menu-small-btn"><span class="sprite-icon icon-settings"></span>Настройки</button>
         </div>
-        <div class="info-panel debug-panel hidden">
-          <strong>Отладка</strong>
-          <span id="debugStatus">Локальные инструменты тестирования.</span>
-        </div>
-        <div class="btn-split debug-panel hidden">
-          <button id="debugCoinsBtn" class="secondary-btn">+10к Ресурсов</button>
-          <button id="debugUltimatesBtn" class="secondary-btn">Открыть УО</button>
-        </div>
-        <div class="btn-split debug-panel hidden">
-          <button id="debugWaveBtn" class="secondary-btn">Волна 10</button>
-          <button id="debugKillBtn" class="secondary-btn">Завершить</button>
-        </div>
       </section>
 
       <section id="gameScreen" class="screen game-screen">
@@ -152,6 +140,7 @@
         <div id="gameGearMenu" class="gear-menu hidden">
           <button id="gameMenuBtn" class="mini-btn" type="button">Меню</button>
           <button id="settingsFromGameBtn" class="mini-btn" type="button">Настройки</button>
+          <button id="arenaCashBtn" class="mini-btn" type="button">+10000 $</button>
           <button id="quitRunBtn" class="mini-btn danger" type="button">Выход</button>
         </div>
 
@@ -393,6 +382,18 @@
             <span><strong>Меньше движения</strong><small>Более спокойные эффекты для долгих idle-сессий.</small></span>
             <input id="reducedMotionToggle" type="checkbox" />
           </label>
+          <div class="info-panel debug-panel">
+            <strong>Отладка</strong>
+            <span id="debugStatus">Локальные инструменты тестирования.</span>
+          </div>
+          <div class="btn-split debug-panel">
+            <button id="debugCoinsBtn" class="secondary-btn">+10к Ресурсов</button>
+            <button id="debugUltimatesBtn" class="secondary-btn">Открыть УО</button>
+          </div>
+          <div class="btn-split debug-panel">
+            <button id="debugWaveBtn" class="secondary-btn">Волна 10</button>
+            <button id="debugKillBtn" class="secondary-btn">Завершить</button>
+          </div>
           <div class="info-panel">
             <strong>Сохранение прогресса</strong>
             <span id="saveToolStatus">Привязка к Telegram или экспорт вручную.</span>
