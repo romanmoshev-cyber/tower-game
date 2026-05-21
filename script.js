@@ -987,6 +987,7 @@ function bindUi() {
   document.getElementById("settingsBtn").addEventListener("click", () => showScreen("settings"));
   document.getElementById("gameSettingsBtn").addEventListener("click", toggleGameGearMenu);
   document.getElementById("settingsFromGameBtn").addEventListener("click", openGameSettings);
+  document.getElementById("arenaCashBtn").addEventListener("click", debugAddArenaCash);
   document.getElementById("gameMenuBtn").addEventListener("click", pauseRunToMenu);
   document.getElementById("quitRunBtn").addEventListener("click", quitRun);
   document.getElementById("pullCardBtn").addEventListener("click", pullCard);
@@ -4400,6 +4401,16 @@ function debugJumpWave10() {
   game.nextWaveTimer = 0.1;
   showScreen("game");
   setDebugStatus("Текущий забег перенесен к 10-й волне.");
+}
+
+function debugAddArenaCash() {
+  if (!game || game.ended) {
+    setDebugStatus("Сначала начни активный забег.");
+    return;
+  }
+  game.cash += 10000;
+  game.stats.cashEarned += 10000;
+  setDebugStatus("+10000 $ добавлено в текущий забег.");
 }
 
 function debugKillRun() {
