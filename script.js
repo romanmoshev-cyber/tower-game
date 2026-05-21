@@ -256,46 +256,46 @@ const enemyDescs = {
 };
 
 const runUpgradeDefs = [
-  { id: "damage", name: "Урон", category: "attack", base: 12, growth: 1.32, max: 5000, desc: "Увеличивает базовый урон снарядов башни." },
-  { id: "attackSpeed", name: "Скорость атаки", category: "attack", base: 16, growth: 1.34, max: 100, desc: "Увеличивает частоту выстрелов." },
-  { id: "range", name: "Дальность", category: "attack", base: 14, growth: 1.3, max: 100, desc: "Увеличивает радиус поражения башни." },
-  { id: "critChance", name: "Шанс крита", category: "attack", base: 18, growth: 1.38, max: 90, desc: "Вероятность нанести критический урон." },
-  { id: "critDamage", name: "Сила крита", category: "attack", base: 22, growth: 1.42, max: 150, desc: "Множитель урона при критическом попадании." },
-  { id: "multiShot", name: "Мультивыстрел", category: "attack", base: 32, growth: 1.46, max: 100, desc: "Шанс выпустить дополнительный снаряд." },
-  { id: "bounceShot", name: "Рикошет", category: "attack", base: 85, growth: 1.55, max: 100, desc: "Шанс отскока снаряда в другую цель." },
-  { id: "bounceTargets", name: "Цели рикошета", category: "attack", base: 190, growth: 1.62, max: 6, desc: "Увеличивает число цепных отскоков снаряда." },
-  { id: "bounceRange", name: "Радиус рикошета", category: "attack", base: 160, growth: 1.48, max: 60, desc: "Увеличивает дальность поиска следующей цели для рикошета." },
-  { id: "rapidFireChance", name: "Шанс Rapid Fire", category: "attack", base: 140, growth: 1.52, max: 80, desc: "Шанс временно ускорить стрельбу после выстрела." },
-  { id: "rapidFireDuration", name: "Длит. Rapid Fire", category: "attack", base: 170, growth: 1.5, max: 60, desc: "Продлевает временный разгон Rapid Fire." },
-  { id: "damageMeter", name: "Урон/метр", category: "attack", base: 110, growth: 1.42, max: 120, desc: "Снаряды наносят больше урона дальним целям." },
-  { id: "superCritChance", name: "Супер-крит (%)", category: "attack", base: 1500, growth: 1.8, max: 100, desc: "Шанс превратить критический урон в супер-крит." },
-  { id: "superCritMult", name: "Супер-крит (x)", category: "attack", base: 2000, growth: 1.85, max: 150, desc: "Дополнительный множитель для супер-критов." },
-  { id: "orbCount", name: "Сферы (шт)", category: "attack", base: 2250, growth: 2.25, max: 4, desc: "Количество орбитальных сфер вокруг башни." },
-  { id: "orbSpeed", name: "Скорость сфер", category: "attack", base: 1080, growth: 1.62, max: 50, desc: "Скорость вращения орбитальных сфер." },
-  { id: "maxHealth", name: "Макс. здоровье", category: "defense", base: 15, growth: 1.32, max: 5000, desc: "Увеличивает максимальный запас здоровья." },
-  { id: "regen", name: "Регенерация", category: "defense", base: 20, growth: 1.38, max: 5000, desc: "Восстанавливает здоровье каждую секунду." },
-  { id: "absDefense", name: "Абс. защита", category: "defense", base: 10, growth: 1.25, max: 5000, desc: "Вычитает фиксированное значение из урона врагов." },
-  { id: "knockback", name: "Отбрасывание", category: "defense", base: 24, growth: 1.38, max: 100, desc: "Шанс отбросить врага при попадании." },
-  { id: "knockbackStrength", name: "Сила отбрасывания", category: "defense", base: 95, growth: 1.46, max: 60, desc: "Увеличивает дистанцию отбрасывания врагов." },
-  { id: "lifesteal", name: "Вампиризм", category: "defense", base: 45, growth: 1.45, max: 100, desc: "Восстанавливает здоровье от нанесенного урона." },
-  { id: "defensePercent", name: "Броня (%)", category: "defense", base: 50, growth: 1.5, max: 90, desc: "Процентное снижение получаемого урона." },
-  { id: "thorns", name: "Шипы", category: "defense", base: 40, growth: 1.4, max: 100, desc: "Возвращает часть урона атакующим в ближнем бою." },
-  { id: "deathDefy", name: "Второй шанс", category: "defense", base: 400, growth: 1.6, max: 30, desc: "Шанс пережить смертельный удар с 1 ХП." },
-  { id: "landmineChance", name: "Шанс мин", category: "defense", base: 110, growth: 1.45, max: 50, desc: "Шанс сбросить мину при выстреле." },
-  { id: "landmineDamage", name: "Урон мин", category: "defense", base: 130, growth: 1.48, max: 100, desc: "Множитель урона для наземных мин." },
-  { id: "cashBonus", name: "Бонус $", category: "utility", base: 26, growth: 1.4, max: 200, desc: "Множитель получаемых $ с врагов." },
-  { id: "cashWave", name: "$/Волна", category: "utility", base: 22, growth: 1.36, max: 160, desc: "Выдает кэш после завершения каждой волны." },
-  { id: "freeUpgrade", name: "Беспл. апгрейд", category: "utility", base: 100, growth: 1.6, max: 100, desc: "Шанс бесплатно улучшить стат в конце волны." },
-  { id: "runCoinBonus", name: "Бонус монет", category: "utility", base: 120, growth: 1.65, max: 150, desc: "Множитель выпадающих монет." },
-  { id: "coinWave", name: "Монеты/Волна", category: "utility", base: 180, growth: 1.7, max: 80, desc: "Шанс получить постоянные монеты после волны." },
-  { id: "interestRate", name: "Инвестиции (%)", category: "utility", base: 50, growth: 1.45, max: 50, desc: "Процент от текущих $, начисляемый каждую волну." },
-  { id: "maxInterest", name: "Макс. инвест.", category: "utility", base: 100, growth: 1.55, max: 150, desc: "Максимальный лимит начисления $ с инвестиций." },
-  { id: "packageChance", name: "Шанс посылки", category: "utility", base: 200, growth: 1.5, max: 100, desc: "Шанс получить лечение (оверхил) после волны." },
-  { id: "packageMax", name: "Макс. оверхил", category: "utility", base: 300, growth: 1.65, max: 100, desc: "Максимальный множитель оверхила от пакетов." },
-  { id: "shockWave", name: "Ударная волна", category: "utility", base: 880, growth: 1.7, max: 60, desc: "Периодически отталкивает врагов от башни, загоняя их под сферы." },
-  { id: "enemyAttackSkip", name: "Пропуск ATK врагов", category: "utility", base: 340, growth: 1.6, max: 80, desc: "Снижает рост урона врагов в текущем забеге." },
-  { id: "enemyHealthSkip", name: "Пропуск HP врагов", category: "utility", base: 340, growth: 1.6, max: 80, desc: "Снижает рост здоровья врагов в текущем забеге." },
-  { id: "waveSkip", name: "Пропуск волны", category: "utility", base: 420, growth: 1.68, max: 50, desc: "Шанс мгновенно зачесть следующую волну и ускорить фарм." },
+  { id: "damage", name: "Урон", category: "attack", base: 12, growth: 1.04, max: 5000, desc: "Увеличивает базовый урон снарядов башни." },
+  { id: "attackSpeed", name: "Скорость атаки", category: "attack", base: 16, growth: 1.16, max: 100, desc: "Увеличивает частоту выстрелов." },
+  { id: "range", name: "Дальность", category: "attack", base: 14, growth: 1.16, max: 40, desc: "Увеличивает радиус поражения башни." },
+  { id: "critChance", name: "Шанс крита", category: "attack", base: 18, growth: 1.16, max: 90, desc: "Вероятность нанести критический урон." },
+  { id: "critDamage", name: "Сила крита", category: "attack", base: 22, growth: 1.16, max: 150, desc: "Множитель урона при критическом попадании." },
+  { id: "multiShot", name: "Мультивыстрел", category: "attack", base: 32, growth: 1.18, max: 100, desc: "Шанс выпустить дополнительный снаряд." },
+  { id: "bounceShot", name: "Рикошет", category: "attack", base: 85, growth: 1.18, max: 100, desc: "Шанс отскока снаряда в другую цель." },
+  { id: "bounceTargets", name: "Цели рикошета", category: "attack", base: 190, growth: 1.2, max: 6, desc: "Увеличивает число цепных отскоков снаряда." },
+  { id: "bounceRange", name: "Радиус рикошета", category: "attack", base: 160, growth: 1.18, max: 60, desc: "Увеличивает дальность поиска следующей цели для рикошета." },
+  { id: "rapidFireChance", name: "Шанс Rapid Fire", category: "attack", base: 140, growth: 1.18, max: 80, desc: "Шанс временно ускорить стрельбу после выстрела." },
+  { id: "rapidFireDuration", name: "Длит. Rapid Fire", category: "attack", base: 170, growth: 1.18, max: 60, desc: "Продлевает временный разгон Rapid Fire." },
+  { id: "damageMeter", name: "Урон/метр", category: "attack", base: 110, growth: 1.16, max: 120, desc: "Снаряды наносят больше урона дальним целям." },
+  { id: "superCritChance", name: "Супер-крит (%)", category: "attack", base: 900, growth: 1.22, max: 100, desc: "Шанс превратить критический урон в супер-крит." },
+  { id: "superCritMult", name: "Супер-крит (x)", category: "attack", base: 1100, growth: 1.22, max: 150, desc: "Дополнительный множитель для супер-критов." },
+  { id: "orbCount", name: "Сферы (шт)", category: "attack", base: 750, growth: 1.24, max: 4, desc: "Количество орбитальных сфер вокруг башни." },
+  { id: "orbSpeed", name: "Скорость сфер", category: "attack", base: 160, growth: 1.2, max: 25, desc: "Скорость вращения орбитальных сфер." },
+  { id: "maxHealth", name: "Макс. здоровье", category: "defense", base: 15, growth: 1.035, max: 5000, desc: "Увеличивает максимальный запас здоровья." },
+  { id: "regen", name: "Регенерация", category: "defense", base: 20, growth: 1.038, max: 5000, desc: "Восстанавливает здоровье каждую секунду." },
+  { id: "absDefense", name: "Абс. защита", category: "defense", base: 10, growth: 1.03, max: 5000, desc: "Вычитает фиксированное значение из урона врагов." },
+  { id: "knockback", name: "Отбрасывание", category: "defense", base: 24, growth: 1.14, max: 100, desc: "Шанс отбросить врага при попадании." },
+  { id: "knockbackStrength", name: "Сила отбрасывания", category: "defense", base: 95, growth: 1.16, max: 60, desc: "Увеличивает дистанцию отбрасывания врагов." },
+  { id: "lifesteal", name: "Вампиризм", category: "defense", base: 45, growth: 1.16, max: 100, desc: "Восстанавливает здоровье от нанесенного урона." },
+  { id: "defensePercent", name: "Броня (%)", category: "defense", base: 50, growth: 1.16, max: 90, desc: "Процентное снижение получаемого урона." },
+  { id: "thorns", name: "Шипы", category: "defense", base: 40, growth: 1.15, max: 100, desc: "Возвращает часть урона атакующим в ближнем бою." },
+  { id: "deathDefy", name: "Второй шанс", category: "defense", base: 400, growth: 1.18, max: 30, desc: "Шанс пережить смертельный удар с 1 ХП." },
+  { id: "landmineChance", name: "Шанс мин", category: "defense", base: 110, growth: 1.16, max: 50, desc: "Шанс сбросить мину при выстреле." },
+  { id: "landmineDamage", name: "Урон мин", category: "defense", base: 130, growth: 1.16, max: 100, desc: "Множитель урона для наземных мин." },
+  { id: "cashBonus", name: "Бонус $", category: "utility", base: 26, growth: 1.15, max: 200, desc: "Множитель получаемых $ с врагов." },
+  { id: "cashWave", name: "$/Волна", category: "utility", base: 22, growth: 1.15, max: 160, desc: "Выдает кэш после завершения каждой волны." },
+  { id: "freeUpgrade", name: "Беспл. апгрейд", category: "utility", base: 100, growth: 1.18, max: 100, desc: "Шанс бесплатно улучшить стат в конце волны." },
+  { id: "runCoinBonus", name: "Бонус монет", category: "utility", base: 120, growth: 1.18, max: 150, desc: "Множитель выпадающих монет." },
+  { id: "coinWave", name: "Монеты/Волна", category: "utility", base: 180, growth: 1.18, max: 80, desc: "Шанс получить постоянные монеты после волны." },
+  { id: "interestRate", name: "Инвестиции (%)", category: "utility", base: 50, growth: 1.16, max: 50, desc: "Процент от текущих $, начисляемый каждую волну." },
+  { id: "maxInterest", name: "Макс. инвест.", category: "utility", base: 100, growth: 1.16, max: 150, desc: "Максимальный лимит начисления $ с инвестиций." },
+  { id: "packageChance", name: "Шанс посылки", category: "utility", base: 200, growth: 1.16, max: 100, desc: "Шанс получить лечение (оверхил) после волны." },
+  { id: "packageMax", name: "Макс. оверхил", category: "utility", base: 300, growth: 1.18, max: 100, desc: "Максимальный множитель оверхила от пакетов." },
+  { id: "shockWave", name: "Ударная волна", category: "utility", base: 880, growth: 1.2, max: 60, desc: "Периодически отталкивает врагов от башни, загоняя их под сферы." },
+  { id: "enemyAttackSkip", name: "Пропуск ATK врагов", category: "utility", base: 340, growth: 1.18, max: 80, desc: "Снижает рост урона врагов в текущем забеге." },
+  { id: "enemyHealthSkip", name: "Пропуск HP врагов", category: "utility", base: 340, growth: 1.18, max: 80, desc: "Снижает рост здоровья врагов в текущем забеге." },
+  { id: "waveSkip", name: "Пропуск волны", category: "utility", base: 420, growth: 1.18, max: 50, desc: "Шанс мгновенно зачесть следующую волну и ускорить фарм." },
 ];
 
 const runUpgradeRequirements = {
@@ -1400,6 +1400,7 @@ function startRun(options = {}) {
     waveTimeRemaining: 0,
     spawnQueue: [],
     spawnTimer: 0,
+    spawnInterval: 0,
     uiTimer: 0,
     paused: false,
     ultimates: buildRunUltimates(),
@@ -1473,11 +1474,12 @@ function spawnWave() {
   game.spawnQueue = createWaveQueue(game.wave);
 
   // Вычисляем длительность волны
+  const targetDuration = getTargetWaveDuration(game.wave);
   const avgDelay = Math.max(balance.spawnMinDelay, balance.spawnBaseDelay - game.wave * balance.spawnDelayWaveReduction);
-  let duration = game.spawnQueue.length * avgDelay * 3.6;
-  if (duration < 5) duration = 5;
+  let duration = Math.max(targetDuration, game.spawnQueue.length * avgDelay + 2);
   game.waveDuration = duration;
   game.waveTimeRemaining = duration;
+  game.spawnInterval = game.spawnQueue.length > 0 ? duration / game.spawnQueue.length : duration;
 
   if (game.wave % 10 === 0) {
     triggerShake();
@@ -1509,6 +1511,7 @@ function triggerFreeUpgrade() {
 
 function setWavePause(seconds, text = "") {
   const waveAccel = progress.equippedCards.includes("cardWaveAccelerator") ? getCardLevelFromCount(progress.cards.cardWaveAccelerator || 0) * 0.08 : 0;
+  seconds = 4;
   seconds *= Math.max(0.45, 1 - waveAccel);
   game.waveState = "pause";
   game.nextWaveTimer = seconds;
@@ -1567,7 +1570,20 @@ function setWavePause(seconds, text = "") {
 
 function getWaveEnemyCount(wave) {
   const balanceLevel = progress.equippedCards.includes("cardEnemyBalance") ? getCardLevelFromCount(progress.cards.cardEnemyBalance || 0) : 0;
-  return Math.floor((balance.waveEnemyBase + wave * balance.waveEnemyGrowth + Math.max(0, wave - 8) * 0.22) * (1 + balanceLevel * 0.08));
+  let count = 8;
+  if (wave > 1) {
+    count += Math.floor((Math.min(wave, 20) - 1) / 2) * 2;
+  }
+  if (wave >= 50) {
+    count += Math.floor((Math.min(wave, 200) - 50) / 2) * 2;
+  }
+  count = Math.min(40, count);
+  return Math.floor(count * (1 + balanceLevel * 0.08));
+}
+
+function getTargetWaveDuration(wave) {
+  const cappedWave = Math.min(wave, 200);
+  return 12 + Math.floor((cappedWave - 1) / 10) * 2;
 }
 
 function createWaveQueue(wave) {
@@ -1739,7 +1755,7 @@ function updateGame(dt) {
       game.spawnTimer -= dt;
       if (game.spawnTimer <= 0 && game.spawnQueue.length) {
         spawnEnemy(game.spawnQueue.shift());
-        game.spawnTimer = Math.max(balance.spawnMinDelay, balance.spawnBaseDelay - game.wave * balance.spawnDelayWaveReduction);
+        game.spawnTimer = Math.max(0.08, game.spawnInterval || Math.max(balance.spawnMinDelay, balance.spawnBaseDelay - game.wave * balance.spawnDelayWaveReduction));
       }
       if (!game.spawnQueue.length) game.waveState = "fighting";
     }
@@ -2827,7 +2843,34 @@ function applyUpgradeStat(id) {
 function getRunUpgradeCost(def, level) {
   const discount = game?.eventMode === "overclocked" ? balance.overclockedUpgradeDiscount : 1;
   const labDiscount = Math.min(0.12, (progress.labs.levels.labUpgradeDiscount || 0) * 0.004);
-  return Math.floor(def.base * Math.pow(def.growth, level) * discount * (1 - labDiscount));
+  const levelTierMult = getRunUpgradeTierMultiplier(def, level);
+  return Math.floor(def.base * Math.pow(def.growth, level) * levelTierMult * discount * (1 - labDiscount));
+}
+
+function getRunUpgradeTierMultiplier(def, level) {
+  if (!def) return 1;
+  if (def.max >= 3000) {
+    if (level >= 1500) return 2.2;
+    if (level >= 800) return 1.8;
+    if (level >= 300) return 1.45;
+    if (level >= 120) return 1.2;
+    return 1;
+  }
+  if (def.max >= 120) {
+    if (level >= 90) return 2.0;
+    if (level >= 60) return 1.6;
+    if (level >= 35) return 1.3;
+    return 1;
+  }
+  if (def.max >= 60) {
+    if (level >= 45) return 1.8;
+    if (level >= 30) return 1.45;
+    if (level >= 20) return 1.2;
+    return 1;
+  }
+  if (level >= 20) return 1.55;
+  if (level >= 10) return 1.22;
+  return 1;
 }
 
 function renderRunUpgrades() {
