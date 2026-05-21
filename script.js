@@ -226,6 +226,9 @@ const cosmeticDefs = {
     { id: "shape_crystal", name: "Кристалл", sides: 6, cost: 85, style: "crystal", label: "призматическое ядро" },
     { id: "shape_blade", name: "Клинки", sides: 4, cost: 100, style: "blade", label: "роторное ядро" },
     { id: "shape_void", name: "Разлом", sides: 9, cost: 120, style: "void", label: "нестабильный разлом" },
+    { id: "shape_black_hole", name: "Черная дыра", sides: 14, cost: 145, style: "black_hole", label: "гравитационное ядро" },
+    { id: "shape_omelette", name: "Яичница", sides: 10, cost: 135, style: "omelette", label: "жареное ядро" },
+    { id: "shape_eye", name: "Глаз", sides: 12, cost: 155, style: "eye", label: "живой дозор" },
   ],
   colors: [
     { id: "color_cyan", name: "Неон", color: "#55ecff", dark: "#141a3a", cost: 0 },
@@ -2111,7 +2114,24 @@ function towerShoot(dt) {
   const rapid = game.tower.rapidFireTimer > 0 ? 0.42 : 1;
   const targets = findTargets(1 + (Math.random() < game.tower.multiShot ? 1 : 0));
   if (!targets.length) return;
-  const projectileStyle = progress.customization.shape === "shape_substance" ? "substance" : "normal";
+  const shapeId = progress?.customization?.shape || "shape_hex";
+  const skinShotProfiles = {
+    shape_hex: { style: "hex_bolt", damageMult: 1.02, speedMult: 1.01, color: "#55ecff" },
+    shape_square: { style: "square_pulse", damageMult: 1.04, speedMult: 0.98, color: "#7d9bff" },
+    shape_triangle: { style: "triangle_sting", damageMult: 0.96, speedMult: 1.08, color: "#7ce0ff" },
+    shape_octa: { style: "octa_frag", damageMult: 1.08, speedMult: 0.95, color: "#c0deff" },
+    shape_substance: { style: "substance", damageMult: 1, speedMult: 1, color: "#8cff72" },
+    shape_pulsar: { style: "pulsar_burst", damageMult: 1.06, speedMult: 1.04, color: "#ffd84f" },
+    shape_ring: { style: "ring_orbit", damageMult: 0.95, speedMult: 1.12, color: "#74f7ff" },
+    shape_crystal: { style: "crystal_shard", damageMult: 1.12, speedMult: 0.92, color: "#c4f0ff" },
+    shape_blade: { style: "blade_disc", damageMult: 1.07, speedMult: 1.03, color: "#ff7b8a" },
+    shape_void: { style: "void_orb", damageMult: 1.1, speedMult: 0.94, color: "#b878ff" },
+    shape_black_hole: { style: "black_hole", damageMult: 1.15, speedMult: 0.9, color: "#3f2a6c" },
+    shape_omelette: { style: "omelette_yolk", damageMult: 1.09, speedMult: 0.96, color: "#ffd25e" },
+    shape_eye: { style: "eye_beamlet", damageMult: 1.03, speedMult: 1.1, color: "#ff4f9a" },
+  };
+  const shotProfile = skinShotProfiles[shapeId] || skinShotProfiles.shape_hex;
+  const projectileStyle = shotProfile.style;
   const shootSound = projectileStyle === "substance" ? "substanceShoot" : "shoot";
   audio.play(shootSound);
   if (projectileStyle === "substance") addEffect("spit", game.tower.x, game.tower.y, 0.18, "#8cff72");
@@ -2120,7 +2140,7 @@ function towerShoot(dt) {
     const isCrit = Math.random() < game.tower.critChance;
     const isSuperCrit = isCrit && Math.random() < game.tower.superCritChance;
     let damage = game.tower.damage * game.perkMultipliers.towerDamage * (isCrit ? game.tower.critDamage : 1) * (isSuperCrit ? game.tower.superCritMult : 1);
-    damage *= game.tower.demonTimer > 0 ? 1.6 : 1;
+    damage *= (game.tower.demonTimer > 0 ? 1.6 : 1) * shotProfile.damageMult;
     if (game.tower.damageMeter > 0) {
       const dist = Math.hypot(target.x - game.tower.x, target.y - game.tower.y);
       damage *= 1 + (dist / 100) * game.tower.damageMeter;
@@ -2131,12 +2151,13 @@ function towerShoot(dt) {
       x: game.tower.x,
       y: game.tower.y,
       target,
-      speed: 520 * (1 + (progress.labs.levels.labLightSpeed || 0) * 0.12),
+      speed: 520 * (1 + (progress.labs.levels.labLightSpeed || 0) * 0.12) * shotProfile.speedMult,
       damage,
       crit: isCrit,
       superCrit: isSuperCrit,
       criticalCoin: isCrit && progress.equippedCards.includes("cardCriticalCoin"),
       style: projectileStyle,
+      skinColor: shotProfile.color,
     });
   });
 
@@ -5060,10 +5081,43 @@ function drawProjectiles() {
       ctx.ellipse(-2, -1, 2, 1.5, 0, 0, TWO_PI);
       ctx.fill();
       ctx.restore();
+    } else if (p.style === "black_hole") {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.superCrit ? 9 : 7, 0, TWO_PI);
+      ctx.fillStyle = "#16111f";
+      ctx.shadowColor = "#7a52c2";
+      ctx.shadowBlur = 18;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 3, 0, TWO_PI);
+      ctx.fillStyle = "rgba(122,82,194,0.9)";
+      ctx.fill();
+    } else if (p.style === "omelette_yolk") {
+      ctx.beginPath();
+      ctx.ellipse(p.x, p.y, p.superCrit ? 9 : 7, p.superCrit ? 7 : 5, 0, 0, TWO_PI);
+      ctx.fillStyle = "#fff7d0";
+      ctx.shadowColor = "#ffe58a";
+      ctx.shadowBlur = 14;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(p.x + 1, p.y, p.superCrit ? 4 : 3, 0, TWO_PI);
+      ctx.fillStyle = "#ffbb2f";
+      ctx.fill();
+    } else if (p.style === "eye_beamlet") {
+      ctx.beginPath();
+      ctx.ellipse(p.x, p.y, p.superCrit ? 9 : 7, p.superCrit ? 6 : 4.5, Math.atan2(game.tower.y - p.y, game.tower.x - p.x), 0, TWO_PI);
+      ctx.fillStyle = "#ffd2e8";
+      ctx.shadowColor = "#ff4f9a";
+      ctx.shadowBlur = 16;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.superCrit ? 3.2 : 2.4, 0, TWO_PI);
+      ctx.fillStyle = "#ff4f9a";
+      ctx.fill();
     } else {
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.superCrit ? 8 : (p.crit ? 6 : 4), 0, TWO_PI);
-      ctx.fillStyle = p.superCrit ? "#ff4444" : (p.crit ? "#ffb020" : colorDef.color);
+      ctx.fillStyle = p.superCrit ? "#ff4444" : (p.crit ? "#ffb020" : (p.skinColor || colorDef.color));
       ctx.shadowColor = ctx.fillStyle;
       ctx.shadowBlur = 12;
       ctx.fill();
