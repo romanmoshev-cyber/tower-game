@@ -254,13 +254,21 @@
 
 .lab-active-panel > strong {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 4px;
   color: #f2fbff;
   font-size: clamp(0.92rem, 3.45vw, 1.12rem);
   font-weight: 900;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   text-shadow: 0 0 10px rgba(255, 92, 214, 0.5);
+}
+
+.lab-slot-hint {
+  display: block;
+  margin-bottom: 10px;
+  color: #ff8bff;
+  font-size: clamp(0.68rem, 2.45vw, 0.78rem);
+  font-weight: 800;
 }
 
 .lab-active-empty {
@@ -451,6 +459,10 @@
   font-size: clamp(0.66rem, 2.45vw, 0.78rem);
   font-weight: 800;
   line-height: 1.1;
+}
+
+.lab-next-effect {
+  color: #ff8bff;
 }
 
 .lab-card-footer {
@@ -652,12 +664,22 @@
 }
 
 .permanent-upgrade-card p {
-  flex: 1;
   margin: 0;
   color: #d6e3f0;
   font-size: clamp(0.76rem, 3vw, 0.94rem);
   font-weight: 700;
   line-height: 1.22;
+}
+
+.permanent-effect {
+  color: #55ecff;
+  font-size: clamp(0.68rem, 2.55vw, 0.82rem);
+  font-weight: 800;
+  line-height: 1.18;
+}
+
+.permanent-starter-effect {
+  color: #ff8bff;
 }
 
 .permanent-card-footer {
@@ -4359,6 +4381,7 @@ input[type="range"] {
 .icon-enemy-health-skip { background-image: url("image/ui/icon_enemy_health_skip.png"); }
 .icon-wave-skip { background-image: url("image/ui/icon_wave_skip.png"); }
 .icon-tower-upgrade { background-image: url("image/ui/icon_tower_upgrade.png"); }
+.icon-energy { background-image: url("image/ui/icon_energy.png"); }
 
 .upgrade-card.is-available .run-upgrade-icon-placeholder {
   color: #7dff55;
@@ -4371,6 +4394,589 @@ input[type="range"] {
 .upgrade-card.is-locked .run-upgrade-icon-placeholder {
   color: #7d8795;
   border-radius: 4px;
+}
+
+/* --- Card equipment screen --- */
+#cardsScreen {
+  gap: 14px;
+}
+
+.card-slots-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.card-slots-grid .card-slot {
+  min-height: 108px;
+}
+
+.card-slots-grid .card-slot:nth-child(1),
+.card-slots-grid .card-slot:nth-child(2),
+.card-slots-grid .card-slot:nth-child(3) {
+  grid-column: span 2;
+}
+
+.card-slots-grid .card-slot:nth-child(4) {
+  grid-column: 2 / span 2;
+}
+
+.card-slots-grid .card-slot:nth-child(5) {
+  grid-column: 4 / span 2;
+}
+
+#cardsInventory.cards-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+#cardsScreen .card-slot,
+#cardsScreen .card-item {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  overflow: hidden;
+  border: 12px solid transparent;
+  border-radius: 0;
+  border-image: url("image/ui/upgrade_card_empty.png") 24 fill stretch;
+  background:
+    linear-gradient(180deg, rgba(5, 22, 45, 0.86), rgba(2, 8, 20, 0.96)),
+    repeating-linear-gradient(0deg, rgba(85, 236, 255, 0.045) 0 1px, transparent 1px 5px);
+  box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.54), 0 0 18px rgba(85, 236, 255, 0.08);
+}
+
+#cardsScreen .card-slot::before,
+#cardsScreen .card-item::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  z-index: -1;
+  background: radial-gradient(circle at 18% 14%, rgba(85, 236, 255, 0.16), transparent 34%);
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+#cardsScreen .card-slot {
+  height: auto;
+  padding: 9px 6px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #dffbff;
+}
+
+#cardsScreen .card-slot:not(.locked) {
+  border-image-source: url("image/ui/feature-frame.png");
+}
+
+#cardsScreen .card-slot.equipped {
+  border-image-source: url("image/ui/upgrade_card_default.png");
+  color: #ffffff;
+  box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.52), 0 0 18px rgba(85, 236, 255, 0.24);
+}
+
+#cardsScreen .card-slot.locked {
+  border-image-source: url("image/ui/upgrade_card_locked.png");
+  filter: grayscale(0.45);
+}
+
+#cardsScreen .card-slot.unlockable {
+  border-image-source: url("image/ui/card-feature-pink-empty.png");
+  filter: none;
+  gap: 2px;
+}
+
+#cardsScreen .card-slot.hard-locked {
+  opacity: 0.76;
+}
+
+.card-slot-plus {
+  color: #55ecff;
+  font-size: 2.8rem;
+  line-height: 0.8;
+  text-shadow: 0 0 14px rgba(85, 236, 255, 0.9);
+}
+
+#cardsScreen .card-slot strong {
+  color: #ff65b5;
+  font-size: clamp(0.76rem, 2.85vw, 0.94rem);
+  text-transform: uppercase;
+}
+
+#cardsScreen .card-slot span,
+#cardsScreen .card-slot i {
+  color: #d5f7ff;
+  font-style: normal;
+  font-size: clamp(0.72rem, 2.7vw, 0.86rem);
+  line-height: 1.1;
+}
+
+#cardsScreen .card-slot.locked span b {
+  color: #ff65b5;
+  font-size: 1.05rem;
+}
+
+.card-slot-icon,
+.card-icon-frame {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 8px solid transparent;
+  border-image: url("image/ui/card-purple.png") 20 fill stretch;
+  background: rgba(2, 8, 18, 0.8);
+  box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.5);
+}
+
+.card-slot-icon {
+  width: 42px;
+  height: 42px;
+}
+
+.card-icon-frame {
+  width: 62px;
+  height: 62px;
+}
+
+.card-slot-icon .sprite-icon,
+.card-icon-frame .sprite-icon {
+  background-size: contain;
+}
+
+.card-slot-icon .sprite-icon {
+  width: 84%;
+  height: 84%;
+}
+
+.card-icon-frame .sprite-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.card-lock {
+  width: 34px;
+  height: 34px;
+  background: url("image/ui/icon_lock.png") center / contain no-repeat;
+  opacity: 0.82;
+  filter: drop-shadow(0 0 8px rgba(220, 233, 255, 0.4));
+}
+
+#cardsScreen .card-slot.unlockable .card-lock {
+  width: 27px;
+  height: 27px;
+  margin-bottom: 1px;
+}
+
+#cardsScreen .card-slot.unlockable strong {
+  font-size: clamp(0.66rem, 2.45vw, 0.78rem);
+  line-height: 1;
+}
+
+.pull-card-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 66px !important;
+  margin: 0 0 14px;
+  border-image-source: url("image/ui/button-menu-blue-small-empty.png") !important;
+  color: #e9fdff;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.pull-card-btn .sprite-icon {
+  width: 34px;
+  height: 34px;
+  filter: drop-shadow(0 0 8px rgba(255, 92, 178, 0.72));
+}
+
+.pull-card-btn b {
+  color: #55ecff;
+  font-weight: 800;
+}
+
+.pull-card-btn.disabled,
+.pull-card-btn:disabled {
+  opacity: 0.48;
+  filter: grayscale(0.7);
+}
+
+.card-collection-head.info-panel {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  align-items: center;
+  gap: 2px 12px;
+  margin: 0 0 10px;
+  border-image-source: url("image/ui/panel-purple.png");
+}
+
+.card-collection-head .sprite-icon {
+  grid-row: span 2;
+  width: 60px;
+  height: 60px;
+  background-size: contain;
+  filter: drop-shadow(0 0 12px rgba(179, 117, 255, 0.78));
+}
+
+.card-collection-head strong {
+  color: #ff8bff;
+  font-size: clamp(1rem, 4vw, 1.25rem);
+  text-transform: uppercase;
+}
+
+#cardsScreen .card-item {
+  min-height: 112px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 66px minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  align-items: start;
+  gap: 5px 10px;
+  text-align: left;
+  cursor: pointer;
+  opacity: 0.68;
+  filter: grayscale(0.78);
+}
+
+#cardsScreen .card-item.owned {
+  opacity: 1;
+  filter: none;
+  border-image-source: url("image/ui/feature-frame.png");
+}
+
+#cardsScreen .card-item.equipped-inv {
+  border-image-source: url("image/ui/upgrade_card_default.png");
+  box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.45), 0 0 18px rgba(85, 236, 255, 0.22);
+}
+
+#cardsScreen .card-item.locked {
+  border-image-source: url("image/ui/upgrade_card_locked.png");
+}
+
+.card-copy {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-top: 1px;
+}
+
+#cardsScreen .card-item strong {
+  color: #55ecff;
+  font-size: clamp(0.68rem, 2.72vw, 0.88rem);
+  font-weight: 900;
+  line-height: 1.05;
+  text-transform: uppercase;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+#cardsScreen .card-item span {
+  color: #dce8f4;
+  font-size: clamp(0.68rem, 2.65vw, 0.84rem);
+  font-weight: 800;
+}
+
+#cardsScreen .card-item .card-desc {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  color: #9daec3;
+  font-style: normal;
+  font-size: clamp(0.66rem, 2.5vw, 0.78rem);
+  line-height: 1.15;
+  min-height: 1.15em;
+}
+
+#cardsScreen .card-item .card-desc { align-self: end; width: 100%; }
+
+.card-owned-check {
+  display: none;
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  width: 28px;
+  height: 28px;
+  border: 6px solid transparent;
+  border-image: url("image/ui/card-feature-green-empty.png") 20 fill stretch;
+}
+
+.card-owned-check::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 2px;
+  width: 8px;
+  height: 14px;
+  border: solid #7dff55;
+  border-width: 0 4px 4px 0;
+  transform: rotate(45deg);
+  filter: drop-shadow(0 0 6px rgba(125, 255, 85, 0.8));
+}
+
+.card-item.equipped-inv .card-owned-check,
+.card-item.can-equip .card-owned-check {
+  display: block;
+}
+
+@media (max-width: 390px) {
+  .card-slots-grid {
+    gap: 8px;
+  }
+
+  .card-slots-grid .card-slot {
+    min-height: 96px;
+  }
+
+  #cardsInventory.cards-grid {
+    gap: 8px;
+  }
+
+  #cardsScreen .card-item {
+    grid-template-columns: 54px minmax(0, 1fr);
+    gap: 7px;
+    padding: 8px;
+  }
+
+  .card-icon-frame {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+.card-pull-overlay {
+  background:
+    radial-gradient(circle at center, rgba(85, 236, 255, 0.14), transparent 42%),
+    rgba(0, 0, 0, 0.96);
+}
+
+.card-pull-box.reward-box {
+  position: relative;
+  overflow: hidden;
+  border: 14px solid transparent;
+  border-image: url("image/ui/modal.png") 24 fill stretch;
+  border-radius: 0;
+  background:
+    linear-gradient(180deg, rgba(4, 18, 42, 0.94), rgba(2, 7, 20, 0.98)),
+    repeating-linear-gradient(0deg, rgba(85, 236, 255, 0.045) 0 1px, transparent 1px 5px);
+  box-shadow: 0 0 36px rgba(85, 236, 255, 0.28), inset 0 0 28px rgba(0, 0, 0, 0.62);
+}
+
+.card-pull-box::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: conic-gradient(from 0deg, transparent, rgba(85, 236, 255, 0.22), transparent, rgba(255, 92, 178, 0.22), transparent);
+  opacity: 0.55;
+  animation: cardPullSpin 2.2s linear infinite;
+  pointer-events: none;
+}
+
+.card-pull-box > * {
+  position: relative;
+  z-index: 1;
+}
+
+.card-pull-reveal {
+  position: relative;
+  min-height: 244px;
+  display: grid;
+  place-items: center;
+  margin: 8px 0 18px;
+}
+
+.card-pull-burst {
+  position: absolute;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.7) 0 3%, rgba(85, 236, 255, 0.28) 6% 22%, transparent 56%),
+    conic-gradient(from 0deg, transparent 0 16%, rgba(85, 236, 255, 0.42) 19%, transparent 24% 50%, rgba(255, 92, 178, 0.34) 54%, transparent 61% 100%);
+  filter: blur(0.2px) drop-shadow(0 0 24px rgba(85, 236, 255, 0.56));
+  animation: cardPullAura 2.6s linear infinite;
+}
+
+.card-pull-burst::after {
+  content: "";
+  position: absolute;
+  inset: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(85, 236, 255, 0.35);
+  box-shadow:
+    0 0 18px rgba(85, 236, 255, 0.4),
+    inset 0 0 18px rgba(255, 92, 178, 0.12);
+}
+
+.card-pull-rays {
+  position: absolute;
+  width: 224px;
+  height: 224px;
+  border-radius: 50%;
+  animation: cardPullOrbit 1.55s linear infinite;
+  filter: drop-shadow(0 0 16px rgba(85, 236, 255, 0.52));
+  pointer-events: none;
+}
+
+.card-pull-rays::before,
+.card-pull-rays::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 112px;
+  height: 24px;
+  transform-origin: 0 50%;
+  clip-path: polygon(0 50%, 78% 12%, 100% 50%, 78% 88%);
+  mix-blend-mode: screen;
+}
+
+.card-pull-rays::before {
+  transform: rotate(20deg) translateX(22px);
+  background: linear-gradient(90deg, transparent, rgba(85, 236, 255, 0.88), transparent);
+}
+
+.card-pull-rays::after {
+  transform: rotate(198deg) translateX(22px);
+  background: linear-gradient(90deg, transparent, rgba(255, 92, 178, 0.78), transparent);
+  filter: drop-shadow(0 0 12px rgba(255, 92, 178, 0.72));
+}
+
+.card-pull-result {
+  width: min(210px, 72vw);
+  min-height: 238px;
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  justify-items: center;
+  gap: 7px;
+  padding: 18px 16px 16px;
+  border: 15px solid transparent;
+  border-image: url("image/ui/upgrade_card_default.png") 24 fill stretch;
+  background:
+    linear-gradient(180deg, rgba(5, 22, 45, 0.9), rgba(2, 8, 20, 0.97)),
+    repeating-linear-gradient(0deg, rgba(85, 236, 255, 0.05) 0 1px, transparent 1px 5px);
+  transform: rotateY(88deg) scale(0.82);
+  opacity: 0.35;
+  filter: brightness(0.6) blur(1px);
+}
+
+.card-pull-overlay.drawing .card-pull-result::after {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(85, 236, 255, 0.32);
+  background:
+    linear-gradient(180deg, transparent 0 42%, rgba(85, 236, 255, 0.5) 46%, transparent 52% 100%);
+  animation: cardPullScan 0.9s ease-in-out infinite;
+}
+
+.card-pull-overlay.revealed .card-pull-result,
+.card-pull-result.revealed {
+  animation: cardPullReveal 0.5s cubic-bezier(0.18, 0.9, 0.25, 1.18) forwards;
+}
+
+.card-pull-overlay.revealed .card-pull-burst,
+.card-pull-overlay.revealed .card-pull-rays {
+  animation: cardPullBoom 0.62s ease-out forwards;
+}
+
+.card-pull-icon {
+  width: 78px;
+  height: 78px;
+  display: grid;
+  place-items: center;
+  border: 10px solid transparent;
+  border-image: url("image/ui/card-purple.png") 20 fill stretch;
+}
+
+.card-pull-icon .sprite-icon {
+  width: 86%;
+  height: 86%;
+  background-size: contain;
+  filter: drop-shadow(0 0 12px rgba(85, 236, 255, 0.76));
+}
+
+.card-pull-result strong {
+  margin: 4px 0 0;
+  color: #55ecff;
+  font-size: clamp(1rem, 4vw, 1.22rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.card-pull-result span {
+  color: #ffffff;
+  font-size: 0.9rem;
+  letter-spacing: 0;
+}
+
+.card-pull-result i {
+  align-self: start;
+  color: #d8e8f3;
+  font-style: normal;
+  font-size: 0.86rem;
+  line-height: 1.25;
+}
+
+.card-pull-close {
+  opacity: 0.5;
+}
+
+.card-pull-close.ready {
+  opacity: 1;
+}
+
+@keyframes cardPullSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes cardPullAura {
+  0% { transform: scale(0.94) rotate(0deg); opacity: 0.54; }
+  50% { transform: scale(1.06) rotate(180deg); opacity: 0.88; }
+  100% { transform: scale(0.94) rotate(360deg); opacity: 0.54; }
+}
+
+@keyframes cardPullOrbit {
+  0% { transform: rotate(0deg) scale(0.96); opacity: 0.58; }
+  45% { opacity: 0.98; }
+  100% { transform: rotate(360deg) scale(1.02); opacity: 0.58; }
+}
+
+@keyframes cardPullScan {
+  from { transform: translateY(-44%); opacity: 0.22; }
+  50% { opacity: 0.9; }
+  to { transform: translateY(44%); opacity: 0.22; }
+}
+
+@keyframes cardPullReveal {
+  0% { transform: rotateY(88deg) scale(0.82); opacity: 0.35; filter: brightness(0.6) blur(1px); }
+  58% { transform: rotateY(-8deg) scale(1.08); opacity: 1; filter: brightness(1.45) blur(0); }
+  100% { transform: rotateY(0deg) scale(1); opacity: 1; filter: brightness(1) blur(0); }
+}
+
+@keyframes cardPullBoom {
+  0% { transform: scale(0.8) rotate(0deg); opacity: 0.72; }
+  70% { transform: scale(1.65) rotate(36deg); opacity: 0.82; }
+  100% { transform: scale(2.1) rotate(55deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-pull-box::before,
+  .card-pull-burst,
+  .card-pull-rays,
+  .card-pull-overlay.drawing .card-pull-result::after,
+  .card-pull-overlay.revealed .card-pull-result,
+  .card-pull-result.revealed,
+  .card-pull-overlay.revealed .card-pull-burst {
+    animation: none;
+  }
+
+  .card-pull-result {
+    transform: none;
+    opacity: 1;
+    filter: none;
+  }
 }
 
 .upgrade-card.is-locked .run-upgrade-icon-placeholder::before {

@@ -81,6 +81,20 @@ const permanentIconMap = {
   packageChance: "icon-loot-cube",
 };
 
+const permanentStarterRunUpgradeMap = {
+  baseDamage: { runId: "damage", every: 5, cap: 18, label: "старт. ур. Урона" },
+  baseAttackSpeed: { runId: "attackSpeed", every: 6, cap: 12, label: "старт. ур. Скорости атаки" },
+  baseHealth: { runId: "maxHealth", every: 5, cap: 18, label: "старт. ур. Здоровья" },
+  coinBonus: { runId: "runCoinBonus", every: 8, cap: 10, label: "старт. ур. Бонуса монет" },
+  startingCash: { runId: "cashWave", every: 8, cap: 8, label: "старт. ур. $/Волна" },
+  criticalChance: { runId: "critChance", every: 4, cap: 10, label: "старт. ур. Крита" },
+  lifesteal: { runId: "lifesteal", every: 5, cap: 8, label: "старт. ур. Вампиризма" },
+  defensePercent: { runId: "defensePercent", every: 5, cap: 10, label: "старт. ур. Брони" },
+  thorns: { runId: "thorns", every: 5, cap: 8, label: "старт. ур. Шипов" },
+  freeUpgrade: { runId: "freeUpgrade", every: 5, cap: 8, label: "старт. ур. Беспл. апгрейдов" },
+  packageChance: { runId: "packageChance", every: 6, cap: 8, label: "старт. ур. Посылок" },
+};
+
 const labDefs = [
   { id: "labDamage", name: "Урон башни", desc: "Глобальный урон башни", getEffect: (lvl) => `+${lvl}%`, baseCost: 150, costGrowth: 1.32, baseTime: 300, timeGrowth: 1.24, max: 60 },
   { id: "labAttackSpeed", name: "Скорость атаки", desc: "Множитель скорости атаки", getEffect: (lvl) => `+${(lvl * 0.6).toFixed(1)}%`, baseCost: 200, costGrowth: 1.34, baseTime: 480, timeGrowth: 1.25, max: 50 },
@@ -154,6 +168,35 @@ const cardDefs = [
 const CARD_PULL_COST = 20;
 const CARD_SLOT_COSTS = [0, 50, 150, 400, 1000]; // 1-й слот бесплатен
 
+const cardIconMap = {
+  cardDamage: "icon-damage",
+  cardSpeed: "icon-attack-speed",
+  cardHealth: "icon-health",
+  cardCash: "icon-cash-bonus",
+  cardCoins: "icon-coins",
+  cardSlow: "icon-ultimate-time-field",
+  cardRegen: "icon-regen",
+  cardDefense: "icon-defense-percent",
+  cardFortress: "icon-absolute-defense",
+  cardFreeUpgrade: "icon-free-upgrade",
+  cardExtraOrbs: "icon-orb-count",
+  cardWaveSkip: "icon-cash-wave",
+  cardEnemyBalance: "icon-warning",
+  cardDeathRay: "icon-death",
+  cardEnergyShield: "icon-energy",
+  cardSecondWind: "icon-recovery",
+  cardCriticalCoin: "icon-crit-chance",
+  cardPlasmaCannon: "icon-ultimate-solar-beam",
+  cardWaveAccelerator: "icon-rapid-fire-chance",
+  cardLandmineStun: "icon-landmine-chance",
+  cardEnergyNet: "icon-ultimate-storm-chain",
+  cardDemonMode: "icon-ultimate-death-wave",
+};
+
+function getCardIconClass(id) {
+  return cardIconMap[id] || "icon-cards";
+}
+
 const moduleTypes = [
   { id: "weapon", name: "Орудие", desc: "Глобальный множитель Урона", stat: "damage", mults: [1.1, 1.25, 1.5, 2.0] },
   { id: "armor", name: "Броня", desc: "Глобальный множитель Здоровья", stat: "health", mults: [1.1, 1.25, 1.5, 2.0] },
@@ -178,6 +221,11 @@ const cosmeticDefs = {
     { id: "shape_triangle", name: "Тригон", sides: 3, cost: 25 },
     { id: "shape_octa", name: "Октагон", sides: 8, cost: 40 },
     { id: "shape_substance", name: "Субстанция", sides: 8, cost: 35, substance: true },
+    { id: "shape_pulsar", name: "Пульсар", sides: 10, cost: 55, style: "star", label: "звездное ядро" },
+    { id: "shape_ring", name: "Кольцо", sides: 12, cost: 70, style: "ring", label: "орбитальное кольцо" },
+    { id: "shape_crystal", name: "Кристалл", sides: 6, cost: 85, style: "crystal", label: "призматическое ядро" },
+    { id: "shape_blade", name: "Клинки", sides: 4, cost: 100, style: "blade", label: "роторное ядро" },
+    { id: "shape_void", name: "Разлом", sides: 9, cost: 120, style: "void", label: "нестабильный разлом" },
   ],
   colors: [
     { id: "color_cyan", name: "Неон", color: "#55ecff", dark: "#141a3a", cost: 0 },
@@ -942,6 +990,7 @@ function bindUi() {
   document.getElementById("gameMenuBtn").addEventListener("click", pauseRunToMenu);
   document.getElementById("quitRunBtn").addEventListener("click", quitRun);
   document.getElementById("pullCardBtn").addEventListener("click", pullCard);
+  document.getElementById("closeCardPullBtn").addEventListener("click", closeCardPullOverlay);
   document.getElementById("pullModuleBtn").addEventListener("click", pullModule);
   document.getElementById("mergeModulesBtn").addEventListener("click", mergeModules);
   document.getElementById("hudPlayPauseBtn").addEventListener("click", togglePause);
@@ -1217,6 +1266,26 @@ function getUniqueModulePower(id) {
   return mod ? [1, 1.35, 1.75, 2.25][mod.rarity] : 0;
 }
 
+function getPermanentStarterRunLevels() {
+  return Object.entries(permanentStarterRunUpgradeMap).reduce((acc, [permanentId, link]) => {
+    const permanentLevel = progress.permanent?.[permanentId] || 0;
+    const levels = Math.min(link.cap, Math.floor(permanentLevel / link.every));
+    if (levels > 0) acc[link.runId] = (acc[link.runId] || 0) + levels;
+    return acc;
+  }, {});
+}
+
+function applyStarterRunUpgradeLevels() {
+  const starterLevels = getPermanentStarterRunLevels();
+  Object.entries(starterLevels).forEach(([runId, levels]) => {
+    for (let i = 0; i < levels; i += 1) {
+      if ((game.runUpgrades[runId] || 0) >= (runUpgradeDefs.find((def) => def.id === runId)?.max || 0)) break;
+      game.runUpgrades[runId] += 1;
+      applyUpgradeStat(runId);
+    }
+  });
+}
+
 function startRun(options = {}) {
   cancelAnimationFrame(animationId);
   resizeGameCanvas();
@@ -1346,6 +1415,8 @@ function startRun(options = {}) {
   if (progress.equippedCards.includes("cardFortress")) {
     game.tower.absDefense *= 1 + getCardLevel("cardFortress") * 0.2;
   }
+  applyStarterRunUpgradeLevels();
+  game.tower.hp = game.tower.maxHp;
   if (hasUniqueModule("orbitalAugmentation")) {
     game.tower.orbCount = Math.min(10, game.tower.orbCount + 1 + Math.floor(getUniqueModulePower("orbitalAugmentation")));
   }
@@ -1753,6 +1824,11 @@ function triggerTowerDamageFeedback(amount = 0, color = "#ff5c6c") {
   if (shapeId === "shape_triangle") t.hitSpin = (t.hitSpin || 0) - 0.48 * intensity;
   if (shapeId === "shape_octa") t.facetPulse = 0.42;
   if (shapeId === "shape_substance") t.blobImpact = 0.46;
+  if (shapeId === "shape_pulsar") t.facetPulse = 0.62;
+  if (shapeId === "shape_ring") t.hitSpin = (t.hitSpin || 0) + 0.22 * intensity;
+  if (shapeId === "shape_crystal") t.facetPulse = 0.7;
+  if (shapeId === "shape_blade") t.hitSpin = (t.hitSpin || 0) + 0.72 * intensity;
+  if (shapeId === "shape_void") t.blobImpact = 0.36;
 }
 
 function beginTowerDeathSequence() {
@@ -2968,8 +3044,8 @@ function openMenuInfo(type, id) {
     level = progress.permanent[id] || 0;
     max = def.max;
     categoryLabel = "ПОСТОЯННОЕ УЛУЧШЕНИЕ";
-    currentEffect = def.getEffect(level);
-    nextEffect = level >= max ? "Достигнут максимум" : `Следующий уровень: ${def.getEffect(level + 1)}`;
+    currentEffect = getPermanentFullEffect(def, level);
+    nextEffect = level >= max ? "Достигнут максимум" : `Следующий уровень: ${getPermanentFullEffect(def, level + 1)}`;
   } else if (type === "ultimate") {
     def = ultimateDefs.find(d => d.id === id);
     level = progress.ultimates[id].level;
@@ -3014,6 +3090,26 @@ function getPermanentCost(def, level) {
   return Math.floor(def.base * Math.pow(def.scale, early) * Math.pow(def.scale + 0.06, mid) * Math.pow(def.scale + 0.14, late));
 }
 
+function getPermanentStarterText(id, level = progress.permanent?.[id] || 0) {
+  const link = permanentStarterRunUpgradeMap[id];
+  if (!link) return "";
+  const starterLevels = Math.min(link.cap, Math.floor(level / link.every));
+  const nextAt = starterLevels >= link.cap ? "кап достигнут" : `след. на ур. ${Math.ceil((level + 1) / link.every) * link.every}`;
+  return `Старт: +${starterLevels} ${link.label} (${nextAt})`;
+}
+
+function getPermanentFullEffect(def, level) {
+  const starterText = getPermanentStarterText(def.id, level);
+  return starterText ? `${def.getEffect(level)} · ${starterText}` : def.getEffect(level);
+}
+
+function getStarterRunLoadoutSummary() {
+  const starterLevels = getPermanentStarterRunLevels();
+  const entries = Object.entries(starterLevels)
+    .map(([runId, level]) => `${runUpgradeDefs.find((def) => def.id === runId)?.name || runId} +${level}`);
+  return entries.length ? entries.join(", ") : "пока нет стартовых уровней";
+}
+
 // --- ЛАБОРАТОРИЯ ---
 function getLabCost(def, level) {
   const early = Math.min(level, 15);
@@ -3027,6 +3123,18 @@ function getLabTime(def, level) {
   const softCap = 7 * 24 * 3600;
   const capped = raw > softCap ? softCap + Math.sqrt(raw - softCap) * 30 : raw;
   return Math.floor(capped * labSpeed);
+}
+function getLabSlotLimit() {
+  const best = progress?.bestWave || 0;
+  const waveSlots = 1 + (best >= 25 ? 1 : 0) + (best >= 60 ? 1 : 0) + (best >= 100 ? 1 : 0);
+  return Math.max(progress?.labs?.slots || 1, waveSlots);
+}
+function getNextLabSlotText() {
+  const best = progress?.bestWave || 0;
+  if (best < 25) return `следующий слот на волне 25 (${best}/25)`;
+  if (best < 60) return `следующий слот на волне 60 (${best}/60)`;
+  if (best < 100) return `следующий слот на волне 100 (${best}/100)`;
+  return "все слоты по волнам открыты";
 }
 function formatLabTime(sec) {
   if (sec < 60) return `${Math.ceil(sec)}с`;
@@ -3051,7 +3159,7 @@ function checkCompletedLabs() {
 }
 
 function startLabResearch(id) {
-  if (progress.labs.active.length >= progress.labs.slots) return;
+  if (progress.labs.active.length >= getLabSlotLimit()) return;
   const def = labDefs.find(l => l.id === id);
   const level = progress.labs.levels[id] || 0;
   const cost = getLabCost(def, level);
@@ -3071,7 +3179,8 @@ function renderLabs() {
   document.getElementById("labCoins").textContent = Math.floor(progress.coins);
   
   const activeContainer = document.getElementById("labActiveSlots");
-  activeContainer.innerHTML = `<div class="lab-active-panel"><strong>Активные исследования (${progress.labs.active.length} / ${progress.labs.slots})</strong>`;
+  const labSlotLimit = getLabSlotLimit();
+  activeContainer.innerHTML = `<div class="lab-active-panel"><strong>Активные исследования (${progress.labs.active.length} / ${labSlotLimit})</strong><span class="lab-slot-hint">${getNextLabSlotText()}</span>`;
   if (progress.labs.active.length === 0) {
     activeContainer.innerHTML += `<div class="lab-active-empty">Слоты свободны. Начни исследование ниже.</div>`;
   } else {
@@ -3106,7 +3215,7 @@ function renderLabs() {
     const cost = getLabCost(def, level);
     const time = getLabTime(def, level);
     const isMax = level >= def.max;
-    const slotBlocked = progress.labs.active.length >= progress.labs.slots;
+    const slotBlocked = progress.labs.active.length >= labSlotLimit;
     const canStudy = progress.coins >= cost && !isResearching && !isMax && !slotBlocked;
     const iconClass = labIconMap[def.id] || "icon-labs";
     const card = document.createElement("div");
@@ -3121,7 +3230,8 @@ function renderLabs() {
       </div>
       <p>${def.desc}</p>
       <div class="lab-card-bottom">
-        <div class="lab-effect">Эффект: ${def.getEffect(level)}</div>
+        <div class="lab-effect">Сейчас: ${def.getEffect(level)}</div>
+        <div class="lab-effect lab-next-effect">${isMax ? "Максимум изучен" : `После исследования: ${def.getEffect(level + 1)}`}</div>
         <div class="lab-card-footer">
           <div class="lab-time"><span class="lab-meta-icon">◷</span><span>${isMax ? "Макс." : formatLabTime(time)}</span></div>
           <div class="lab-cost"><i class="sprite-icon icon-coin" aria-hidden="true"></i><span>${cost}</span></div>
@@ -3156,10 +3266,52 @@ function pullCard() {
   progress.cards[randomDef.id] = (progress.cards[randomDef.id] || 0) + 1;
   saveProgress();
   renderCards();
-  showWaveToast(`Выбито: ${randomDef.name}!`);
+  showCardPullOverlay(randomDef);
+}
+
+function showCardPullOverlay(def) {
+  const overlay = document.getElementById("cardPullOverlay");
+  const stage = document.getElementById("cardPullStage");
+  const title = document.getElementById("cardPullTitle");
+  const result = document.getElementById("cardPullResult");
+  const icon = document.getElementById("cardPullIcon");
+  const closeBtn = document.getElementById("closeCardPullBtn");
+  const count = progress.cards[def.id] || 0;
+  const lvl = getCardLevelFromCount(count);
+  const revealDelay = progress.settings?.reducedMotion ? 120 : 1150;
+
+  stage.textContent = "Синхронизация колоды";
+  title.textContent = "Вытягиваем карту...";
+  result.classList.remove("revealed");
+  closeBtn.classList.remove("ready");
+  closeBtn.disabled = true;
+  icon.className = `sprite-icon ${getCardIconClass(def.id)}`;
+  document.getElementById("cardPullName").textContent = def.name;
+  document.getElementById("cardPullLevel").textContent = `Ур. ${lvl} (${lvl}/5)`;
+  document.getElementById("cardPullEffect").textContent = lvl > 0 ? def.getEffect(lvl) : def.desc;
+
+  overlay.classList.remove("hidden");
+  overlay.classList.remove("revealed");
+  overlay.classList.add("drawing");
+
+  window.setTimeout(() => {
+    overlay.classList.remove("drawing");
+    overlay.classList.add("revealed");
+    result.classList.add("revealed");
+    stage.textContent = "Вобана!";
+    title.textContent = "Карта выпала";
+    closeBtn.disabled = false;
+    closeBtn.classList.add("ready");
+    showWaveToast(`Выбито: ${def.name}!`);
+  }, revealDelay);
+}
+
+function closeCardPullOverlay() {
+  document.getElementById("cardPullOverlay").classList.add("hidden");
 }
 
 function equipCard(id) {
+  if ((progress.cards[id] || 0) <= 0) return;
   if (progress.equippedCards.includes(id)) {
     progress.equippedCards = progress.equippedCards.filter(c => c !== id);
   } else {
@@ -3181,30 +3333,35 @@ function unlockCardSlot() {
 
 function renderCards() {
   document.getElementById("cardsCrystals").textContent = progress.crystals || 0;
+  const pullBtn = document.getElementById("pullCardBtn");
+  const canPull = (progress.crystals || 0) >= CARD_PULL_COST;
+  pullBtn.disabled = !canPull;
+  pullBtn.classList.toggle("disabled", !canPull);
   
   const slotsGrid = document.getElementById("cardSlotsGrid");
   slotsGrid.innerHTML = "";
   for (let i = 0; i < 5; i++) {
     const slot = document.createElement("div");
+    slot.className = "card-slot";
     if (i < progress.cardSlots) {
       const cardId = progress.equippedCards[i];
       if (cardId) {
         const def = cardDefs.find(c => c.id === cardId);
         const lvl = getCardLevelFromCount(progress.cards[cardId]);
         slot.className = "card-slot equipped";
-        slot.innerHTML = `<strong>${def.name}</strong><span>Ур.${lvl}</span><i style="margin-top:2px; font-size:0.85rem; line-height:1.15;">${def.getEffect(lvl)}</i>`;
+        slot.innerHTML = `<div class="card-slot-icon"><i class="sprite-icon ${getCardIconClass(cardId)}"></i></div><strong>${def.name}</strong><span>Ур. ${lvl}</span><i>${def.getEffect(lvl)}</i>`;
         slot.addEventListener("click", () => equipCard(cardId));
       } else {
         slot.className = "card-slot";
-        slot.textContent = "Пустой слот";
+        slot.innerHTML = `<b class="card-slot-plus">+</b><span>Пустой слот</span>`;
       }
     } else if (i === progress.cardSlots) {
-      slot.className = "card-slot locked";
-      slot.innerHTML = `<span>Разблокировать<br><b style="color:var(--accent-pink);">${CARD_SLOT_COSTS[i]} ♦</b></span>`;
+      slot.className = "card-slot locked unlockable";
+      slot.innerHTML = `<i class="card-lock"></i><strong>Разблокировать</strong><span><b>${CARD_SLOT_COSTS[i]} ♦</b></span>`;
       slot.addEventListener("click", unlockCardSlot);
     } else {
-      slot.className = "card-slot locked";
-      slot.textContent = "Закрыто";
+      slot.className = "card-slot locked hard-locked";
+      slot.innerHTML = `<i class="card-lock"></i><strong>Заблокировано</strong>`;
     }
     slotsGrid.append(slot);
   }
@@ -3215,9 +3372,16 @@ function renderCards() {
     const count = progress.cards[def.id] || 0;
     const lvl = getCardLevelFromCount(count);
     const isEquipped = progress.equippedCards.includes(def.id);
+    const canEquip = count > 0 && !isEquipped && progress.equippedCards.length < progress.cardSlots;
     const card = document.createElement("div");
-    card.className = `card-item ${count > 0 ? "owned" : ""} ${isEquipped ? "equipped-inv" : ""}`;
-    card.innerHTML = `<strong>${def.name}</strong><span>Ур.${lvl} (${count} шт)</span><i style="margin-top:2px; font-size:0.85rem; line-height:1.15;">${lvl > 0 ? def.getEffect(lvl) : "---"}</i>`;
+    card.className = `card-item ${count > 0 ? "owned" : "locked"} ${isEquipped ? "equipped-inv" : ""} ${canEquip ? "can-equip" : ""}`;
+    card.innerHTML = `<div class="card-owned-check" aria-hidden="true"></div>
+      <div class="card-icon-frame"><i class="sprite-icon ${getCardIconClass(def.id)}"></i></div>
+      <div class="card-copy">
+        <strong>${def.name}</strong>
+        <span>Ур. ${lvl} (${lvl}/5)</span>
+      </div>
+      <i class="card-desc">${lvl > 0 ? def.getEffect(lvl) : def.desc}</i>`;
     if (count > 0) card.addEventListener("click", () => equipCard(def.id));
     invGrid.append(card);
   });
@@ -3323,7 +3487,7 @@ function renderCustomization() {
     const equipped = progress.customization.shape === def.id;
     const card = document.createElement("div");
     card.className = `card-item ${owned ? "owned" : ""} ${equipped ? "equipped-inv" : ""}`;
-    card.innerHTML = `<strong>${def.name}</strong><span>${def.sides} граней</span><i style="margin-top:2px; font-size:0.85rem; line-height:1.15;">${owned ? (equipped ? "Надето" : "Выбрать") : `${def.cost} Медалей`}</i>`;
+    card.innerHTML = `<strong>${def.name}</strong><span>${def.label || `${def.sides} граней`}</span><i style="margin-top:2px; font-size:0.85rem; line-height:1.15;">${owned ? (equipped ? "Надето" : "Выбрать") : `${def.cost} Медалей`}</i>`;
     card.addEventListener("click", () => handleCosmeticClick(def.id, "shape", def.cost));
     shapesGrid.append(card);
   });
@@ -3362,7 +3526,7 @@ function renderPermanentShop() {
        <i class="sprite-icon icon-prestige" style="width:42px; height:42px;"></i>
        <div>
          <strong>Престиж ${progress.prestige || 0}</strong>
-         <span style="display:block; font-size:0.85rem; margin-top:4px; line-height:1.2;">Каждое очко престижа дает +4% урона башни. ${nextMilestone ? `Следующий рубеж: волна ${nextMilestone.wave}, награда ${nextMilestone.text}.` : "Все текущие рубежи получены."}</span>
+         <span style="display:block; font-size:0.85rem; margin-top:4px; line-height:1.2;">Каждое очко престижа дает +4% урона башни. Старт забега: ${getStarterRunLoadoutSummary()}. ${nextMilestone ? `Следующий рубеж: волна ${nextMilestone.wave}, награда ${nextMilestone.text}.` : "Все текущие рубежи получены."}</span>
        </div>
      </div>`;
   const list = document.getElementById("permanentList");
@@ -3385,6 +3549,8 @@ function renderPermanentShop() {
       </div>
       <div class="permanent-progress" style="--progress-percent:${progressPercent}%" aria-hidden="true"><i></i></div>
       <p>${def.desc}</p>
+      <div class="permanent-effect">Сейчас: ${def.getEffect(level)}</div>
+      ${getPermanentStarterText(def.id, level) ? `<div class="permanent-effect permanent-starter-effect">${getPermanentStarterText(def.id, level)}</div>` : ""}
       <div class="permanent-card-footer">
         <div class="permanent-price ${level >= def.max ? "is-max" : ""}">
           ${level >= def.max ? "Макс." : `<i class="sprite-icon icon-coin" aria-hidden="true"></i><span>${cost}</span>`}
@@ -4477,6 +4643,144 @@ function drawTower() {
       ctx.fillStyle = "rgba(180, 255, 160, 0.45)";
       ctx.fill();
     }
+  } else if (shapeDef.style === "star") {
+    const pulse = 1 + Math.sin(performance.now() / 180) * 0.05;
+    ctx.beginPath();
+    for (let i = 0; i < 10; i += 1) {
+      const angle = -Math.PI / 2 + (i / 10) * TWO_PI;
+      const r = (i % 2 === 0 ? 28 : 13) * pulse;
+      const x = t.x + Math.cos(angle) * r;
+      const y = t.y + Math.sin(angle) * r;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = darkColor;
+    ctx.fill();
+    ctx.strokeStyle = mainColor;
+    ctx.lineWidth = 3;
+    ctx.shadowColor = mainColor;
+    ctx.shadowBlur = 18;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(t.x, t.y, 8, 0, TWO_PI);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.94)";
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  } else if (shapeDef.style === "ring") {
+    ctx.beginPath();
+    ctx.arc(t.x, t.y, 27, 0, TWO_PI);
+    ctx.fillStyle = darkColor;
+    ctx.fill();
+    ctx.strokeStyle = mainColor;
+    ctx.lineWidth = 4;
+    ctx.shadowColor = mainColor;
+    ctx.shadowBlur = 18;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(t.x, t.y, 14, 0, TWO_PI);
+    ctx.fillStyle = "rgba(1, 7, 18, 0.96)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(233, 253, 255, 0.75)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    for (let i = 0; i < 4; i += 1) {
+      const a = performance.now() / 520 + i * TWO_PI / 4;
+      ctx.beginPath();
+      ctx.arc(t.x + Math.cos(a) * 27, t.y + Math.sin(a) * 27, 3, 0, TWO_PI);
+      ctx.fillStyle = i % 2 ? mainColor : "#ffffff";
+      ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+  } else if (shapeDef.style === "crystal") {
+    const points = [
+      [0, -32], [18, -9], [12, 27], [0, 34], [-12, 27], [-18, -9]
+    ];
+    ctx.beginPath();
+    points.forEach(([px, py], i) => {
+      const x = t.x + px;
+      const y = t.y + py;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = darkColor;
+    ctx.fill();
+    ctx.strokeStyle = mainColor;
+    ctx.lineWidth = 3;
+    ctx.shadowColor = mainColor;
+    ctx.shadowBlur = 18;
+    ctx.stroke();
+
+    ctx.strokeStyle = "rgba(233, 253, 255, 0.64)";
+    ctx.lineWidth = 1.5;
+    [[0, -32], [0, 34], [18, -9], [-18, -9], [12, 27], [-12, 27]].forEach(([px, py], i, arr) => {
+      if (i % 2 !== 0) return;
+      ctx.beginPath();
+      ctx.moveTo(t.x, t.y + 2);
+      ctx.lineTo(t.x + px, t.y + py);
+      ctx.stroke();
+    });
+    ctx.shadowBlur = 0;
+  } else if (shapeDef.style === "blade") {
+    ctx.shadowColor = mainColor;
+    ctx.shadowBlur = 18;
+    for (let i = 0; i < 4; i += 1) {
+      const a = i * TWO_PI / 4 + performance.now() / 980;
+      ctx.save();
+      ctx.translate(t.x, t.y);
+      ctx.rotate(a);
+      ctx.beginPath();
+      ctx.moveTo(0, -8);
+      ctx.lineTo(33, -5);
+      ctx.lineTo(22, 8);
+      ctx.lineTo(0, 6);
+      ctx.closePath();
+      ctx.fillStyle = i % 2 ? "rgba(233, 253, 255, 0.78)" : darkColor;
+      ctx.fill();
+      ctx.strokeStyle = mainColor;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.beginPath();
+    ctx.arc(t.x, t.y, 10, 0, TWO_PI);
+    ctx.fillStyle = "rgba(233, 253, 255, 0.95)";
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  } else if (shapeDef.style === "void") {
+    const time = performance.now() / 360;
+    ctx.beginPath();
+    for (let i = 0; i < sides; i += 1) {
+      const angle = -Math.PI / 2 + (i / sides) * TWO_PI;
+      const r = 22 + Math.sin(time + i * 1.7) * 5;
+      const x = t.x + Math.cos(angle) * r;
+      const y = t.y + Math.sin(angle) * r;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = "rgba(2, 2, 12, 0.96)";
+    ctx.fill();
+    ctx.strokeStyle = mainColor;
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = mainColor;
+    ctx.shadowBlur = 18;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(t.x, t.y, 10 + Math.sin(time * 1.6) * 2, 0, TWO_PI);
+    ctx.fillStyle = "rgba(255, 92, 178, 0.78)";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(t.x, t.y, 29, time, time + Math.PI * 0.72);
+    ctx.strokeStyle = "rgba(85, 236, 255, 0.65)";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
   } else {
     ctx.beginPath();
     for (let i = 0; i < sides; i += 1) {
@@ -4539,6 +4843,32 @@ function drawTower() {
         ctx.beginPath();
         ctx.moveTo(t.x, t.y);
         ctx.lineTo(t.x + Math.cos(a) * (36 + hitPulse * 14), t.y + Math.sin(a) * (36 + hitPulse * 14));
+        ctx.stroke();
+      }
+    } else if (shapeDef.style === "star" || shapeDef.style === "crystal") {
+      ctx.strokeStyle = `rgba(255, 255, 255, ${0.72 * hitPulse})`;
+      ctx.lineWidth = 2.5;
+      for (let i = 0; i < sides; i += 1) {
+        const a = -Math.PI / 2 + i * TWO_PI / sides;
+        ctx.beginPath();
+        ctx.moveTo(t.x, t.y);
+        ctx.lineTo(t.x + Math.cos(a) * (38 + hitPulse * 16), t.y + Math.sin(a) * (38 + hitPulse * 16));
+        ctx.stroke();
+      }
+    } else if (shapeDef.style === "ring" || shapeDef.style === "void") {
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, 31 + hitPulse * 22, 0, TWO_PI);
+      ctx.strokeStyle = `rgba(255, 92, 178, ${0.62 * hitPulse})`;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    } else if (shapeDef.style === "blade") {
+      ctx.strokeStyle = `rgba(255, 255, 255, ${0.76 * hitPulse})`;
+      ctx.lineWidth = 3;
+      for (let i = 0; i < 4; i += 1) {
+        const a = i * TWO_PI / 4 + hitPulse * 0.8;
+        ctx.beginPath();
+        ctx.moveTo(t.x + Math.cos(a) * 18, t.y + Math.sin(a) * 18);
+        ctx.lineTo(t.x + Math.cos(a) * (48 + hitPulse * 18), t.y + Math.sin(a) * (48 + hitPulse * 18));
         ctx.stroke();
       }
     } else {

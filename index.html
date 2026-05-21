@@ -264,9 +264,9 @@
           <h2 style="display:flex; align-items:center; gap:8px;"><i class="sprite-icon icon-cards" style="width:28px; height:28px;"></i> Экипировка Карт</h2>
           <strong class="resource-pill resource-crystals"><i class="sprite-icon icon-crystal" aria-hidden="true"></i><span id="cardsCrystals">0</span></strong>
         </div>
-        <div id="cardSlotsGrid" class="cards-grid" style="margin-bottom: 30px;"></div>
-        <button id="pullCardBtn" class="primary-btn" style="background: linear-gradient(135deg, #b375ff, #ff5c9b);">Вытянуть карту (20 ♦)</button>
-        <div class="info-panel"><strong>Твоя коллекция</strong><span>Нажми на карту, чтобы экипировать её в свободный слот.</span></div>
+        <div id="cardSlotsGrid" class="cards-grid card-slots-grid"></div>
+        <button id="pullCardBtn" class="primary-btn pull-card-btn"><span class="sprite-icon icon-cards"></span>Вытянуть карту <b>(20 ♦)</b></button>
+        <div class="info-panel card-collection-head"><i class="sprite-icon icon-cards"></i><strong>Твоя коллекция</strong><span>Нажми на карту, чтобы экипировать её в свободный слот.</span></div>
         <div id="cardsInventory" class="cards-grid"></div>
       </section>
 
@@ -428,6 +428,24 @@
           <div id="offlineReport" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px; line-height: 1.4;"></div>
           <div id="dailyRewardReport" style="color: var(--accent-cyan); font-size: 1rem; margin-bottom: 20px;"></div>
           <button id="claimWelcomeBtn" class="primary-btn">Забрать</button>
+        </div>
+      </div>
+
+      <div id="cardPullOverlay" class="reward-overlay card-pull-overlay hidden">
+        <div class="reward-box card-pull-box">
+          <span id="cardPullStage">Синхронизация колоды</span>
+          <strong id="cardPullTitle">Вытягиваем карту...</strong>
+          <div class="card-pull-reveal" aria-hidden="true">
+            <div class="card-pull-burst"></div>
+            <div class="card-pull-rays"></div>
+            <div id="cardPullResult" class="card-pull-result">
+              <div class="card-pull-icon"><i id="cardPullIcon" class="sprite-icon icon-cards"></i></div>
+              <strong id="cardPullName">Карта</strong>
+              <span id="cardPullLevel">Ур. 0</span>
+              <i id="cardPullEffect">Эффект</i>
+            </div>
+          </div>
+          <button id="closeCardPullBtn" class="primary-btn card-pull-close" type="button">Забрать</button>
         </div>
       </div>
     </main>
