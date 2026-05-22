@@ -8,10 +8,6 @@ const TWO_PI = Math.PI * 2;
 const ARENA_CAMERA_ZOOM_OUT = 2.5;
 
 const balance = {
-  waveEnemyBase: 3,
-  waveEnemyGrowth: 1.05,
-  waveHpGrowth: 1.068,
-  waveDamageGrowth: 1.052,
   waveSpeedGrowth: 0.006,
   spawnBaseDelay: 0.95,
   spawnMinDelay: 0.42,
@@ -20,13 +16,7 @@ const balance = {
   coinWaveBonus: 0.9,
   coinKillRate: 0.03,
   coinBossBonus: 7,
-  bossHpGrowth: 2.1,
-  bossDamageGrowth: 1.28,
-  bossRewardGrowth: 0.25,
   bossTierReward: 0.28,
-  goldenCoreCashMult: 1.7,
-  goldenCoreCashGrowth: 0.08,
-  goldenCoreCashCap: 2.5,
   overclockedSpeed: 1.18,
   overclockedUpgradeDiscount: 0.9,
   glassCoreHp: 0.7,
@@ -103,7 +93,7 @@ const labDefs = [
   { id: "labCoins", name: "Множитель монет", desc: "Глобальный бонус всех монет", getEffect: (lvl) => `+${Math.min(50, lvl * 0.8).toFixed(1)}%`, baseCost: 250, costGrowth: 1.35, baseTime: 900, timeGrowth: 1.26, max: 60 },
   { id: "labStartingCash", name: "Стартовый кэш", desc: "Увеличивает $ на старте", getEffect: (lvl) => `+$${Math.min(300, lvl * 8)}`, baseCost: 500, costGrowth: 1.3, baseTime: 1200, timeGrowth: 1.22, max: 40 },
   { id: "labHealth", name: "Прочность ядра", desc: "Глобальное здоровье башни", getEffect: (lvl) => `+${Math.min(48, lvl * 0.8).toFixed(1)}%`, baseCost: 180, costGrowth: 1.32, baseTime: 420, timeGrowth: 1.24, max: 60 },
-  { id: "labCritDamage", name: "Крит-калибровка", desc: "Усиление критического урона", getEffect: (lvl) => `+${lvl * 2}%`, baseCost: 320, costGrowth: 1.36, baseTime: 1800, timeGrowth: 1.26, max: 40 },
+  { id: "labCritDamage", name: "Крит-калибровка", desc: "Усиление критического урона", getEffect: (lvl) => `+${Math.min(60, lvl * 1.5).toFixed(1)}%`, baseCost: 320, costGrowth: 1.36, baseTime: 1800, timeGrowth: 1.26, max: 40 },
   { id: "labBossDamage", name: "Анти-босс протокол", desc: "Дополнительный урон по боссам", getEffect: (lvl) => `+${Math.min(50, lvl)}%`, baseCost: 400, costGrowth: 1.38, baseTime: 2400, timeGrowth: 1.27, max: 50 },
   { id: "labUpgradeDiscount", name: "Оптимизация апгрейдов", desc: "Снижает стоимость улучшений в забеге", getEffect: (lvl) => `-${(Math.min(12, lvl * 0.4)).toFixed(1)}%`, baseCost: 450, costGrowth: 1.4, baseTime: 3600, timeGrowth: 1.28, max: 30 },
   { id: "labModuleParts", name: "Разбор модулей", desc: "Больше деталей модулей с боссов", getEffect: (lvl) => `+${lvl}%`, baseCost: 600, costGrowth: 1.38, baseTime: 5400, timeGrowth: 1.27, max: 30 },
@@ -111,13 +101,13 @@ const labDefs = [
   { id: "labLabSpeed", name: "Скорость лаборатории", desc: "Сокращает время исследований", getEffect: (lvl) => `-${Math.min(40, lvl)}% времени`, baseCost: 500, costGrowth: 1.36, baseTime: 2400, timeGrowth: 1.25, max: 40 },
   { id: "labLightSpeed", name: "Световые выстрелы", desc: "Снаряды почти мгновенно долетают до цели", getEffect: (lvl) => `+${lvl * 12}% скорости`, baseCost: 700, costGrowth: 1.38, baseTime: 3600, timeGrowth: 1.26, max: 25 },
   { id: "labGarlicThorns", name: "Чесночные шипы", desc: "Шипы дополнительно прожигают вампиров рядом с ядром", getEffect: (lvl) => `${lvl * 5}% силы шипов`, baseCost: 850, costGrowth: 1.4, baseTime: 5400, timeGrowth: 1.27, max: 20 },
-  { id: "labPerkWaves", name: "Чаще перки", desc: "Снижает требование волн между перками", getEffect: (lvl) => `-${Math.min(10, lvl)} волн`, baseCost: 900, costGrowth: 1.42, baseTime: 7200, timeGrowth: 1.28, max: 10 },
+  { id: "labPerkWaves", name: "Чаще перки", desc: "Снижает требование волн между перками", getEffect: (lvl) => `-${Math.min(5, lvl)} волн`, baseCost: 900, costGrowth: 1.42, baseTime: 7200, timeGrowth: 1.28, max: 5 },
   { id: "labGoldenBonus", name: "Бонус Golden Tower", desc: "Усиливает доход во время Золотой Башни", getEffect: (lvl) => `+${Math.min(45, lvl * 1.5).toFixed(1)}% дохода`, baseCost: 1100, costGrowth: 1.42, baseTime: 7200, timeGrowth: 1.28, max: 30 },
   { id: "labGoldenDuration", name: "Длительность Golden Tower", desc: "Продлевает активность Золотой Башни", getEffect: (lvl) => `+${Math.min(5, lvl * 0.2).toFixed(1)}с`, baseCost: 1250, costGrowth: 1.43, baseTime: 9000, timeGrowth: 1.28, max: 25 },
   { id: "labBlackHoleCoins", name: "Монеты Black Hole", desc: "Усиливает награды за убийства внутри Черной Дыры", getEffect: (lvl) => `+${Math.min(45, lvl * 1.5).toFixed(1)}%`, baseCost: 1350, costGrowth: 1.44, baseTime: 9600, timeGrowth: 1.29, max: 30 },
   { id: "labBlackHoleDamage", name: "Урон Black Hole", desc: "Враги внутри Черной Дыры теряют долю максимального здоровья", getEffect: (lvl) => `${Math.min(1, lvl * 0.04).toFixed(2)}% ОЗ/с`, baseCost: 1500, costGrowth: 1.45, baseTime: 10800, timeGrowth: 1.29, max: 25 },
   { id: "labBlackHoleDuration", name: "Длительность Black Hole", desc: "Продлевает Черную Дыру", getEffect: (lvl) => `+${Math.min(4, lvl * 0.2).toFixed(1)}с`, baseCost: 1450, costGrowth: 1.44, baseTime: 10200, timeGrowth: 1.29, max: 20 },
-  { id: "labDeathWaveHealth", name: "Здоровье Death Wave", desc: "Убийства Волной Смерти дают временный запас ОЗ", getEffect: (lvl) => `+${lvl}% лимита`, baseCost: 1600, costGrowth: 1.45, baseTime: 12000, timeGrowth: 1.3, max: 25 }
+  { id: "labDeathWaveHealth", name: "Здоровье Death Wave", desc: "Убийства Волной Смерти дают временный запас ОЗ", getEffect: (lvl) => `+${Math.min(15, lvl * 0.6).toFixed(1)}% лимита`, baseCost: 1600, costGrowth: 1.45, baseTime: 12000, timeGrowth: 1.3, max: 25 }
 ];
 
 const labIconMap = {
@@ -154,21 +144,50 @@ const cardDefs = [
   { id: "cardDefense", name: "Экстра защита", desc: "+2% защиты за уровень", getEffect: (lvl) => `+${lvl * 2}%` },
   { id: "cardFortress", name: "Крепость", desc: "+20% абсолютной защиты за уровень", getEffect: (lvl) => `x${(1 + lvl * 0.2).toFixed(2)}` },
   { id: "cardFreeUpgrade", name: "Бесплатные апгрейды", desc: "+3% шанса за уровень", getEffect: (lvl) => `+${lvl * 3}%` },
-  { id: "cardExtraOrbs", name: "Доп. сферы", desc: "+1 орбитальная сфера за уровень", getEffect: (lvl) => `+${lvl} сф.` },
-  { id: "cardWaveSkip", name: "Пропуск волны", desc: "+3% шанса за уровень", getEffect: (lvl) => `+${lvl * 3}%` },
+  { id: "cardExtraOrbs", name: "Доп. сферы", desc: "+1 сфера за 2 уровня, максимум +2", getEffect: (lvl) => `+${Math.min(2, Math.ceil(lvl / 2))} сф.` },
+  { id: "cardWaveSkip", name: "Пропуск волны", desc: "+1.5% шанса за уровень, максимум 12%", getEffect: (lvl) => `+${Math.min(12, lvl * 1.5).toFixed(1)}%` },
   { id: "cardEnemyBalance", name: "Баланс врагов", desc: "Больше врагов и больше наград", getEffect: (lvl) => `+${lvl * 8}%` },
   { id: "cardDeathRay", name: "Смертельный луч", desc: "Периодически прорезает линию врагов", getEffect: (lvl) => `${Math.max(9, 18 - lvl * 1.5).toFixed(1)}с КД` },
   { id: "cardEnergyShield", name: "Энергощит", desc: "Блокирует смертельный удар раз в забег", getEffect: (lvl) => `${1 + Math.floor(lvl / 3)} заряд` },
   { id: "cardSecondWind", name: "Второе дыхание", desc: "Один раз восстанавливает ядро после смерти", getEffect: (lvl) => `${25 + lvl * 10}% ОЗ` },
   { id: "cardCriticalCoin", name: "Крит-монета", desc: "Криты повышают шанс монет", getEffect: (lvl) => `+${lvl * 3}%` },
-  { id: "cardPlasmaCannon", name: "Плазменная пушка", desc: "Боссы получают урон при появлении", getEffect: (lvl) => `${lvl * 5}% ОЗ босса` },
+  { id: "cardPlasmaCannon", name: "Плазменная пушка", desc: "Боссы получают ограниченный урон при появлении", getEffect: (lvl) => `${Math.min(18, lvl * 3.5).toFixed(1)}% ОЗ босса` },
   { id: "cardWaveAccelerator", name: "Ускоритель волн", desc: "Сокращает паузы между волнами", getEffect: (lvl) => `-${lvl * 8}% паузы` },
   { id: "cardLandmineStun", name: "Оглушающие мины", desc: "Мины замедляют выживших врагов", getEffect: (lvl) => `${0.6 + lvl * 0.2}с` },
   { id: "cardEnergyNet", name: "Энергосеть", desc: "На время ловит босса при появлении", getEffect: (lvl) => `${0.8 + lvl * 0.25}с` },
-  { id: "cardDemonMode", name: "Демон-режим", desc: "Короткий стартовый разгон урона и скорости", getEffect: (lvl) => `${4 + lvl * 2}с` },
+  { id: "cardDemonMode", name: "Демон-режим", desc: "Короткий стартовый разгон урона и скорости", getEffect: (lvl) => `${(3 + lvl * 1.2).toFixed(1)}с` },
 ];
 const CARD_PULL_COST = 20;
 const CARD_SLOT_COSTS = [0, 50, 150, 400, 1000]; // 1-й слот бесплатен
+const cardRarityDefs = {
+  common: { name: "Обычная", weight: 70 },
+  rare: { name: "Редкая", weight: 24 },
+  epic: { name: "Эпическая", weight: 6 },
+};
+const cardRarityMap = {
+  cardDamage: "common",
+  cardSpeed: "common",
+  cardHealth: "common",
+  cardCash: "common",
+  cardCoins: "common",
+  cardRegen: "common",
+  cardDefense: "common",
+  cardFortress: "rare",
+  cardSlow: "rare",
+  cardFreeUpgrade: "rare",
+  cardWaveSkip: "rare",
+  cardEnemyBalance: "rare",
+  cardCriticalCoin: "rare",
+  cardExtraOrbs: "epic",
+  cardDeathRay: "epic",
+  cardEnergyShield: "epic",
+  cardSecondWind: "epic",
+  cardPlasmaCannon: "epic",
+  cardWaveAccelerator: "epic",
+  cardLandmineStun: "rare",
+  cardEnergyNet: "epic",
+  cardDemonMode: "epic",
+};
 
 const cardIconMap = {
   cardDamage: "icon-damage",
@@ -363,14 +382,14 @@ const runUpgradeIconMap = {
 const defaultRunUpgradeIconClass = "icon-tower-upgrade";
 
 const ultimateDefs = [
-  { id: "stormChain", name: "Chain Lightning", cost: 800, cooldown: 11, desc: "Молния перескакивает между врагами.", getUpgradeInfo: (lvl) => `Целей: ${4+lvl} -> ${4+lvl+1} | Урон: x${4+lvl}` },
-  { id: "timeField", name: "Chrono Field", cost: 900, cooldown: 18, desc: "Замедляет врагов вокруг башни.", getUpgradeInfo: (lvl) => `Замедление: постоянно` },
+  { id: "stormChain", name: "Chain Lightning", cost: 800, cooldown: 11, desc: "Молния перескакивает между врагами.", getUpgradeInfo: (lvl) => `Целей: ${Math.min(9, 3+lvl)} -> ${Math.min(9, 4+lvl)} | Урон: x${(3.8+lvl*0.8).toFixed(1)}` },
+  { id: "timeField", name: "Chrono Field", cost: 900, cooldown: 18, desc: "Кратко замедляет врагов вокруг башни.", getUpgradeInfo: (lvl) => `Длительность: ${(2.8+lvl*0.25).toFixed(1)}с` },
   { id: "missileSwarm", name: "Smart Missile", cost: 1100, cooldown: 16, desc: "Запускает самонаводящиеся ракеты.", getUpgradeInfo: (lvl) => `Ракет: ${5+lvl} -> ${5+lvl+1}` },
-  { id: "solarBeam", name: "Солнечный луч", cost: 1400, cooldown: 45, desc: "Мощный луч на 360 градусов.", getUpgradeInfo: (lvl) => `Урон/сек: x${15+lvl*5} -> x${15+(lvl+1)*5}` },
-  { id: "goldenCore", name: "Golden Tower", cost: 1600, cooldown: 35, desc: "Умножает $ и монеты во время активности.", getUpgradeInfo: (lvl) => `Длительность: ${10+lvl*2}с -> ${10+(lvl+1)*2}с` },
-  { id: "blackHole", name: "Black Hole", cost: 1850, cooldown: 42, desc: "Стягивает врагов и увеличивает награды за убийства внутри.", getUpgradeInfo: (lvl) => `Длительность: ${6+lvl}с -> ${6+lvl+1}с` },
+  { id: "solarBeam", name: "Солнечный луч", cost: 1400, cooldown: 45, desc: "Мощный луч на 360 градусов.", getUpgradeInfo: (lvl) => `Урон/сек: x${(11+lvl*3).toFixed(0)} -> x${(11+(lvl+1)*3).toFixed(0)}` },
+  { id: "goldenCore", name: "Golden Tower", cost: 1600, cooldown: 35, desc: "Временно добавляет capped-бонус к доходу.", getUpgradeInfo: (lvl) => `Длительность: ${(8+lvl*1.5).toFixed(1)}с -> ${(8+(lvl+1)*1.5).toFixed(1)}с` },
+  { id: "blackHole", name: "Black Hole", cost: 1850, cooldown: 42, desc: "Стягивает врагов и дает мягкий capped-бонус к наградам внутри.", getUpgradeInfo: (lvl) => `Длительность: ${(5+lvl*0.8).toFixed(1)}с -> ${(5+(lvl+1)*0.8).toFixed(1)}с` },
   { id: "deathWave", name: "Death Wave", cost: 5600, cooldown: 90, desc: "Короткая волна энергии вокруг башни.", getUpgradeInfo: (lvl) => `Урон: x${(1.7+lvl*0.35).toFixed(1)} -> x${(1.7+(lvl+1)*0.35).toFixed(1)}` },
-  { id: "poisonSwamp", name: "Poison Swamp", cost: 2200, cooldown: 18, desc: "Создает токсичные лужи.", getUpgradeInfo: (lvl) => `Луж: ${3+lvl} -> ${3+lvl+1}` },
+  { id: "poisonSwamp", name: "Poison Swamp", cost: 2200, cooldown: 18, desc: "Создает компактные токсичные лужи.", getUpgradeInfo: (lvl) => `Луж: ${Math.min(6, 2+lvl)} -> ${Math.min(6, 3+lvl)}` },
 ];
 
 const ultimateLoadoutLimit = 3;
@@ -432,28 +451,28 @@ const dailyQuestPool = [
 ];
 
 const bossRewardDefs = [
-  { id: "overcharge", name: "Линза перегруза", desc: "+18% урона и +8 дальности", apply: () => {
+  { id: "overcharge", name: "Линза перегруза", desc: "+9% урона и +5 дальности", apply: () => {
     game.tower.damage *= 1.09;
     game.tower.range += 5;
     if(game.rewardMultipliers) game.rewardMultipliers.damage *= 1.09;
   } },
-  { id: "pulseEngine", name: "Импульсный двигатель", desc: "+16% скорости атаки", apply: () => {
-    game.tower.attackSpeed *= 1.08;
+  { id: "pulseEngine", name: "Импульсный двигатель", desc: "+8% скорости атаки, до общего капа", apply: () => {
+    game.tower.attackSpeed = Math.min(balance.attackSpeedCap, game.tower.attackSpeed * 1.08);
   } },
-  { id: "repairLoop", name: "Ремонтный цикл", desc: "Восстановить 35% ОЗ и +1 регенерации", apply: () => {
+  { id: "repairLoop", name: "Ремонтный цикл", desc: "Восстановить 25% ОЗ и +0.5 регенерации", apply: () => {
     game.tower.hp = Math.min(game.tower.maxHp, game.tower.hp + game.tower.maxHp * 0.25);
     game.tower.regen += 0.5;
   } },
-  { id: "luckyCapacitor", name: "Удачный конденсатор", desc: "+7% крита и +0.25 силы крита", apply: () => {
+  { id: "luckyCapacitor", name: "Удачный конденсатор", desc: "+3.5% крита и +0.15 силы крита", apply: () => {
     game.tower.critChance += 0.035;
     game.tower.critDamage += 0.15;
   } },
-  { id: "wideBurst", name: "Широкий залп", desc: "+8% мультивыстрела и +6% отбрасывания", apply: () => {
+  { id: "wideBurst", name: "Широкий залп", desc: "+4% мультивыстрела и +3.5% отбрасывания", apply: () => {
     game.tower.multiShot += 0.04;
     game.tower.knockback += 0.035;
   } },
-  { id: "salvageCode", name: "Код утилизации", desc: "+15% бонуса $ и +$80 сразу", apply: () => {
-    game.tower.cashBonus += 0.08;
+  { id: "salvageCode", name: "Код утилизации", desc: "+8% бонуса $ и +$50 сразу", apply: () => {
+    game.tower.cashBonus = Math.min(0.9, game.tower.cashBonus + 0.08);
     game.cash += 50;
   } },
 ];
@@ -1342,8 +1361,8 @@ function startRun(options = {}) {
   const cardCoinBonus = getCardRunBonus("cardCoins", 0.15);
   const cardDefenseBonus = progress.equippedCards.includes("cardDefense") ? getCardLevel("cardDefense") * 0.02 : 0;
   const cardFreeUpgradeBonus = progress.equippedCards.includes("cardFreeUpgrade") ? getCardLevel("cardFreeUpgrade") * 0.03 : 0;
-  const cardExtraOrbs = progress.equippedCards.includes("cardExtraOrbs") ? getCardLevel("cardExtraOrbs") : 0;
-  const cardWaveSkipBonus = progress.equippedCards.includes("cardWaveSkip") ? getCardLevel("cardWaveSkip") * 0.03 : 0;
+  const cardExtraOrbs = progress.equippedCards.includes("cardExtraOrbs") ? Math.min(2, Math.ceil(getCardLevel("cardExtraOrbs") / 2)) : 0;
+  const cardWaveSkipBonus = progress.equippedCards.includes("cardWaveSkip") ? Math.min(0.12, getCardLevel("cardWaveSkip") * 0.015) : 0;
   
   game = {
     ended: false,
@@ -1363,7 +1382,7 @@ function startRun(options = {}) {
       range: 160,
       regen: 0,
       critChance: 0.05 + p.criticalChance * 0.005,
-      critDamage: 2 + (progress.labs.levels.labCritDamage || 0) * 0.02,
+      critDamage: 2 + Math.min(0.6, (progress.labs.levels.labCritDamage || 0) * 0.015),
       superCritChance: 0,
       superCritMult: 3,
       multiShot: 0,
@@ -1386,7 +1405,7 @@ function startRun(options = {}) {
       freeUpgradeChance: (p.freeUpgrade || 0) * 0.004 + cardFreeUpgradeBonus,
       runCoinBonus: cardCoinBonus,
       coinWaveChance: 0,
-      orbCount: Math.min(8, cardExtraOrbs),
+      orbCount: Math.min(6, cardExtraOrbs),
       orbSpeed: 1.5 + (p.orbSpeed || 0) * 0.08,
       orbAngle: 0,
       deathDefy: 0,
@@ -1407,9 +1426,9 @@ function startRun(options = {}) {
       secondWindReady: progress.equippedCards.includes("cardSecondWind"),
       deathRayTimer: progress.equippedCards.includes("cardDeathRay") ? Math.max(9, 18 - getCardLevel("cardDeathRay") * 1.5) : 0,
       deathRayCooldown: progress.equippedCards.includes("cardDeathRay") ? Math.max(9, 18 - getCardLevel("cardDeathRay") * 1.5) : 0,
-      plasmaCannon: progress.equippedCards.includes("cardPlasmaCannon") ? getCardLevel("cardPlasmaCannon") * 0.05 : 0,
+      plasmaCannon: progress.equippedCards.includes("cardPlasmaCannon") ? Math.min(0.18, getCardLevel("cardPlasmaCannon") * 0.035) : 0,
       energyNetDuration: progress.equippedCards.includes("cardEnergyNet") ? 0.8 + getCardLevel("cardEnergyNet") * 0.25 : 0,
-      demonTimer: progress.equippedCards.includes("cardDemonMode") ? 4 + getCardLevel("cardDemonMode") * 2 : 0,
+      demonTimer: progress.equippedCards.includes("cardDemonMode") ? 3 + getCardLevel("cardDemonMode") * 1.2 : 0,
       landmineStunDuration: progress.equippedCards.includes("cardLandmineStun") ? 0.6 + getCardLevel("cardLandmineStun") * 0.2 : 0,
     },
     enemies: [],
@@ -1454,7 +1473,7 @@ function startRun(options = {}) {
   applyStarterRunUpgradeLevels();
   game.tower.hp = game.tower.maxHp;
   if (hasUniqueModule("orbitalAugmentation")) {
-    game.tower.orbCount = Math.min(10, game.tower.orbCount + 1 + Math.floor(getUniqueModulePower("orbitalAugmentation")));
+    game.tower.orbCount = Math.min(8, game.tower.orbCount + Math.min(2, 1 + Math.floor(getUniqueModulePower("orbitalAugmentation") * 0.45)));
   }
   game.synergies = getActiveSynergies();
   if (hasSynergy("Заряженный фокус")) game.tower.critChance += 0.05;
@@ -1479,7 +1498,7 @@ function buildRunUltimates() {
     .slice(0, ultimateLoadoutLimit)
     .map((def) => {
       const level = progress.ultimates[def.id].level;
-      const nexusSync = hasUniqueModule("multiverseNexus") && ["goldenCore", "blackHole", "deathWave"].includes(def.id) ? 0.82 : 1;
+      const nexusSync = hasUniqueModule("multiverseNexus") && ["goldenCore", "blackHole", "deathWave"].includes(def.id) ? 0.9 : 1;
       const stoneCut = (progress.stoneUpgrades.cd || 0) * 0.5;
       const upgradedCooldown = Math.max(def.cooldown * 0.6, def.cooldown * Math.pow(0.97, level - 1) - stoneCut);
       const maxTimer = Math.max(4, upgradedCooldown * nexusSync);
@@ -1521,7 +1540,7 @@ function spawnWave() {
     game.waveTimeRemaining = game.waveDuration;
   }
   
-  const perkInterval = Math.max(8, Math.round((20 - (progress.labs.levels.labPerkWaves || 0)) * (1 - (game.perkWaveReduction || 0))));
+  const perkInterval = Math.max(10, Math.round((20 - Math.min(5, progress.labs.levels.labPerkWaves || 0)) * (1 - Math.min(0.35, game.perkWaveReduction || 0))));
   if (game.wave > 0 && game.wave % perkInterval === 0) {
     offerPerks();
   }
@@ -1537,7 +1556,7 @@ function triggerFreeUpgrade() {
   game.stats.runUpgrades += 1;
   applyUpgradeStat(target.id);
   if (hasUniqueModule("blackHoleDigester")) {
-    game.blackHoleDigestStacks = Math.min(12, (game.blackHoleDigestStacks || 0) + getUniqueModulePower("blackHoleDigester"));
+    game.blackHoleDigestStacks = Math.min(8, (game.blackHoleDigestStacks || 0) + Math.min(1.5, getUniqueModulePower("blackHoleDigester")));
   }
   addText(`Бесплатно: ${target.name}`, game.tower.x, game.tower.y - 60, "#55ecff");
   renderRunUpgrades();
@@ -1592,7 +1611,7 @@ function setWavePause(seconds, text = "") {
     if (game.tower.hp < maxOverheal) {
       game.tower.hp = Math.min(maxOverheal, game.tower.hp + healAmount);
       if (hasUniqueModule("galaxyCompressor")) {
-        const cut = 2 + getUniqueModulePower("galaxyCompressor") * 2;
+        const cut = Math.min(3.5, 1.5 + getUniqueModulePower("galaxyCompressor"));
         game.ultimates.forEach((ultimate) => (ultimate.timer = Math.max(0.5, ultimate.timer - cut)));
       }
       addEffect("time", game.tower.x, game.tower.y, 0.8, "#ffb020");
@@ -1843,7 +1862,7 @@ function updateGame(dt) {
 
   if (game.tower.regen > 0 && game.tower.hp > 0 && game.tower.hp < game.tower.maxHp) {
     const wormhole = getUniqueModulePower("wormholeRedirector");
-    const regenCap = wormhole > 0 ? game.tower.maxHp * (1 + game.tower.packageMax * Math.min(1, wormhole * 0.35)) : game.tower.maxHp;
+    const regenCap = wormhole > 0 ? game.tower.maxHp * (1 + game.tower.packageMax * Math.min(0.45, wormhole * 0.18)) : game.tower.maxHp;
     game.tower.hp = Math.min(regenCap, game.tower.hp + game.tower.regen * dt);
   }
 
@@ -2010,6 +2029,10 @@ function updateEnemies(dt) {
     let targetSlow = 1;
     if (progress.equippedCards.includes("cardSlow")) targetSlow -= getCardLevelFromCount(progress.cards["cardSlow"] || 0) * 0.05;
     
+    if ((enemy.timeFieldTimer || 0) > 0) {
+      enemy.timeFieldTimer = Math.max(0, enemy.timeFieldTimer - dt);
+      targetSlow = Math.min(targetSlow, 0.42);
+    }
     enemy.slow = Math.min(targetSlow, enemy.slow + dt * 0.5);
     enemy.flash = Math.max(0, (enemy.flash || 0) - dt);
     enemy.orbHitTimer = Math.max(0, (enemy.orbHitTimer || 0) - dt);
@@ -2276,7 +2299,7 @@ function updateProjectiles(dt) {
         if (newTargets.length > 0) {
           p.target = newTargets[Math.floor(Math.random() * newTargets.length)];
           p.bounces += 1;
-          if (hasUniqueModule("astralDeliverance")) p.damage *= 1 + 0.18 * getUniqueModulePower("astralDeliverance");
+          if (hasUniqueModule("astralDeliverance")) p.damage *= Math.min(1.45, 1 + 0.1 * getUniqueModulePower("astralDeliverance"));
           bounced = true;
         }
       }
@@ -2406,8 +2429,8 @@ function killEnemy(enemy) {
   game.stats.kills += 1;
 
   if (enemy.lastHitSource === "deathWave" && (progress.labs.levels.labDeathWaveHealth || 0) > 0) {
-    const cap = game.tower.maxHp * Math.min(0.75, (progress.labs.levels.labDeathWaveHealth || 0) * 0.01);
-    const gain = Math.min(cap - game.deathWaveHealthBonus, game.tower.maxHp * 0.012);
+    const cap = game.tower.maxHp * Math.min(0.35, (progress.labs.levels.labDeathWaveHealth || 0) * 0.006);
+    const gain = Math.min(cap - game.deathWaveHealthBonus, game.tower.maxHp * 0.008);
     if (gain > 0) {
       game.deathWaveHealthBonus += gain;
       game.tower.maxHp += gain;
@@ -2646,8 +2669,9 @@ function updateVisualFeedback(dt) {
       const enemyAngle = Math.atan2(e.y - game.tower.y, e.x - game.tower.x);
       let diff = Math.abs(Math.atan2(Math.sin(enemyAngle - currentAngle), Math.cos(enemyAngle - currentAngle)));
       if (diff < 0.25) {
-        const dmgPerSec = game.tower.damage * (15 + eff.level * 5);
-        damageEnemy(e, dmgPerSec * dt);
+        const dmgPerSec = game.tower.damage * (11 + eff.level * 3);
+        const bossClamp = e.type === "boss" ? 0.55 : 1;
+        damageEnemy(e, dmgPerSec * bossClamp * dt);
         if (hasSynergy("Орбитальная линза")) e.slow = Math.min(e.slow, 0.45);
       }
     });
@@ -2666,15 +2690,20 @@ function triggerUltimate(ultimate) {
   const dmgBonus = 1 + (progress.stoneUpgrades.dmg || 0) * 0.05;
   if (ultimate.id === "stormChain") {
     const extraTargets = hasSynergy("Магнитная дуга") ? 2 : 0;
-    const targets = findTargets(4 + level + extraTargets);
-    targets.forEach((enemy) => damageEnemy(enemy, game.tower.damage * (4 + level) * dmgBonus));
+    const targets = findTargets(Math.min(9, 3 + level + extraTargets));
+    targets.forEach((enemy) => damageEnemy(enemy, game.tower.damage * (3.8 + level * 0.8) * dmgBonus));
     if (targets.length > 0) {
       const pts = [{x: game.tower.x, y: game.tower.y}, ...targets.map(t => ({x: t.x, y: t.y}))];
       game.effects.push({ type: "chain", pts, life: 0.4, maxLife: 0.4, color: "#55ecff" });
     }
   }
   if (ultimate.id === "timeField") {
-    game.enemies.forEach((enemy) => (enemy.slow = Math.min(enemy.slow, 0.35)));
+    game.enemies
+      .filter((enemy) => Math.hypot(enemy.x - game.tower.x, enemy.y - game.tower.y) <= 360)
+      .forEach((enemy) => {
+        enemy.slow = Math.min(enemy.slow, 0.42);
+        enemy.timeFieldTimer = Math.max(enemy.timeFieldTimer || 0, 2.8 + level * 0.25);
+      });
     addEffect("time", game.tower.x, game.tower.y, 1.5, "#24b47e");
   }
   if (ultimate.id === "missileSwarm") {
@@ -2878,7 +2907,7 @@ function applyUpgradeStat(id) {
   if (id === "maxInterest") t.maxInterest = Math.max(t.maxInterest, getAverageWaveReward() * 0.35);
   if (id === "freeUpgrade") t.freeUpgradeChance = Math.min(0.15, t.freeUpgradeChance + 0.004);
   if (id === "runCoinBonus") t.runCoinBonus += 0.05;
-  if (id === "coinWave") t.coinWaveChance = Math.min(0.45, t.coinWaveChance + 0.006);
+  if (id === "coinWave") t.coinWaveChance = Math.min(0.5, t.coinWaveChance + 0.01);
   if (id === "orbCount") t.orbCount = Math.min(10, t.orbCount + 1);
   if (id === "orbSpeed") t.orbSpeed += 0.12;
   if (id === "deathDefy") t.deathDefy = Math.min(0.3, t.deathDefy + 0.015);
@@ -3108,7 +3137,7 @@ function getNextUpgradeEffectString(id, level) {
     case "maxInterest": return `35% средней награды волны`;
     case "freeUpgrade": return `+0.4%`;
     case "runCoinBonus": return `+5.0%`;
-    case "coinWave": return `+0.6%`;
+    case "coinWave": return `+1.0%`;
     case "packageChance": return `+1.0%`;
     case "packageMax": return `+10.0%`;
     case "shockWave": return `волна чаще и сильнее`;
@@ -3120,16 +3149,19 @@ function getNextUpgradeEffectString(id, level) {
 }
 
 function getPermanentBonusString(id) {
-  const p = progress.permanent;
   const style = `style="color:var(--accent-pink); font-size:0.8rem; margin-top:2px; display:block;"`;
+  const labDamageBonus = Math.min(0.5, (progress.labs.levels.labDamage || 0) * 0.008);
+  const labHealthBonus = Math.min(0.48, (progress.labs.levels.labHealth || 0) * 0.008);
+  const labSpeedBonus = Math.min(0.2, (progress.labs.levels.labAttackSpeed || 0) * 0.004);
+  const prestigeBonus = (progress.prestige || 0) * 0.04;
   switch(id) {
-    case "damage": return `<span ${style}>(Вкл. Постоянное: база ${Math.round((10 + (p.baseDamage || 0) + (progress.eventShop.medalDamage || 0)) * (1 + (progress.prestige || 0) * 0.04) * (1 + (progress.labs.levels.labDamage || 0) * 0.01))})</span>`;
-    case "maxHealth": return `<span ${style}>(Вкл. Постоянное: база ${Math.round((100 + (p.baseHealth || 0) * 8) * (1 + (progress.labs.levels.labHealth || 0) * 0.012))})</span>`;
-    case "attackSpeed": return `<span ${style}>(Вкл. Постоянное: +${((p.baseAttackSpeed || 0) * 1.5 + (progress.labs.levels.labAttackSpeed || 0) * 0.6).toFixed(1)}%)</span>`;
-    case "critChance": return `<span ${style}>(Вкл. Постоянное: +${((p.criticalChance || 0) * 0.5).toFixed(1)}%)</span>`;
-    case "lifesteal": return `<span ${style}>(Вкл. Постоянное: +${((p.lifesteal || 0) * 0.1).toFixed(1)}%)</span>`;
-    case "defensePercent": return `<span ${style}>(Вкл. Постоянное: +${((p.defensePercent || 0) * 0.7).toFixed(1)}%)</span>`;
-    case "thorns": return `<span ${style}>(Вкл. Постоянное: +${(p.thorns || 0) * 2}%)</span>`;
+    case "damage": return `<span ${style}>(Вкл. постоянное: база ${Math.round((10 + getPermanentLevel("baseDamage") + (progress.eventShop.medalDamage || 0)) * (1 + prestigeBonus + labDamageBonus))})</span>`;
+    case "maxHealth": return `<span ${style}>(Вкл. постоянное: база ${Math.round((100 + getPermanentLevel("baseHealth") * 8) * (1 + labHealthBonus))})</span>`;
+    case "attackSpeed": return `<span ${style}>(Вкл. постоянное: +${Math.min((getPermanentLevel("baseAttackSpeed") * 0.015 + labSpeedBonus) * 100, (balance.attackSpeedCap - 1) * 100).toFixed(1)}%)</span>`;
+    case "critChance": return `<span ${style}>(Вкл. постоянное: +${(getPermanentLevel("criticalChance") * 0.5).toFixed(1)}%)</span>`;
+    case "lifesteal": return `<span ${style}>(Вкл. постоянное: +${(getPermanentLevel("lifesteal") * 0.1).toFixed(1)}%)</span>`;
+    case "defensePercent": return `<span ${style}>(Вкл. постоянное: +${(getPermanentLevel("defensePercent") * 0.7).toFixed(1)}%)</span>`;
+    case "thorns": return `<span ${style}>(Вкл. постоянное: +${getPermanentLevel("thorns") * 2}%)</span>`;
     default: return "";
   }
 }
@@ -3382,10 +3414,31 @@ function getCardLevelFromCount(count) {
   return 5; // Max level
 }
 
+function getCardRarity(id) {
+  return cardRarityMap[id] || "common";
+}
+
+function pullWeightedCardDef() {
+  const weightedRarities = Object.entries(cardRarityDefs);
+  const totalWeight = weightedRarities.reduce((sum, [, rarity]) => sum + rarity.weight, 0);
+  let roll = Math.random() * totalWeight;
+  let selectedRarity = "common";
+  for (const [rarityId, rarity] of weightedRarities) {
+    roll -= rarity.weight;
+    if (roll <= 0) {
+      selectedRarity = rarityId;
+      break;
+    }
+  }
+  const pool = cardDefs.filter((def) => getCardRarity(def.id) === selectedRarity);
+  const fallbackPool = pool.length > 0 ? pool : cardDefs;
+  return fallbackPool[Math.floor(Math.random() * fallbackPool.length)];
+}
+
 function pullCard() {
   if (progress.crystals < CARD_PULL_COST) return;
   progress.crystals -= CARD_PULL_COST;
-  const randomDef = cardDefs[Math.floor(Math.random() * cardDefs.length)];
+  const randomDef = pullWeightedCardDef();
   progress.cards[randomDef.id] = (progress.cards[randomDef.id] || 0) + 1;
   saveProgress();
   renderCards();
@@ -3410,7 +3463,7 @@ function showCardPullOverlay(def) {
   closeBtn.disabled = true;
   icon.className = `sprite-icon ${getCardIconClass(def.id)}`;
   document.getElementById("cardPullName").textContent = def.name;
-  document.getElementById("cardPullLevel").textContent = `Ур. ${lvl} (${lvl}/5)`;
+  document.getElementById("cardPullLevel").textContent = `${cardRarityDefs[getCardRarity(def.id)].name} · Ур. ${lvl} (${lvl}/5)`;
   document.getElementById("cardPullEffect").textContent = lvl > 0 ? def.getEffect(lvl) : def.desc;
 
   overlay.classList.remove("hidden");
@@ -3472,7 +3525,7 @@ function renderCards() {
         const def = cardDefs.find(c => c.id === cardId);
         const lvl = getCardLevelFromCount(progress.cards[cardId]);
         slot.className = "card-slot equipped";
-        slot.innerHTML = `<div class="card-slot-icon"><i class="sprite-icon ${getCardIconClass(cardId)}"></i></div><strong>${def.name}</strong><span>Ур. ${lvl}</span><i>${def.getEffect(lvl)}</i>`;
+        slot.innerHTML = `<div class="card-slot-icon"><i class="sprite-icon ${getCardIconClass(cardId)}"></i></div><strong>${def.name}</strong><span>${cardRarityDefs[getCardRarity(cardId)].name} · Ур. ${lvl}</span><i>${def.getEffect(lvl)}</i>`;
         slot.addEventListener("click", () => equipCard(cardId));
       } else {
         slot.className = "card-slot";
@@ -3494,6 +3547,7 @@ function renderCards() {
   cardDefs.forEach(def => {
     const count = progress.cards[def.id] || 0;
     const lvl = getCardLevelFromCount(count);
+    const rarity = cardRarityDefs[getCardRarity(def.id)];
     const isEquipped = progress.equippedCards.includes(def.id);
     const canEquip = count > 0 && !isEquipped && progress.equippedCards.length < progress.cardSlots;
     const card = document.createElement("div");
@@ -3502,7 +3556,7 @@ function renderCards() {
       <div class="card-icon-frame"><i class="sprite-icon ${getCardIconClass(def.id)}"></i></div>
       <div class="card-copy">
         <strong>${def.name}</strong>
-        <span>Ур. ${lvl} (${lvl}/5)</span>
+        <span>${rarity.name} · Ур. ${lvl} (${lvl}/5)</span>
       </div>
       <i class="card-desc">${lvl > 0 ? def.getEffect(lvl) : def.desc}</i>`;
     if (count > 0) card.addEventListener("click", () => equipCard(def.id));
