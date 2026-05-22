@@ -31,6 +31,8 @@ const balance = {
   overclockedUpgradeDiscount: 0.9,
   glassCoreHp: 0.7,
   glassCoreCash: 1.25,
+  tempRewardCap: 1.2,
+  attackSpeedCap: 6.5,
 };
 
 const screens = {
@@ -50,19 +52,19 @@ const screens = {
 };
 
 const permanentDefs = [
-  { id: "baseDamage", name: "Базовый урон", desc: "+1 урона за уровень", getEffect: (lvl) => `+${lvl}`, base: 45, scale: 1.36, max: 100 },
-  { id: "baseAttackSpeed", name: "Базовая скорострельность", desc: "+1.5% скорости атаки за уровень", getEffect: (lvl) => `+${(lvl * 1.5).toFixed(1)}%`, base: 55, scale: 1.38, max: 80 },
-  { id: "baseHealth", name: "Базовое здоровье", desc: "+8 максимальных ОЗ за уровень", getEffect: (lvl) => `+${lvl * 8}`, base: 40, scale: 1.34, max: 100 },
-  { id: "coinBonus", name: "Бонус монет", desc: "+2% к выплате монет за уровень", getEffect: (lvl) => `+${lvl * 2}%`, base: 75, scale: 1.4, max: 80 },
-  { id: "startingCash", name: "Стартовый кэш", desc: "+8 стартовых $ за уровень", getEffect: (lvl) => `+${lvl * 8}`, base: 60, scale: 1.38, max: 60 },
-  { id: "criticalChance", name: "Шанс крита", desc: "+0.5% шанса крита за уровень", getEffect: (lvl) => `+${(lvl * 0.5).toFixed(1)}%`, base: 85, scale: 1.42, max: 40 },
-  { id: "bossDamageBonus", name: "Урон по боссам", desc: "+3% урона по боссам за уровень", getEffect: (lvl) => `+${lvl * 3}%`, base: 95, scale: 1.42, max: 60 },
-  { id: "lifesteal", name: "Вампиризм", desc: "+0.1% кражи здоровья за уровень", getEffect: (lvl) => `+${(lvl * 0.1).toFixed(1)}%`, base: 110, scale: 1.45, max: 40 },
-  { id: "defensePercent", name: "Процент защиты", desc: "+0.7% снижения урона за уровень", getEffect: (lvl) => `+${(lvl * 0.7).toFixed(1)}%`, base: 100, scale: 1.38, max: 50 },
-  { id: "thorns", name: "Шипы", desc: "Возвращает 2% урона башни атакующему", getEffect: (lvl) => `+${lvl * 2}%`, base: 90, scale: 1.4, max: 35 },
-  { id: "freeUpgrade", name: "Бесплатные улучшения", desc: "+0.4% шанс бесплатного улучшения за волну", getEffect: (lvl) => `+${(lvl * 0.4).toFixed(1)}%`, base: 150, scale: 1.48, max: 40 },
+  { id: "baseDamage", name: "Базовый урон", desc: "+1 урона за уровень", getEffect: (lvl) => `+${lvl}`, base: 45, scale: 1.36, max: 30 },
+  { id: "baseAttackSpeed", name: "Базовая скорострельность", desc: "+1.5% скорости атаки за уровень", getEffect: (lvl) => `+${(lvl * 1.5).toFixed(1)}%`, base: 55, scale: 1.38, max: 24 },
+  { id: "baseHealth", name: "Базовое здоровье", desc: "+8 максимальных ОЗ за уровень", getEffect: (lvl) => `+${lvl * 8}`, base: 40, scale: 1.34, max: 40 },
+  { id: "coinBonus", name: "Бонус монет", desc: "+2% к выплате монет за уровень", getEffect: (lvl) => `+${lvl * 2}%`, base: 75, scale: 1.4, max: 50 },
+  { id: "startingCash", name: "Стартовый кэш", desc: "+8 стартовых $ за уровень", getEffect: (lvl) => `+${lvl * 8}`, base: 60, scale: 1.38, max: 20 },
+  { id: "criticalChance", name: "Шанс крита", desc: "+0.5% шанса крита за уровень", getEffect: (lvl) => `+${(lvl * 0.5).toFixed(1)}%`, base: 85, scale: 1.42, max: 20 },
+  { id: "bossDamageBonus", name: "Урон по боссам", desc: "+3% урона по боссам за уровень", getEffect: (lvl) => `+${lvl * 3}%`, base: 95, scale: 1.42, max: 40 },
+  { id: "lifesteal", name: "Вампиризм", desc: "+0.1% кражи здоровья за уровень", getEffect: (lvl) => `+${(lvl * 0.1).toFixed(1)}%`, base: 110, scale: 1.45, max: 25 },
+  { id: "defensePercent", name: "Процент защиты", desc: "+0.7% снижения урона за уровень", getEffect: (lvl) => `+${(lvl * 0.7).toFixed(1)}%`, base: 100, scale: 1.38, max: 25 },
+  { id: "thorns", name: "Шипы", desc: "Возвращает 2% урона башни атакующему", getEffect: (lvl) => `+${lvl * 2}%`, base: 90, scale: 1.4, max: 18 },
+  { id: "freeUpgrade", name: "Бесплатные улучшения", desc: "+0.4% шанс бесплатного улучшения за волну", getEffect: (lvl) => `+${(lvl * 0.4).toFixed(1)}%`, base: 150, scale: 1.48, max: 20 },
   { id: "orbSpeed", name: "Скорость сфер", desc: "+0.08 к базовой скорости сфер", getEffect: (lvl) => `+${(lvl * 0.08).toFixed(2)}`, base: 140, scale: 1.38, max: 30 },
-  { id: "packageChance", name: "Шанс пакета", desc: "+0.5% шанс посылки после волны", getEffect: (lvl) => `+${(lvl * 0.5).toFixed(1)}%`, base: 180, scale: 1.45, max: 30 },
+  { id: "packageChance", name: "Шанс пакета", desc: "+0.5% шанс посылки после волны", getEffect: (lvl) => `+${(lvl * 0.5).toFixed(1)}%`, base: 180, scale: 1.45, max: 15 },
 ];
 
 const permanentIconMap = {
@@ -82,12 +84,12 @@ const permanentIconMap = {
 };
 
 const permanentStarterRunUpgradeMap = {
-  baseDamage: { runId: "damage", every: 5, cap: 18, label: "старт. ур. Урона" },
-  baseAttackSpeed: { runId: "attackSpeed", every: 6, cap: 12, label: "старт. ур. Скорости атаки" },
-  baseHealth: { runId: "maxHealth", every: 5, cap: 18, label: "старт. ур. Здоровья" },
+  baseDamage: { runId: "damage", every: 5, cap: 6, label: "старт. ур. Урона" },
+  baseAttackSpeed: { runId: "attackSpeed", every: 6, cap: 4, label: "старт. ур. Скорости атаки" },
+  baseHealth: { runId: "maxHealth", every: 5, cap: 6, label: "старт. ур. Здоровья" },
   coinBonus: { runId: "runCoinBonus", every: 8, cap: 10, label: "старт. ур. Бонуса монет" },
-  startingCash: { runId: "cashWave", every: 8, cap: 8, label: "старт. ур. $/Волна" },
-  criticalChance: { runId: "critChance", every: 4, cap: 10, label: "старт. ур. Крита" },
+  startingCash: { runId: "cashWave", every: 8, cap: 3, label: "старт. ур. $/Волна" },
+  criticalChance: { runId: "critChance", every: 4, cap: 4, label: "старт. ур. Крита" },
   lifesteal: { runId: "lifesteal", every: 5, cap: 8, label: "старт. ур. Вампиризма" },
   defensePercent: { runId: "defensePercent", every: 5, cap: 10, label: "старт. ур. Брони" },
   thorns: { runId: "thorns", every: 5, cap: 8, label: "старт. ур. Шипов" },
@@ -96,13 +98,13 @@ const permanentStarterRunUpgradeMap = {
 };
 
 const labDefs = [
-  { id: "labDamage", name: "Урон башни", desc: "Глобальный урон башни", getEffect: (lvl) => `+${lvl}%`, baseCost: 150, costGrowth: 1.32, baseTime: 300, timeGrowth: 1.24, max: 60 },
-  { id: "labAttackSpeed", name: "Скорость атаки", desc: "Множитель скорости атаки", getEffect: (lvl) => `+${(lvl * 0.6).toFixed(1)}%`, baseCost: 200, costGrowth: 1.34, baseTime: 480, timeGrowth: 1.25, max: 50 },
-  { id: "labCoins", name: "Множитель монет", desc: "Глобальный бонус всех монет", getEffect: (lvl) => `+${(lvl * 1.5).toFixed(1)}%`, baseCost: 250, costGrowth: 1.35, baseTime: 900, timeGrowth: 1.26, max: 60 },
-  { id: "labStartingCash", name: "Стартовый кэш", desc: "Увеличивает $ на старте", getEffect: (lvl) => `+$${lvl * 15}`, baseCost: 500, costGrowth: 1.3, baseTime: 1200, timeGrowth: 1.22, max: 40 },
-  { id: "labHealth", name: "Прочность ядра", desc: "Глобальное здоровье башни", getEffect: (lvl) => `+${(lvl * 1.2).toFixed(1)}%`, baseCost: 180, costGrowth: 1.32, baseTime: 420, timeGrowth: 1.24, max: 60 },
+  { id: "labDamage", name: "Урон башни", desc: "Глобальный урон башни", getEffect: (lvl) => `+${Math.min(50, lvl * 0.8).toFixed(1)}%`, baseCost: 150, costGrowth: 1.32, baseTime: 300, timeGrowth: 1.24, max: 60 },
+  { id: "labAttackSpeed", name: "Скорость атаки", desc: "Множитель скорости атаки", getEffect: (lvl) => `+${Math.min(20, lvl * 0.4).toFixed(1)}%`, baseCost: 200, costGrowth: 1.34, baseTime: 480, timeGrowth: 1.25, max: 50 },
+  { id: "labCoins", name: "Множитель монет", desc: "Глобальный бонус всех монет", getEffect: (lvl) => `+${Math.min(50, lvl * 0.8).toFixed(1)}%`, baseCost: 250, costGrowth: 1.35, baseTime: 900, timeGrowth: 1.26, max: 60 },
+  { id: "labStartingCash", name: "Стартовый кэш", desc: "Увеличивает $ на старте", getEffect: (lvl) => `+$${Math.min(300, lvl * 8)}`, baseCost: 500, costGrowth: 1.3, baseTime: 1200, timeGrowth: 1.22, max: 40 },
+  { id: "labHealth", name: "Прочность ядра", desc: "Глобальное здоровье башни", getEffect: (lvl) => `+${Math.min(48, lvl * 0.8).toFixed(1)}%`, baseCost: 180, costGrowth: 1.32, baseTime: 420, timeGrowth: 1.24, max: 60 },
   { id: "labCritDamage", name: "Крит-калибровка", desc: "Усиление критического урона", getEffect: (lvl) => `+${lvl * 2}%`, baseCost: 320, costGrowth: 1.36, baseTime: 1800, timeGrowth: 1.26, max: 40 },
-  { id: "labBossDamage", name: "Анти-босс протокол", desc: "Дополнительный урон по боссам", getEffect: (lvl) => `+${lvl * 2}%`, baseCost: 400, costGrowth: 1.38, baseTime: 2400, timeGrowth: 1.27, max: 50 },
+  { id: "labBossDamage", name: "Анти-босс протокол", desc: "Дополнительный урон по боссам", getEffect: (lvl) => `+${Math.min(50, lvl)}%`, baseCost: 400, costGrowth: 1.38, baseTime: 2400, timeGrowth: 1.27, max: 50 },
   { id: "labUpgradeDiscount", name: "Оптимизация апгрейдов", desc: "Снижает стоимость улучшений в забеге", getEffect: (lvl) => `-${(Math.min(12, lvl * 0.4)).toFixed(1)}%`, baseCost: 450, costGrowth: 1.4, baseTime: 3600, timeGrowth: 1.28, max: 30 },
   { id: "labModuleParts", name: "Разбор модулей", desc: "Больше деталей модулей с боссов", getEffect: (lvl) => `+${lvl}%`, baseCost: 600, costGrowth: 1.38, baseTime: 5400, timeGrowth: 1.27, max: 30 },
   { id: "labGameSpeed", name: "Скорость игры", desc: "Ускоряет обработку забега", getEffect: (lvl) => `+${lvl}%`, baseCost: 350, costGrowth: 1.34, baseTime: 1500, timeGrowth: 1.24, max: 50 },
@@ -110,11 +112,11 @@ const labDefs = [
   { id: "labLightSpeed", name: "Световые выстрелы", desc: "Снаряды почти мгновенно долетают до цели", getEffect: (lvl) => `+${lvl * 12}% скорости`, baseCost: 700, costGrowth: 1.38, baseTime: 3600, timeGrowth: 1.26, max: 25 },
   { id: "labGarlicThorns", name: "Чесночные шипы", desc: "Шипы дополнительно прожигают вампиров рядом с ядром", getEffect: (lvl) => `${lvl * 5}% силы шипов`, baseCost: 850, costGrowth: 1.4, baseTime: 5400, timeGrowth: 1.27, max: 20 },
   { id: "labPerkWaves", name: "Чаще перки", desc: "Снижает требование волн между перками", getEffect: (lvl) => `-${Math.min(10, lvl)} волн`, baseCost: 900, costGrowth: 1.42, baseTime: 7200, timeGrowth: 1.28, max: 10 },
-  { id: "labGoldenBonus", name: "Бонус Golden Tower", desc: "Усиливает доход во время Золотой Башни", getEffect: (lvl) => `+${lvl * 4}% дохода`, baseCost: 1100, costGrowth: 1.42, baseTime: 7200, timeGrowth: 1.28, max: 30 },
-  { id: "labGoldenDuration", name: "Длительность Golden Tower", desc: "Продлевает активность Золотой Башни", getEffect: (lvl) => `+${(lvl * 0.4).toFixed(1)}с`, baseCost: 1250, costGrowth: 1.43, baseTime: 9000, timeGrowth: 1.28, max: 25 },
-  { id: "labBlackHoleCoins", name: "Монеты Black Hole", desc: "Усиливает награды за убийства внутри Черной Дыры", getEffect: (lvl) => `+${lvl * 5}%`, baseCost: 1350, costGrowth: 1.44, baseTime: 9600, timeGrowth: 1.29, max: 30 },
-  { id: "labBlackHoleDamage", name: "Урон Black Hole", desc: "Враги внутри Черной Дыры теряют долю максимального здоровья", getEffect: (lvl) => `${(lvl * 0.12).toFixed(2)}% ОЗ/с`, baseCost: 1500, costGrowth: 1.45, baseTime: 10800, timeGrowth: 1.29, max: 25 },
-  { id: "labBlackHoleDuration", name: "Длительность Black Hole", desc: "Продлевает Черную Дыру", getEffect: (lvl) => `+${(lvl * 0.35).toFixed(1)}с`, baseCost: 1450, costGrowth: 1.44, baseTime: 10200, timeGrowth: 1.29, max: 20 },
+  { id: "labGoldenBonus", name: "Бонус Golden Tower", desc: "Усиливает доход во время Золотой Башни", getEffect: (lvl) => `+${Math.min(45, lvl * 1.5).toFixed(1)}% дохода`, baseCost: 1100, costGrowth: 1.42, baseTime: 7200, timeGrowth: 1.28, max: 30 },
+  { id: "labGoldenDuration", name: "Длительность Golden Tower", desc: "Продлевает активность Золотой Башни", getEffect: (lvl) => `+${Math.min(5, lvl * 0.2).toFixed(1)}с`, baseCost: 1250, costGrowth: 1.43, baseTime: 9000, timeGrowth: 1.28, max: 25 },
+  { id: "labBlackHoleCoins", name: "Монеты Black Hole", desc: "Усиливает награды за убийства внутри Черной Дыры", getEffect: (lvl) => `+${Math.min(45, lvl * 1.5).toFixed(1)}%`, baseCost: 1350, costGrowth: 1.44, baseTime: 9600, timeGrowth: 1.29, max: 30 },
+  { id: "labBlackHoleDamage", name: "Урон Black Hole", desc: "Враги внутри Черной Дыры теряют долю максимального здоровья", getEffect: (lvl) => `${Math.min(1, lvl * 0.04).toFixed(2)}% ОЗ/с`, baseCost: 1500, costGrowth: 1.45, baseTime: 10800, timeGrowth: 1.29, max: 25 },
+  { id: "labBlackHoleDuration", name: "Длительность Black Hole", desc: "Продлевает Черную Дыру", getEffect: (lvl) => `+${Math.min(4, lvl * 0.2).toFixed(1)}с`, baseCost: 1450, costGrowth: 1.44, baseTime: 10200, timeGrowth: 1.29, max: 20 },
   { id: "labDeathWaveHealth", name: "Здоровье Death Wave", desc: "Убийства Волной Смерти дают временный запас ОЗ", getEffect: (lvl) => `+${lvl}% лимита`, baseCost: 1600, costGrowth: 1.45, baseTime: 12000, timeGrowth: 1.3, max: 25 }
 ];
 
@@ -198,10 +200,10 @@ function getCardIconClass(id) {
 }
 
 const moduleTypes = [
-  { id: "weapon", name: "Орудие", desc: "Глобальный множитель Урона", stat: "damage", mults: [1.1, 1.25, 1.5, 2.0] },
-  { id: "armor", name: "Броня", desc: "Глобальный множитель Здоровья", stat: "health", mults: [1.1, 1.25, 1.5, 2.0] },
-  { id: "generator", name: "Генератор", desc: "Множитель Кэша и Монет", stat: "economy", mults: [1.1, 1.25, 1.5, 2.0] },
-  { id: "core", name: "Процессор", desc: "Множитель Скор. Атаки", stat: "speed", mults: [1.1, 1.25, 1.5, 2.0] },
+  { id: "weapon", name: "Орудие", desc: "Глобальный множитель Урона", stat: "damage", mults: [1.05, 1.12, 1.22, 1.35] },
+  { id: "armor", name: "Броня", desc: "Глобальный множитель Здоровья", stat: "health", mults: [1.05, 1.12, 1.22, 1.35] },
+  { id: "generator", name: "Генератор", desc: "Множитель Кэша и Монет", stat: "economy", mults: [1.05, 1.12, 1.22, 1.35] },
+  { id: "core", name: "Процессор", desc: "Множитель Скор. Атаки", stat: "speed", mults: [1.05, 1.12, 1.22, 1.35] },
 ];
 const rarityNames = ["Обычный", "Редкий", "Эпический", "Легендарный"];
 
@@ -281,7 +283,7 @@ const runUpgradeDefs = [
   { id: "defensePercent", name: "Броня (%)", category: "defense", base: 50, growth: 1.16, max: 90, desc: "Процентное снижение получаемого урона." },
   { id: "thorns", name: "Шипы", category: "defense", base: 40, growth: 1.15, max: 100, desc: "Возвращает часть урона атакующим в ближнем бою." },
   { id: "deathDefy", name: "Второй шанс", category: "defense", base: 400, growth: 1.18, max: 30, desc: "Шанс пережить смертельный удар с 1 ХП." },
-  { id: "landmineChance", name: "Шанс мин", category: "defense", base: 110, growth: 1.16, max: 50, desc: "Шанс сбросить мину при выстреле." },
+  { id: "landmineChance", name: "Шанс мин", category: "defense", base: 110, growth: 1.16, max: 25, desc: "Шанс сбросить мину при выстреле." },
   { id: "landmineDamage", name: "Урон мин", category: "defense", base: 130, growth: 1.16, max: 100, desc: "Множитель урона для наземных мин." },
   { id: "cashBonus", name: "Бонус $", category: "utility", base: 26, growth: 1.15, max: 200, desc: "Множитель получаемых $ с врагов." },
   { id: "cashWave", name: "$/Волна", category: "utility", base: 22, growth: 1.15, max: 160, desc: "Выдает кэш после завершения каждой волны." },
@@ -1090,7 +1092,7 @@ function checkWelcomeBack() {
     const hours = Math.min(24, offlineMins / 60); // Максимум 24 часа
     // Базовая ставка: 10 монет/мин + 2 монеты за каждую пройденную лучшую волну
     const coinRatePerMin = Math.min(8.33, 0.2 + (progress.bestWave || 0) * 0.018); 
-    const labMult = 1 + (progress.labs.levels.labCoins || 0) * 0.015;
+    const labMult = 1 + Math.min(0.5, (progress.labs.levels.labCoins || 0) * 0.008);
     const earned = Math.floor(offlineMins * coinRatePerMin * labMult);
     
     if (earned > 0) {
@@ -1270,9 +1272,34 @@ function getUniqueModulePower(id) {
   return mod ? [1, 1.35, 1.75, 2.25][mod.rarity] : 0;
 }
 
+function getCardRunBonus(cardId, perLevel) {
+  return progress.equippedCards.includes(cardId)
+    ? getCardLevelFromCount(progress.cards[cardId] || 0) * perLevel
+    : 0;
+}
+
+function getRegularWaveScale(wave, earlyGrowth, midGrowth, lateGrowth) {
+  if (wave <= 20) return Math.pow(earlyGrowth, Math.max(0, wave - 1));
+  if (wave <= 100) return Math.pow(earlyGrowth, 19) * Math.pow(midGrowth, wave - 20);
+  return Math.pow(earlyGrowth, 19) * Math.pow(midGrowth, 80) * Math.pow(lateGrowth, wave - 100);
+}
+
+function getAverageWaveReward(wave = game?.wave || 1) {
+  return 34 * getRegularWaveScale(wave, 1.085, 1.05, 1.018);
+}
+
+function clampTowerAttackSpeed() {
+  if (game?.tower) game.tower.attackSpeed = Math.min(balance.attackSpeedCap, game.tower.attackSpeed);
+}
+
+function getPermanentLevel(id) {
+  const def = permanentDefs.find((item) => item.id === id);
+  return Math.min(def?.max ?? Infinity, progress.permanent?.[id] || 0);
+}
+
 function getPermanentStarterRunLevels() {
   return Object.entries(permanentStarterRunUpgradeMap).reduce((acc, [permanentId, link]) => {
-    const permanentLevel = progress.permanent?.[permanentId] || 0;
+    const permanentLevel = getPermanentLevel(permanentId);
     const levels = Math.min(link.cap, Math.floor(permanentLevel / link.every));
     if (levels > 0) acc[link.runId] = (acc[link.runId] || 0) + levels;
     return acc;
@@ -1297,18 +1324,22 @@ function startRun(options = {}) {
   activeRunUpgradeCategory = "attack";
   runUpgradeScrollPositions = {};
   const tier = Number(document.getElementById("tierSelect").value || 1);
-  const p = progress.permanent;
+  const p = Object.fromEntries(permanentDefs.map((def) => [def.id, getPermanentLevel(def.id)]));
   const eventMode = options.eventMode || null;
-  const maxHealth = (100 + p.baseHealth * 8) * (1 + (progress.labs.levels.labHealth || 0) * 0.012) * (eventMode === "glassCore" ? balance.glassCoreHp : 1);
+  const maxHealth = (100 + p.baseHealth * 8) * (1 + Math.min(0.48, (progress.labs.levels.labHealth || 0) * 0.008)) * (eventMode === "glassCore" ? balance.glassCoreHp : 1);
   const prestigeMult = 1 + (progress.prestige || 0) * 0.04;
   const medalDamage = progress.eventShop.medalDamage || 0;
   const medalStart = progress.eventShop.medalStart || 0;
-  const labDamageMult = 1 + (progress.labs.levels.labDamage || 0) * 0.01;
-  const labSpeedMult = 1 + (progress.labs.levels.labAttackSpeed || 0) * 0.006;
-  const labStartCash = (progress.labs.levels.labStartingCash || 0) * 15;
+  const labDamageBonus = Math.min(0.5, (progress.labs.levels.labDamage || 0) * 0.008);
+  const labSpeedBonus = Math.min(0.2, (progress.labs.levels.labAttackSpeed || 0) * 0.004);
+  const labStartCash = Math.min(300, (progress.labs.levels.labStartingCash || 0) * 8);
   
   const getCardLevel = (id) => getCardLevelFromCount(progress.cards[id] || 0);
   const cardHpMult = progress.equippedCards.includes("cardHealth") ? 1 + getCardLevel("cardHealth") * 0.25 : 1;
+  const cardDamageBonus = getCardRunBonus("cardDamage", 0.2);
+  const cardSpeedBonus = getCardRunBonus("cardSpeed", 0.15);
+  const cardCashBonus = getCardRunBonus("cardCash", 0.2);
+  const cardCoinBonus = getCardRunBonus("cardCoins", 0.15);
   const cardDefenseBonus = progress.equippedCards.includes("cardDefense") ? getCardLevel("cardDefense") * 0.02 : 0;
   const cardFreeUpgradeBonus = progress.equippedCards.includes("cardFreeUpgrade") ? getCardLevel("cardFreeUpgrade") * 0.03 : 0;
   const cardExtraOrbs = progress.equippedCards.includes("cardExtraOrbs") ? getCardLevel("cardExtraOrbs") : 0;
@@ -1320,15 +1351,15 @@ function startRun(options = {}) {
     eventMode,
     tierMult: 1 + (tier - 1) * 0.55,
     wave: 0,
-    cash: (p.startingCash * 10 + medalStart * 15 + labStartCash) * getModuleMult("economy"),
+    cash: p.startingCash * 8 + medalStart * 15 + labStartCash,
     totalCash: 0,
     tower: {
       x: getCanvasEffectiveWidth() / 2,
       y: getCanvasEffectiveHeight() / 2,
       hp: maxHealth * cardHpMult * getModuleMult("health"),
       maxHp: maxHealth * cardHpMult * getModuleMult("health"),
-      damage: (10 + p.baseDamage + medalDamage) * prestigeMult * labDamageMult * getModuleMult("damage"),
-      attackSpeed: 1 * (1 + p.baseAttackSpeed * 0.015) * labSpeedMult * getModuleMult("speed"),
+      damage: (10 + p.baseDamage + medalDamage) * (prestigeMult + labDamageBonus + (getModuleMult("damage") - 1) + cardDamageBonus),
+      attackSpeed: Math.min(balance.attackSpeedCap, 1 * (1 + p.baseAttackSpeed * 0.015 + labSpeedBonus + (getModuleMult("speed") - 1) + cardSpeedBonus)),
       range: 160,
       regen: 0,
       critChance: 0.05 + p.criticalChance * 0.005,
@@ -1344,7 +1375,7 @@ function startRun(options = {}) {
       rapidFireTimer: 0,
       knockback: 0,
       knockbackStrength: 26,
-      cashBonus: 0,
+      cashBonus: cardCashBonus,
       cashWave: 0,
       shotTimer: 0,
       lifesteal: (p.lifesteal || 0) * 0.001,
@@ -1353,7 +1384,7 @@ function startRun(options = {}) {
       thorns: (p.thorns || 0) * 0.02,
       bounceChance: 0,
       freeUpgradeChance: (p.freeUpgrade || 0) * 0.004 + cardFreeUpgradeBonus,
-      runCoinBonus: 0,
+      runCoinBonus: cardCoinBonus,
       coinWaveChance: 0,
       orbCount: Math.min(8, cardExtraOrbs),
       orbSpeed: 1.5 + (p.orbSpeed || 0) * 0.08,
@@ -1449,8 +1480,10 @@ function buildRunUltimates() {
     .map((def) => {
       const level = progress.ultimates[def.id].level;
       const nexusSync = hasUniqueModule("multiverseNexus") && ["goldenCore", "blackHole", "deathWave"].includes(def.id) ? 0.82 : 1;
-      const maxTimer = Math.max(4, def.cooldown * Math.pow(0.94, level - 1) * nexusSync);
-      return { ...def, level, timer: Math.max(1.5, def.cooldown * 0.5), maxTimer };
+      const stoneCut = (progress.stoneUpgrades.cd || 0) * 0.5;
+      const upgradedCooldown = Math.max(def.cooldown * 0.6, def.cooldown * Math.pow(0.97, level - 1) - stoneCut);
+      const maxTimer = Math.max(4, upgradedCooldown * nexusSync);
+      return { ...def, level, cooldown: upgradedCooldown, timer: Math.max(1.5, upgradedCooldown * 0.5), maxTimer };
     });
 }
 
@@ -1497,7 +1530,8 @@ function spawnWave() {
 
 function triggerFreeUpgrade() {
   if (!game || game.ended || Math.random() > game.tower.freeUpgradeChance) return;
-  const defs = runUpgradeDefs;
+  const defs = runUpgradeDefs.filter((def) => isRunUpgradeRequirementMet(def) && (game.runUpgrades[def.id] || 0) < def.max);
+  if (!defs.length) return;
   const target = defs[Math.floor(Math.random() * defs.length)];
   game.runUpgrades[target.id] += 1;
   game.stats.runUpgrades += 1;
@@ -1511,7 +1545,7 @@ function triggerFreeUpgrade() {
 
 function setWavePause(seconds, text = "") {
   const waveAccel = progress.equippedCards.includes("cardWaveAccelerator") ? getCardLevelFromCount(progress.cards.cardWaveAccelerator || 0) * 0.08 : 0;
-  seconds = 4;
+  seconds = Math.max(1.2, seconds || 4);
   seconds *= Math.max(0.45, 1 - waveAccel);
   game.waveState = "pause";
   game.nextWaveTimer = seconds;
@@ -1519,7 +1553,7 @@ function setWavePause(seconds, text = "") {
   triggerFreeUpgrade();
 
   if (game.tower.cashWave > 0) {
-    const earned = game.tower.cashWave * (1 + game.tower.cashBonus);
+    const earned = game.tower.cashWave * (1 + game.tower.cashBonus + (getModuleMult("economy") - 1));
     game.cash += earned;
     game.totalCash += earned;
     game.stats.cashEarned += earned;
@@ -1533,7 +1567,7 @@ function setWavePause(seconds, text = "") {
 
   if (game.tower.waveSkipChance > 0 && game.wave > 0 && game.wave % 10 !== 9 && Math.random() < game.tower.waveSkipChance) {
     game.wave += 1;
-    const skipCash = Math.ceil((10 + game.wave * 2.5) * (1 + game.tower.cashBonus));
+    const skipCash = Math.ceil(getAverageWaveReward(game.wave) * 0.35 * (1 + game.tower.cashBonus));
     game.cash += skipCash;
     game.totalCash += skipCash;
     game.stats.cashEarned += skipCash;
@@ -1543,6 +1577,7 @@ function setWavePause(seconds, text = "") {
 
   // Логика Инвестиций (процент за волну)
   if (game.tower.interestRate > 0) {
+    game.tower.maxInterest = Math.max(game.tower.maxInterest, getAverageWaveReward(game.wave) * 0.35);
     const earned = Math.min(game.tower.maxInterest, game.cash * game.tower.interestRate);
     if (earned > 0) {
       game.cash += earned;
@@ -1628,7 +1663,16 @@ function spawnEnemy(type, override = {}) {
   
   let eventMult = game.eventMode === "tournament" ? Math.pow(1.02, game.wave) : 1;
   const hpSkip = type === "boss" ? 0 : game.tower.enemyHealthSkip;
-  const scale = (type === "boss" ? Math.pow(balance.bossHpGrowth, bossIndex - 1) : Math.pow(balance.waveHpGrowth, Math.max(0, game.wave - 1)) * (1 - hpSkip)) * game.tierMult * eventMult;
+  const hpScale = type === "boss"
+    ? Math.pow(1.75, bossIndex - 1)
+    : getRegularWaveScale(game.wave, 1.1, 1.06, 1.018) * (1 - hpSkip);
+  const damageScale = type === "boss"
+    ? Math.pow(1.18, bossIndex - 1)
+    : getRegularWaveScale(game.wave, 1.07, 1.04, 1.012) * (1 - game.tower.enemyAttackSkip);
+  const rewardScale = type === "boss"
+    ? Math.pow(1.45, bossIndex - 1)
+    : getRegularWaveScale(game.wave, 1.085, 1.05, 1.018);
+  const scale = hpScale * game.tierMult * eventMult;
   
   const enemy = {
     id: globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
@@ -1641,8 +1685,8 @@ function spawnEnemy(type, override = {}) {
     hp: (override.hp ?? def.hp) * scale * (type === "boss" ? 1 : game.perkMultipliers.enemyHp),
     maxHp: (override.hp ?? def.hp) * scale * (type === "boss" ? 1 : game.perkMultipliers.enemyHp),
     speed: (override.speed ?? def.speed) * (1 + game.wave * balance.waveSpeedGrowth) * (type === "boss" ? 0.95 : 1) * (game.eventMode === "overclocked" ? balance.overclockedSpeed : 1),
-    reward: Math.ceil((override.reward ?? def.reward) * (type === "boss" ? (1 + game.tier * balance.bossTierReward) * (1 + bossIndex * balance.bossRewardGrowth) : 1) * (game.eventMode === "glassCore" ? balance.glassCoreCash : 1) * (1 + (progress.equippedCards.includes("cardEnemyBalance") ? getCardLevelFromCount(progress.cards.cardEnemyBalance || 0) * 0.04 : 0))),
-    damage: Math.ceil(def.damage * (type === "boss" ? Math.pow(balance.bossDamageGrowth, bossIndex - 1) : Math.pow(balance.waveDamageGrowth, game.wave - 1)) * game.tierMult * eventMult * game.perkMultipliers.enemyDamage * (1 - game.tower.enemyAttackSkip)),
+    reward: Math.ceil((override.reward ?? def.reward) * rewardScale * (type === "boss" ? (1 + game.tier * balance.bossTierReward) : 1) * (game.eventMode === "glassCore" ? balance.glassCoreCash : 1) * (1 + (progress.equippedCards.includes("cardEnemyBalance") ? getCardLevelFromCount(progress.cards.cardEnemyBalance || 0) * 0.04 : 0))),
+    damage: Math.ceil(def.damage * damageScale * game.tierMult * eventMult * game.perkMultipliers.enemyDamage),
     radius: override.radius ?? def.radius,
     color: def.color,
     slow: 1,
@@ -1670,11 +1714,11 @@ function spawnEnemy(type, override = {}) {
   }
   if (enemy.mega) {
     enemy.name = "Множитель";
-    enemy.hp *= 8.4;
-    enemy.maxHp *= 8.4;
+    enemy.hp *= 4.5;
+    enemy.maxHp *= 4.5;
     enemy.speed *= 0.9;
-    enemy.damage = Math.ceil(enemy.damage * 1.8);
-    enemy.reward = Math.ceil(enemy.reward * 3.4);
+    enemy.damage = Math.ceil(enemy.damage * 1.45);
+    enemy.reward = Math.ceil(enemy.reward * 5.5);
     enemy.radius += 22;
   }
   if (enemy.type === "horn") {
@@ -1760,9 +1804,17 @@ function updateGame(dt) {
       if (!game.spawnQueue.length) game.waveState = "fighting";
     }
 
-    // Завершение времени волны, переход в фазу подготовки
-    if (game.waveTimeRemaining <= 0) {
-      setWavePause(game.waveDuration / 2, `Подготовка...`);
+    if (game.waveState === "fighting" && game.enemies.length === 0) {
+      const speedBonus = game.waveTimeRemaining > 0
+        ? Math.ceil(getAverageWaveReward(game.wave) * Math.min(0.35, game.waveTimeRemaining / Math.max(1, game.waveDuration) * 0.5))
+        : 0;
+      if (speedBonus > 0) {
+        game.cash += speedBonus;
+        game.totalCash += speedBonus;
+        game.stats.cashEarned += speedBonus;
+        addText(`+$${speedBonus} clear`, game.tower.x, game.tower.y - 104, "#55ecff");
+      }
+      setWavePause(2.6, `Подготовка...`);
     }
   }
 
@@ -2132,19 +2184,19 @@ function towerShoot(dt) {
   if (!targets.length) return;
   const shapeId = progress?.customization?.shape || "shape_hex";
   const skinShotProfiles = {
-    shape_hex: { style: "hex_bolt", damageMult: 1.02, speedMult: 1.01, color: "#55ecff" },
-    shape_square: { style: "square_pulse", damageMult: 1.04, speedMult: 0.98, color: "#7d9bff" },
-    shape_triangle: { style: "triangle_sting", damageMult: 0.96, speedMult: 1.08, color: "#7ce0ff" },
-    shape_octa: { style: "octa_frag", damageMult: 1.08, speedMult: 0.95, color: "#c0deff" },
+    shape_hex: { style: "hex_bolt", damageMult: 1, speedMult: 1, color: "#55ecff" },
+    shape_square: { style: "square_pulse", damageMult: 1, speedMult: 1, color: "#7d9bff" },
+    shape_triangle: { style: "triangle_sting", damageMult: 1, speedMult: 1, color: "#7ce0ff" },
+    shape_octa: { style: "octa_frag", damageMult: 1, speedMult: 1, color: "#c0deff" },
     shape_substance: { style: "substance", damageMult: 1, speedMult: 1, color: "#8cff72" },
-    shape_pulsar: { style: "pulsar_burst", damageMult: 1.06, speedMult: 1.04, color: "#ffd84f" },
-    shape_ring: { style: "ring_orbit", damageMult: 0.95, speedMult: 1.12, color: "#74f7ff" },
-    shape_crystal: { style: "crystal_shard", damageMult: 1.12, speedMult: 0.92, color: "#c4f0ff" },
-    shape_blade: { style: "blade_disc", damageMult: 1.07, speedMult: 1.03, color: "#ff7b8a" },
-    shape_void: { style: "void_orb", damageMult: 1.1, speedMult: 0.94, color: "#b878ff" },
-    shape_black_hole: { style: "black_hole", damageMult: 1.15, speedMult: 0.9, color: "#3f2a6c" },
-    shape_omelette: { style: "omelette_yolk", damageMult: 1.09, speedMult: 0.96, color: "#ffd25e" },
-    shape_eye: { style: "eye_beamlet", damageMult: 1.03, speedMult: 1.1, color: "#ff4f9a" },
+    shape_pulsar: { style: "pulsar_burst", damageMult: 1, speedMult: 1, color: "#ffd84f" },
+    shape_ring: { style: "ring_orbit", damageMult: 1, speedMult: 1, color: "#74f7ff" },
+    shape_crystal: { style: "crystal_shard", damageMult: 1, speedMult: 1, color: "#c4f0ff" },
+    shape_blade: { style: "blade_disc", damageMult: 1, speedMult: 1, color: "#ff7b8a" },
+    shape_void: { style: "void_orb", damageMult: 1, speedMult: 1, color: "#b878ff" },
+    shape_black_hole: { style: "black_hole", damageMult: 1, speedMult: 1, color: "#3f2a6c" },
+    shape_omelette: { style: "omelette_yolk", damageMult: 1, speedMult: 1, color: "#ffd25e" },
+    shape_eye: { style: "eye_beamlet", damageMult: 1, speedMult: 1, color: "#ff4f9a" },
   };
   const shotProfile = skinShotProfiles[shapeId] || skinShotProfiles.shape_hex;
   const projectileStyle = shotProfile.style;
@@ -2161,7 +2213,7 @@ function towerShoot(dt) {
       const dist = Math.hypot(target.x - game.tower.x, target.y - game.tower.y);
       damage *= 1 + (dist / 100) * game.tower.damageMeter;
     }
-    if (target.type === "boss") damage *= (1 + progress.permanent.bossDamageBonus * 0.03 + (progress.labs.levels.labBossDamage || 0) * 0.02) * game.perkMultipliers.bossDamage;
+    if (target.type === "boss") damage *= (1 + getPermanentLevel("bossDamageBonus") * 0.03 + Math.min(0.5, (progress.labs.levels.labBossDamage || 0) * 0.01)) * game.perkMultipliers.bossDamage;
     else if (game.perkMultipliers.bossDamage > 1) damage *= 0.9; // Пенальти для перка "Убийца боссов"
     game.projectiles.push({
       x: game.tower.x,
@@ -2337,14 +2389,17 @@ function killEnemy(enemy) {
   progress.bestiary[enemy.type] = (progress.bestiary[enemy.type] || 0) + 1;
   game.enemies = game.enemies.filter((item) => item !== enemy);
   const goldenCore = game.ultimates?.find((ultimate) => ultimate.id === "goldenCore");
-  const gcCashMult = game.goldenCoreTimer > 0 && goldenCore
-    ? Math.min(balance.goldenCoreCashCap + (progress.labs.levels.labGoldenBonus || 0) * 0.04, balance.goldenCoreCashMult + goldenCore.level * balance.goldenCoreCashGrowth + (progress.labs.levels.labGoldenBonus || 0) * 0.04)
-    : 1;
-  const blackHoleCashMult = enemy.inBlackHole
-    ? (hasSynergy("Фарм-синхрон") && game.goldenCoreTimer > 0 ? 1.9 : 1.45) * (1 + (progress.labs.levels.labBlackHoleCoins || 0) * 0.05)
-    : 1;
-  const digesterMult = 1 + (game.blackHoleDigestStacks || 0) * 0.03;
-  const reward = Math.ceil(enemy.reward * (1 + game.tower.cashBonus) * gcCashMult * blackHoleCashMult * digesterMult * getModuleMult("economy"));
+  const goldenBonus = game.goldenCoreTimer > 0 && goldenCore
+    ? 0.55 + goldenCore.level * 0.08 + Math.min(0.45, (progress.labs.levels.labGoldenBonus || 0) * 0.015)
+    : 0;
+  const blackHoleBonus = enemy.inBlackHole
+    ? 0.35 + Math.min(0.45, (progress.labs.levels.labBlackHoleCoins || 0) * 0.015)
+    : 0;
+  const synergyBonus = enemy.inBlackHole && hasSynergy("Фарм-синхрон") && game.goldenCoreTimer > 0 ? 0.25 : 0;
+  const digesterBonus = Math.min(0.24, (game.blackHoleDigestStacks || 0) * 0.02);
+  const metaRewardBonus = game.tower.cashBonus + (getModuleMult("economy") - 1);
+  const tempRewardBonus = Math.min(balance.tempRewardCap, goldenBonus + blackHoleBonus + synergyBonus + digesterBonus);
+  const reward = Math.ceil(enemy.reward * (1 + metaRewardBonus) * (1 + tempRewardBonus));
   game.cash += reward;
   game.totalCash += reward;
   game.stats.cashEarned += reward;
@@ -2373,7 +2428,7 @@ function killEnemy(enemy) {
   if (["grunt", "shooter", "splitter"].includes(enemy.type)) coinChance = 0.02;
   if (["brute", "shield", "vampire"].includes(enemy.type)) coinChance = 0.05;
   if (enemy.elite || enemy.type === "boss") coinChance = 0.20;
-  const labCoinMult = 1 + (progress.labs.levels.labCoins || 0) * 0.015;
+  const labCoinMult = 1 + Math.min(0.5, (progress.labs.levels.labCoins || 0) * 0.008);
 
   const critCoinBonus = enemy.criticalCoinBonus ? getCardLevelFromCount(progress.cards.cardCriticalCoin || 0) * 0.03 : 0;
   if (Math.random() < coinChance * (1 + game.tower.runCoinBonus + critCoinBonus) * labCoinMult * getModuleMult("economy")) {
@@ -2578,7 +2633,7 @@ function updateVisualFeedback(dt) {
   });
 
   if (game.blackHole && (progress.labs.levels.labBlackHoleDamage || 0) > 0) {
-    const pct = (progress.labs.levels.labBlackHoleDamage || 0) * 0.0012;
+    const pct = Math.min(0.01, (progress.labs.levels.labBlackHoleDamage || 0) * 0.0004);
     game.enemies.forEach((enemy) => {
       if (enemy.inBlackHole && enemy.type !== "boss") damageEnemy(enemy, enemy.maxHp * pct * dt, "blackHole");
     });
@@ -2631,7 +2686,7 @@ function triggerUltimate(ultimate) {
     game.effects.push({ type: "solarSweep", life: 2.0, maxLife: 2.0, angle: 0, level });
   }
   if (ultimate.id === "goldenCore") {
-    game.goldenCoreTimer = 10 + level * 2 + (progress.labs.levels.labGoldenDuration || 0) * 0.4;
+    game.goldenCoreTimer = 8 + level * 1.5 + Math.min(5, (progress.labs.levels.labGoldenDuration || 0) * 0.2);
     addEffect("time", game.tower.x, game.tower.y, 1.0, "#ffb020");
   }
   if (ultimate.id === "blackHole") {
@@ -2643,12 +2698,12 @@ function triggerUltimate(ultimate) {
       radius,
       level,
     };
-    game.blackHoleTimer = 6 + level + (progress.labs.levels.labBlackHoleDuration || 0) * 0.35;
+    game.blackHoleTimer = 5 + level * 0.8 + Math.min(4, (progress.labs.levels.labBlackHoleDuration || 0) * 0.2);
     game.effects.push({ type: "blackHole", x: game.blackHole.x, y: game.blackHole.y, radius, life: game.blackHoleTimer, maxLife: game.blackHoleTimer, color: "#b375ff" });
   }
   if (ultimate.id === "deathWave") {
     const selectedUltimates = getSelectedUltimateIds();
-    const triSync = game.goldenCoreTimer > 0 && game.blackHoleTimer > 0 && ["goldenCore", "blackHole", "deathWave"].every((id) => selectedUltimates.includes(id)) ? 1.25 : 1;
+    const triSync = game.goldenCoreTimer > 0 && game.blackHoleTimer > 0 && ["goldenCore", "blackHole", "deathWave"].every((id) => selectedUltimates.includes(id)) ? 1.12 : 1;
     const waveRadius = 175 + level * 16;
     game.enemies.forEach((enemy) => {
       const dist = Math.hypot(enemy.x - game.tower.x, enemy.y - game.tower.y);
@@ -2660,8 +2715,8 @@ function triggerUltimate(ultimate) {
     addEffect("deathWave", game.tower.x, game.tower.y, 1.0, "#ff5c9b");
   }
   if (ultimate.id === "poisonSwamp") {
-    for(let i=0; i<3+level; i++) {
-      game.effects.push({ type: "swamp", x: game.tower.x + (Math.random()-0.5)*300, y: game.tower.y + (Math.random()-0.5)*300, life: 8, maxLife: 8, color: "#a5ff3b", radius: 70 });
+    for(let i=0; i<Math.min(6, 2+level); i++) {
+      game.effects.push({ type: "swamp", x: game.tower.x + (Math.random()-0.5)*300, y: game.tower.y + (Math.random()-0.5)*300, life: 7, maxLife: 7, color: "#a5ff3b", radius: 62 });
     }
   }
 }
@@ -2775,34 +2830,36 @@ function applyUpgradeStat(id) {
   const level = game.runUpgrades[id] - 1; // Уровень до улучшения (для формул)
   const t = game.tower;
   
-  const prestigeMult = 1 + (progress.prestige || 0) * 0.04;
-  const labDmgMult = 1 + (progress.labs.levels.labDamage || 0) * 0.01;
+  const prestigeBonus = (progress.prestige || 0) * 0.04;
+  const labDmgBonus = Math.min(0.5, (progress.labs.levels.labDamage || 0) * 0.008);
   const perkDmg = game.perkMultipliers?.towerDamage || 1;
   const rewardDmg = game.rewardMultipliers?.damage || 1;
   
   const getCardLevel = (cardId) => getCardLevelFromCount(progress.cards[cardId] || 0);
-  const cardDmgMult = progress.equippedCards.includes("cardDamage") ? 1 + getCardLevel("cardDamage") * 0.2 : 1;
-  const cardSpdMult = progress.equippedCards.includes("cardSpeed") ? 1 + getCardLevel("cardSpeed") * 0.15 : 1;
   const cardHpMult = progress.equippedCards.includes("cardHealth") ? 1 + getCardLevel("cardHealth") * 0.25 : 1;
-  const cardCashMult = progress.equippedCards.includes("cardCash") ? 1 + getCardLevel("cardCash") * 0.2 : 1;
-  const cardCoinMult = progress.equippedCards.includes("cardCoins") ? 1 + getCardLevel("cardCoins") * 0.15 : 1;
   const cardRegenMult = progress.equippedCards.includes("cardRegen") ? 1 + getCardLevel("cardRegen") * 0.3 : 1;
   const cardFortressMult = progress.equippedCards.includes("cardFortress") ? 1 + getCardLevel("cardFortress") * 0.2 : 1;
 
-  if (id === "damage") t.damage += (3 + level * 0.9) * prestigeMult * labDmgMult * perkDmg * rewardDmg * cardDmgMult * getModuleMult("damage");
-  if (id === "attackSpeed") t.attackSpeed *= 1.08 * (level === 0 ? cardSpdMult * getModuleMult("speed") : 1);
+  if (id === "damage") {
+    const runStep = level < 20 ? 1.2 : 0.4;
+    t.damage += (10 + getPermanentLevel("baseDamage")) * runStep * (1 + prestigeBonus + labDmgBonus + (getModuleMult("damage") - 1) + getCardRunBonus("cardDamage", 0.2)) * perkDmg * rewardDmg;
+  }
+  if (id === "attackSpeed") {
+    const runStep = level < 15 ? 0.07 : 0.025;
+    t.attackSpeed = Math.min(balance.attackSpeedCap, t.attackSpeed + runStep);
+  }
   if (id === "range") t.range += 12;
   if (id === "maxHealth") {
-    const added = 24 * (game.eventMode === "glassCore" ? balance.glassCoreHp : 1) * (game.perks?.includes("hp") ? 1.25 : 1) * cardHpMult * getModuleMult("health");
+    const added = (level < 25 ? 20 : 8) * (game.eventMode === "glassCore" ? balance.glassCoreHp : 1) * (game.perks?.includes("hp") ? 1.25 : 1) * cardHpMult * getModuleMult("health");
     t.maxHp += added;
     t.hp += added;
   }
   if (id === "regen") t.regen += 0.5 * cardRegenMult;
-  if (id === "critChance") t.critChance += 0.025;
-  if (id === "critDamage") t.critDamage += 0.18;
+  if (id === "critChance") t.critChance = Math.min(0.5, t.critChance + 0.008);
+  if (id === "critDamage") t.critDamage = Math.min(3.5, t.critDamage + 0.1);
   if (id === "superCritChance") t.superCritChance = Math.min(0.8, t.superCritChance + 0.0075);
   if (id === "superCritMult") t.superCritMult += 0.18;
-  if (id === "multiShot") t.multiShot += 0.025;
+  if (id === "multiShot") t.multiShot = Math.min(0.35, t.multiShot + 0.015);
   if (id === "bounceShot") t.bounceChance += 0.03;
   if (id === "bounceTargets") t.bounceTargets = Math.min(8, t.bounceTargets + 1);
   if (id === "bounceRange") t.bounceRange += 18;
@@ -2811,16 +2868,16 @@ function applyUpgradeStat(id) {
   if (id === "damageMeter") t.damageMeter += 0.006;
   if (id === "knockback") t.knockback += 0.03;
   if (id === "knockbackStrength") t.knockbackStrength += 3.5;
-  if (id === "lifesteal") t.lifesteal += 0.004;
-  if (id === "absDefense") t.absDefense += (1.5 + level * 1.1) * cardFortressMult;
-  if (id === "defensePercent") t.defensePercent = Math.min(0.65, t.defensePercent + 0.012);
-  if (id === "thorns") t.thorns += 0.07;
-  if (id === "cashBonus") t.cashBonus += 0.05 + (level === 0 ? cardCashMult - 1 : 0);
-  if (id === "cashWave") t.cashWave += 8 + level * 1.6;
-  if (id === "interestRate") t.interestRate = Math.min(0.12, t.interestRate + 0.0035);
-  if (id === "maxInterest") t.maxInterest += 18 + level * 4;
-  if (id === "freeUpgrade") t.freeUpgradeChance += 0.008;
-  if (id === "runCoinBonus") t.runCoinBonus += 0.05 + (level === 0 ? cardCoinMult - 1 : 0);
+  if (id === "lifesteal") t.lifesteal = Math.min(0.12, t.lifesteal + 0.003);
+  if (id === "absDefense") t.absDefense += (1.4 + Math.sqrt(level + 1) * 0.75) * cardFortressMult;
+  if (id === "defensePercent") t.defensePercent = Math.min(0.55, t.defensePercent + 0.008);
+  if (id === "thorns") t.thorns += 0.035;
+  if (id === "cashBonus") t.cashBonus = Math.min(0.9, t.cashBonus + (level < 15 ? 0.03 : 0.012));
+  if (id === "cashWave") t.cashWave += 6 + 4 * (level + 1) + 0.35 * Math.pow(level + 1, 1.15);
+  if (id === "interestRate") t.interestRate = Math.min(0.02, t.interestRate + (level === 0 ? 0.002 : 0.0006));
+  if (id === "maxInterest") t.maxInterest = Math.max(t.maxInterest, getAverageWaveReward() * 0.35);
+  if (id === "freeUpgrade") t.freeUpgradeChance = Math.min(0.15, t.freeUpgradeChance + 0.004);
+  if (id === "runCoinBonus") t.runCoinBonus += 0.05;
   if (id === "coinWave") t.coinWaveChance = Math.min(0.45, t.coinWaveChance + 0.006);
   if (id === "orbCount") t.orbCount = Math.min(10, t.orbCount + 1);
   if (id === "orbSpeed") t.orbSpeed += 0.12;
@@ -2835,16 +2892,17 @@ function applyUpgradeStat(id) {
     t.shockWaveStrength = 34 + game.runUpgrades.shockWave * 0.9;
     if (t.shockWaveTimer <= 0) t.shockWaveTimer = Math.min(1.2, t.shockWaveCooldown);
   }
-  if (id === "enemyAttackSkip") t.enemyAttackSkip = Math.min(0.55, t.enemyAttackSkip + 0.0075);
-  if (id === "enemyHealthSkip") t.enemyHealthSkip = Math.min(0.55, t.enemyHealthSkip + 0.0075);
-  if (id === "waveSkip") t.waveSkipChance = Math.min(0.42, t.waveSkipChance + 0.006);
+  if (id === "enemyAttackSkip") t.enemyAttackSkip = Math.min(0.18, t.enemyAttackSkip + 0.003);
+  if (id === "enemyHealthSkip") t.enemyHealthSkip = Math.min(0.18, t.enemyHealthSkip + 0.003);
+  if (id === "waveSkip") t.waveSkipChance = Math.min(0.18, t.waveSkipChance + 0.003);
 }
 
 function getRunUpgradeCost(def, level) {
   const discount = game?.eventMode === "overclocked" ? balance.overclockedUpgradeDiscount : 1;
   const labDiscount = Math.min(0.12, (progress.labs.levels.labUpgradeDiscount || 0) * 0.004);
   const levelTierMult = getRunUpgradeTierMultiplier(def, level);
-  return Math.floor(def.base * Math.pow(def.growth, level) * levelTierMult * discount * (1 - labDiscount));
+  const growth = ["damage", "attackSpeed", "maxHealth", "cashBonus", "cashWave"].includes(def.id) ? 1.12 : def.growth;
+  return Math.max(1, Math.round(def.base * Math.pow(growth, level) * levelTierMult * discount * (1 - labDiscount)));
 }
 
 function getRunUpgradeTierMultiplier(def, level) {
@@ -3017,14 +3075,14 @@ function getStatValueString(id, t) {
 
 function getNextUpgradeEffectString(id, level) {
   switch(id) {
-    case "damage": return `+${(4 + level * 1.4).toFixed(1)} к базовому урону`;
-    case "attackSpeed": return `x1.12 к скорости атаки`;
+    case "damage": return level < 20 ? `+12% от базы урона` : `+4% от базы урона`;
+    case "attackSpeed": return level < 15 ? `+0.07 выстр./с` : `+0.025 выстр./с`;
     case "range": return `+12 px`;
-    case "critChance": return `+3.5%`;
-    case "critDamage": return `+0.22x`;
+    case "critChance": return `+0.8%`;
+    case "critDamage": return `+0.10x`;
     case "superCritChance": return `+1.0%`;
     case "superCritMult": return `+0.25x`;
-    case "multiShot": return `+4.0%`;
+    case "multiShot": return `+1.5%`;
     case "bounceShot": return `+5.0%`;
     case "bounceTargets": return `+1 отскок`;
     case "bounceRange": return `+18 px`;
@@ -3032,31 +3090,31 @@ function getNextUpgradeEffectString(id, level) {
     case "rapidFireDuration": return `+0.22с`;
     case "damageMeter": return `+0.6%/100px`;
     case "orbCount": return `+1 сфера`;
-    case "orbSpeed": return `+0.15 к скорости`;
-    case "maxHealth": return `+24 ОЗ`;
-    case "regen": return `+0.7 ОЗ/с`;
-    case "absDefense": return `+${(2 + level * 1.5).toFixed(1)} к поглощению`;
-    case "knockback": return `+4.5%`;
+    case "orbSpeed": return `+0.12 к скорости`;
+    case "maxHealth": return level < 25 ? `+20 ОЗ` : `+8 ОЗ`;
+    case "regen": return `+0.5 ОЗ/с`;
+    case "absDefense": return `+${(1.4 + Math.sqrt(level + 1) * 0.75).toFixed(1)} к поглощению`;
+    case "knockback": return `+3.0%`;
     case "knockbackStrength": return `+3.5 px`;
-    case "lifesteal": return `+0.8%`;
-    case "defensePercent": return `+2.0%`;
-    case "thorns": return `+10.0%`;
+    case "lifesteal": return `+0.3%`;
+    case "defensePercent": return `+0.8%`;
+    case "thorns": return `+3.5%`;
     case "deathDefy": return `+1.5%`;
-    case "landmineChance": return `+2.0%`;
-    case "landmineDamage": return `+0.4x`;
-    case "cashBonus": return `+8.0%`;
-    case "cashWave": return `+$${Math.round(8 + level * 1.6)}`;
-    case "interestRate": return `+0.5%`;
-    case "maxInterest": return `+$${25 + level * 5}`;
-    case "freeUpgrade": return `+1.5%`;
-    case "runCoinBonus": return `+10.0%`;
+    case "landmineChance": return `+1.5%`;
+    case "landmineDamage": return `+0.3x`;
+    case "cashBonus": return level < 15 ? `+3.0%` : `+1.2%`;
+    case "cashWave": return `+$${Math.round(6 + 4 * (level + 1) + 0.35 * Math.pow(level + 1, 1.15))}`;
+    case "interestRate": return level === 0 ? `+0.2%` : `+0.06%`;
+    case "maxInterest": return `35% средней награды волны`;
+    case "freeUpgrade": return `+0.4%`;
+    case "runCoinBonus": return `+5.0%`;
     case "coinWave": return `+0.6%`;
-    case "packageChance": return `+1.5%`;
-    case "packageMax": return `+15.0%`;
+    case "packageChance": return `+1.0%`;
+    case "packageMax": return `+10.0%`;
     case "shockWave": return `волна чаще и сильнее`;
-    case "enemyAttackSkip": return `-0.75% урона врагов`;
-    case "enemyHealthSkip": return `-0.75% здоровья врагов`;
-    case "waveSkip": return `+0.6% шанс пропуска`;
+    case "enemyAttackSkip": return `-0.3% урона врагов`;
+    case "enemyHealthSkip": return `-0.3% здоровья врагов`;
+    case "waveSkip": return `+0.3% шанс пропуска`;
     default: return "";
   }
 }
@@ -3149,10 +3207,10 @@ function buyPermanentUpgrade(id) {
 }
 
 function getPermanentCost(def, level) {
-  const early = Math.min(level, 20);
-  const mid = Math.max(0, Math.min(level - 20, 40));
-  const late = Math.max(0, level - 60);
-  return Math.floor(def.base * Math.pow(def.scale, early) * Math.pow(def.scale + 0.06, mid) * Math.pow(def.scale + 0.14, late));
+  const early = Math.min(level, 15);
+  const mid = Math.max(0, Math.min(level - 15, 20));
+  const late = Math.max(0, level - 35);
+  return Math.round(def.base * Math.pow(1.22, early) * Math.pow(1.3, mid) * Math.pow(1.38, late));
 }
 
 function getPermanentStarterText(id, level = progress.permanent?.[id] || 0) {
@@ -3636,12 +3694,6 @@ function buyStoneUpgrade(type) {
   if (progress.powerStones < cost) return;
   progress.powerStones -= cost;
   progress.stoneUpgrades[type] = (progress.stoneUpgrades[type] || 0) + 1;
-  // Пересчитываем КД
-  if (type === "cd") {
-    ultimateDefs.forEach(def => {
-      if (progress.ultimates[def.id]) progress.ultimates[def.id].cooldown = Math.max(1, def.cooldown - progress.stoneUpgrades.cd * 0.5);
-    });
-  }
   saveProgress();
   renderUltimateShop();
 }
@@ -3671,7 +3723,7 @@ function renderUltimateShop() {
   list.innerHTML = "";
   ultimateDefs.forEach((def) => {
     const data = progress.ultimates[def.id];
-    const nextCost = data.owned ? Math.floor(def.cost * Math.pow(1.9, data.level)) : def.cost;
+    const nextCost = data.owned ? Math.round(def.cost * Math.pow(1.65, data.level)) : def.cost;
     const canBuy = progress.coins >= nextCost;
     const isLockedByCost = !data.owned && !canBuy;
     const iconClass = getUltimateIconClass(def.id);
@@ -3716,7 +3768,7 @@ function renderUltimateShop() {
 function buyUltimate(id) {
   const def = ultimateDefs.find((u) => u.id === id);
   const data = progress.ultimates[id];
-  const cost = data.owned ? Math.floor(def.cost * Math.pow(1.9, data.level)) : def.cost;
+  const cost = data.owned ? Math.round(def.cost * Math.pow(1.65, data.level)) : def.cost;
   if (progress.coins < cost) return;
   progress.coins -= cost;
   progress.spentCoins = (progress.spentCoins || 0) + cost;
@@ -3893,12 +3945,12 @@ function buildRunSummary(commit = false) {
   if (!game) return null;
   const reachedWave = Math.max(0, game.wave);
   const tierReward = 1 + (game.tier - 1) * 0.65;
-  const coinBonus = 1 + progress.permanent.coinBonus * 0.02;
+  const coinBonus = 1 + getPermanentLevel("coinBonus") * 0.02;
   const medalCoinBonus = 1 + (progress.eventShop.medalCoins || 0) * 0.03;
-  const labCoinMult = 1 + (progress.labs.levels.labCoins || 0) * 0.015;
+  const labCoinMult = 1 + Math.min(0.5, (progress.labs.levels.labCoins || 0) * 0.008);
   const waveCoins = Math.pow(reachedWave, 1.18) * balance.coinWaveBonus;
   const killCoins = game.stats.kills * balance.coinKillRate;
-  const bossCoins = game.stats.bossKills * (balance.coinBossBonus + game.tier * 8);
+  const bossCoins = game.stats.bossKills * (balance.coinBossBonus + game.tier * 8) * Math.pow(1.08, game.stats.bossKills);
   const earnedCoins = Math.floor((game.totalCash * balance.coinCashRate + waveCoins + killCoins + bossCoins) * tierReward * coinBonus * medalCoinBonus * labCoinMult);
   const eventScore = calculateEventScore(reachedWave);
   const earnedMedals = game.eventMode ? Math.max(1, Math.floor(eventScore / 120)) : 0;
@@ -4186,9 +4238,10 @@ function getWaveThreatText() {
     const type = typeof item === "string" ? item : item.type;
     const elite = typeof item === "object" ? item.elite : false;
     const def = enemyDefs[type];
-    const scale = type === "boss" ? Math.pow(balance.bossHpGrowth, bossIndex - 1) * game.tierMult : Math.pow(balance.waveHpGrowth, Math.max(0, game.wave - 1)) * game.tierMult;
+    const scale = (type === "boss" ? Math.pow(1.75, bossIndex - 1) : getRegularWaveScale(game.wave, 1.1, 1.06, 1.018)) * game.tierMult;
+    const damageScale = type === "boss" ? Math.pow(1.18, bossIndex - 1) : getRegularWaveScale(game.wave, 1.07, 1.04, 1.012);
     let hp = def.hp * scale;
-    let damage = def.damage * (type === "boss" ? Math.pow(balance.bossDamageGrowth, bossIndex - 1) : Math.pow(balance.waveDamageGrowth, Math.max(0, game.wave - 1))) * game.tierMult;
+    let damage = def.damage * damageScale * game.tierMult;
     if (elite) { hp *= 2.6; damage *= 1.7; }
     if (hp > maxHp) maxHp = hp;
     if (damage > maxAtk) maxAtk = damage;
