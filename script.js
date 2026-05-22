@@ -227,12 +227,12 @@ const moduleTypes = [
 const rarityNames = ["Обычный", "Редкий", "Эпический", "Легендарный"];
 
 const moduleUniqueDefs = [
-  { id: "astralDeliverance", type: "weapon", name: "Astral Deliverance", desc: "Рикошет летит дальше и усиливается после каждого отскока." },
-  { id: "wormholeRedirector", type: "armor", name: "Wormhole Redirector", desc: "Регенерация лечит часть оверхила от пакетов." },
-  { id: "galaxyCompressor", type: "generator", name: "Galaxy Compressor", desc: "Пакеты восстановления сокращают перезарядку ультимейтов." },
-  { id: "multiverseNexus", type: "core", name: "Multiverse Nexus", desc: "Golden Tower, Black Hole и Death Wave чаще синхронизируются." },
-  { id: "blackHoleDigester", type: "generator", name: "Black Hole Digester", desc: "Бесплатные апгрейды временно усиливают монеты за убийство." },
-  { id: "orbitalAugmentation", type: "armor", name: "Orbital Augmentation", desc: "Добавляет электронные орбиты, добивающие врагов рядом с ядром." },
+  { id: "astralDeliverance", type: "weapon", name: "Astral Deliverance", desc: "Рикошет усиливается после отскока, но бонус ограничен." },
+  { id: "wormholeRedirector", type: "armor", name: "Wormhole Redirector", desc: "Регенерация дает ограниченный оверхил от пакетов." },
+  { id: "galaxyCompressor", type: "generator", name: "Galaxy Compressor", desc: "Пакеты восстановления немного сокращают КД ультимейтов." },
+  { id: "multiverseNexus", type: "core", name: "Multiverse Nexus", desc: "Golden Tower, Black Hole и Death Wave мягко синхронизируются." },
+  { id: "blackHoleDigester", type: "generator", name: "Black Hole Digester", desc: "Бесплатные апгрейды дают capped-бонус к наградам." },
+  { id: "orbitalAugmentation", type: "armor", name: "Orbital Augmentation", desc: "Добавляет до двух дополнительных орбитальных сфер." },
 ];
 
 const cosmeticDefs = {
@@ -478,7 +478,7 @@ const bossRewardDefs = [
 ];
 
 const perkDefs = [
-  { id: "dmg", name: "Урон +15%", desc: "Увеличивает весь урон башни на 15%.", max: 5 },
+  { id: "dmg", name: "Урон +12%", desc: "Увеличивает весь урон башни на 12%, до общего капа перков.", max: 5 },
   { id: "hp", name: "Здоровье +20%", desc: "Максимальное здоровье башни увеличено на 20%.", max: 5 },
   { id: "regenPerk", name: "Регенерация x1.6", desc: "Сильно усиливает восстановление ядра.", max: 5 },
   { id: "defense", name: "Защита +4%", desc: "Процент защиты увеличен на 4%.", max: 5 },
@@ -488,8 +488,8 @@ const perkDefs = [
   { id: "perkWaveReq", name: "Перки чаще -20%", desc: "Следующие перки появляются быстрее.", max: 3 },
   { id: "gameSpeedPerk", name: "Скорость игры +1", desc: "Ускоряет текущий забег.", max: 1 },
   { id: "tradeHp", name: "Хрупкие враги", desc: "Сделка: -40% ОЗ врагов, но +40% урон врагов.", max: 1, trade: true },
-  { id: "tradeBoss", name: "Убийца боссов", desc: "Сделка: +50% урона по боссам, -10% урона по остальным.", max: 1, trade: true },
-  { id: "tradeCoinsHp", name: "Монеты x1.8 / -70% ОЗ", desc: "Сделка: сильный фарм ценой максимального здоровья.", max: 1, trade: true },
+  { id: "tradeBoss", name: "Убийца боссов", desc: "Сделка: +45% урона по боссам, -10% урона по остальным.", max: 1, trade: true },
+  { id: "tradeCoinsHp", name: "Монеты +60% / -70% ОЗ", desc: "Сделка: capped-бонус к монетам ценой максимального здоровья.", max: 1, trade: true },
 ];
 
 const enemyDefs = {
@@ -901,6 +901,7 @@ function defaultProgress() {
     stoneUpgrades: { dmg: 0, cd: 0 },
     bestiary: {},
     cards: {},
+    cardPity: { rare: 0, epic: 0 },
     cardSlots: 1,
     equippedCards: [],
     medals: 0,
@@ -937,6 +938,7 @@ function loadProgress() {
   progress.labs = progress.labs || defaultProgress().labs;
   progress.labs.levels = { ...defaultProgress().labs.levels, ...progress.labs.levels };
   progress.cards = progress.cards || {};
+  progress.cardPity = { ...defaultProgress().cardPity, ...(progress.cardPity || {}) };
   progress.equippedCards = progress.equippedCards || [];
   progress.modules = progress.modules || [];
   progress.equippedModules = { ...defaultProgress().equippedModules, ...(progress.equippedModules || {}) };
@@ -1297,6 +1299,17 @@ function getCardRunBonus(cardId, perLevel) {
     : 0;
 }
 
+function getMetaCashBonus() {
+  if (!game?.tower) return 0;
+  return Math.min(1.35, (game.tower.cashBonus || 0) + (getModuleMult("economy") - 1));
+}
+
+function getCoinDropBonus(extra = 0) {
+  const labCoinBonus = Math.min(0.5, (progress.labs.levels.labCoins || 0) * 0.008);
+  const moduleCoinBonus = getModuleMult("economy") - 1;
+  return Math.min(1.6, (game?.tower?.runCoinBonus || 0) + extra + labCoinBonus + moduleCoinBonus);
+}
+
 function getRegularWaveScale(wave, earlyGrowth, midGrowth, lateGrowth) {
   if (wave <= 20) return Math.pow(earlyGrowth, Math.max(0, wave - 1));
   if (wave <= 100) return Math.pow(earlyGrowth, 19) * Math.pow(midGrowth, wave - 20);
@@ -1572,7 +1585,7 @@ function setWavePause(seconds, text = "") {
   triggerFreeUpgrade();
 
   if (game.tower.cashWave > 0) {
-    const earned = game.tower.cashWave * (1 + game.tower.cashBonus + (getModuleMult("economy") - 1));
+    const earned = game.tower.cashWave * (1 + getMetaCashBonus());
     game.cash += earned;
     game.totalCash += earned;
     game.stats.cashEarned += earned;
@@ -1586,7 +1599,7 @@ function setWavePause(seconds, text = "") {
 
   if (game.tower.waveSkipChance > 0 && game.wave > 0 && game.wave % 10 !== 9 && Math.random() < game.tower.waveSkipChance) {
     game.wave += 1;
-    const skipCash = Math.ceil(getAverageWaveReward(game.wave) * 0.35 * (1 + game.tower.cashBonus));
+    const skipCash = Math.ceil(getAverageWaveReward(game.wave) * 0.35 * (1 + getMetaCashBonus()));
     game.cash += skipCash;
     game.totalCash += skipCash;
     game.stats.cashEarned += skipCash;
@@ -2171,7 +2184,7 @@ function updateEnemies(dt) {
         audio.play("baseHit");
         const actualDamage = Math.max(1, (enemy.damage - game.tower.absDefense)) * Math.max(0.1, (1 - game.tower.defensePercent));
         
-        const hitDamage = enemy.type === "horn" ? game.tower.maxHp * 0.5 : actualDamage;
+        const hitDamage = enemy.type === "horn" ? game.tower.maxHp * 0.25 : actualDamage;
         if (game.tower.hp - hitDamage <= 0 && Math.random() < game.tower.deathDefy) {
           game.tower.hp = 1;
           addText("Игнор смерти!", game.tower.x, game.tower.y - 80, "#ff5c9b");
@@ -2420,7 +2433,7 @@ function killEnemy(enemy) {
     : 0;
   const synergyBonus = enemy.inBlackHole && hasSynergy("Фарм-синхрон") && game.goldenCoreTimer > 0 ? 0.25 : 0;
   const digesterBonus = Math.min(0.24, (game.blackHoleDigestStacks || 0) * 0.02);
-  const metaRewardBonus = game.tower.cashBonus + (getModuleMult("economy") - 1);
+  const metaRewardBonus = getMetaCashBonus();
   const tempRewardBonus = Math.min(balance.tempRewardCap, goldenBonus + blackHoleBonus + synergyBonus + digesterBonus);
   const reward = Math.ceil(enemy.reward * (1 + metaRewardBonus) * (1 + tempRewardBonus));
   game.cash += reward;
@@ -2451,10 +2464,8 @@ function killEnemy(enemy) {
   if (["grunt", "shooter", "splitter"].includes(enemy.type)) coinChance = 0.02;
   if (["brute", "shield", "vampire"].includes(enemy.type)) coinChance = 0.05;
   if (enemy.elite || enemy.type === "boss") coinChance = 0.20;
-  const labCoinMult = 1 + Math.min(0.5, (progress.labs.levels.labCoins || 0) * 0.008);
-
   const critCoinBonus = enemy.criticalCoinBonus ? getCardLevelFromCount(progress.cards.cardCriticalCoin || 0) * 0.03 : 0;
-  if (Math.random() < coinChance * (1 + game.tower.runCoinBonus + critCoinBonus) * labCoinMult * getModuleMult("economy")) {
+  if (Math.random() < Math.min(0.85, coinChance * (1 + getCoinDropBonus(critCoinBonus)))) {
     progress.coins += 1;
     audio.play("coin");
     saveProgress();
@@ -2595,18 +2606,18 @@ function offerPerks() {
 
 function applyPerk(perk) {
   game.perks.push(perk.id);
-  if (perk.id === "dmg") game.perkMultipliers.towerDamage *= 1.15;
+  if (perk.id === "dmg") game.perkMultipliers.towerDamage = Math.min(1.6, game.perkMultipliers.towerDamage + 0.12);
   if (perk.id === "hp") { game.tower.maxHp *= 1.2; game.tower.hp *= 1.2; }
   if (perk.id === "regenPerk") game.tower.regen = Math.max(0.5, game.tower.regen * 1.6);
   if (perk.id === "defense") game.tower.defensePercent = Math.min(0.9, game.tower.defensePercent + 0.04);
-  if (perk.id === "coins") game.tower.runCoinBonus += 0.15;
+  if (perk.id === "coins") game.tower.runCoinBonus = Math.min(1.2, game.tower.runCoinBonus + 0.15);
   if (perk.id === "orbPerk") game.tower.orbCount = Math.min(10, game.tower.orbCount + 1);
   if (perk.id === "freeUpPerk") game.tower.freeUpgradeChance += 0.05;
   if (perk.id === "perkWaveReq") game.perkWaveReduction = (game.perkWaveReduction || 0) + 0.2;
   if (perk.id === "gameSpeedPerk") game.perkGameSpeed = (game.perkGameSpeed || 1) + 1;
   if (perk.id === "tradeHp") { game.perkMultipliers.enemyHp *= 0.6; game.perkMultipliers.enemyDamage *= 1.4; }
-  if (perk.id === "tradeBoss") { game.perkMultipliers.bossDamage *= 1.5; }
-  if (perk.id === "tradeCoinsHp") { game.tower.runCoinBonus += 0.8; game.tower.maxHp *= 0.3; game.tower.hp = Math.min(game.tower.hp, game.tower.maxHp); }
+  if (perk.id === "tradeBoss") { game.perkMultipliers.bossDamage = Math.min(1.75, game.perkMultipliers.bossDamage + 0.45); }
+  if (perk.id === "tradeCoinsHp") { game.tower.runCoinBonus = Math.min(1.2, game.tower.runCoinBonus + 0.6); game.tower.maxHp *= 0.3; game.tower.hp = Math.min(game.tower.hp, game.tower.maxHp); }
 
   document.getElementById("perkOverlay").classList.add("hidden");
   showWaveToast(`Перк применен`);
@@ -2906,7 +2917,7 @@ function applyUpgradeStat(id) {
   if (id === "interestRate") t.interestRate = Math.min(0.02, t.interestRate + (level === 0 ? 0.002 : 0.0006));
   if (id === "maxInterest") t.maxInterest = Math.max(t.maxInterest, getAverageWaveReward() * 0.35);
   if (id === "freeUpgrade") t.freeUpgradeChance = Math.min(0.15, t.freeUpgradeChance + 0.004);
-  if (id === "runCoinBonus") t.runCoinBonus += 0.05;
+  if (id === "runCoinBonus") t.runCoinBonus = Math.min(1.2, t.runCoinBonus + 0.05);
   if (id === "coinWave") t.coinWaveChance = Math.min(0.5, t.coinWaveChance + 0.01);
   if (id === "orbCount") t.orbCount = Math.min(10, t.orbCount + 1);
   if (id === "orbSpeed") t.orbSpeed += 0.12;
@@ -3419,6 +3430,15 @@ function getCardRarity(id) {
 }
 
 function pullWeightedCardDef() {
+  const pity = progress.cardPity || { rare: 0, epic: 0 };
+  if (pity.epic >= 34) {
+    const epicPool = cardDefs.filter((def) => getCardRarity(def.id) === "epic");
+    return epicPool[Math.floor(Math.random() * epicPool.length)];
+  }
+  if (pity.rare >= 8) {
+    const rareOrBetterPool = cardDefs.filter((def) => getCardRarity(def.id) !== "common");
+    return rareOrBetterPool[Math.floor(Math.random() * rareOrBetterPool.length)];
+  }
   const weightedRarities = Object.entries(cardRarityDefs);
   const totalWeight = weightedRarities.reduce((sum, [, rarity]) => sum + rarity.weight, 0);
   let roll = Math.random() * totalWeight;
@@ -3439,6 +3459,11 @@ function pullCard() {
   if (progress.crystals < CARD_PULL_COST) return;
   progress.crystals -= CARD_PULL_COST;
   const randomDef = pullWeightedCardDef();
+  const rarity = getCardRarity(randomDef.id);
+  progress.cardPity = {
+    rare: rarity === "common" ? (progress.cardPity?.rare || 0) + 1 : 0,
+    epic: rarity === "epic" ? 0 : (progress.cardPity?.epic || 0) + 1,
+  };
   progress.cards[randomDef.id] = (progress.cards[randomDef.id] || 0) + 1;
   saveProgress();
   renderCards();
@@ -4477,6 +4502,7 @@ function applyImportedData(imported) {
   paused = false;
   progress = { ...defaultProgress(), ...imported };
   progress.permanent = { ...defaultProgress().permanent, ...progress.permanent };
+  progress.cardPity = { ...defaultProgress().cardPity, ...(progress.cardPity || {}) };
   progress.ultimates = { ...defaultProgress().ultimates, ...progress.ultimates };
   progress.events = { ...defaultProgress().events, ...progress.events };
   progress.eventShop = { ...defaultProgress().eventShop, ...progress.eventShop };
