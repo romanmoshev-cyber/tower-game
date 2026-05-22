@@ -15,8 +15,63 @@
 }
 
 /* --- Permanent upgrades: neon asset cards --- */
+#permanentScreen {
+  padding: 10px 10px 18px;
+  background:
+    radial-gradient(circle at 50% 4%, rgba(85, 236, 255, 0.13), transparent 34%),
+    linear-gradient(180deg, rgba(2, 14, 28, 0.96), rgba(2, 6, 17, 0.98));
+}
+
+#permanentScreen .sub-head {
+  margin: 0 0 12px;
+  padding: 4px 0 12px;
+  border-bottom: 1px solid rgba(85, 236, 255, 0.22);
+  gap: 10px;
+}
+
+#permanentScreen .back-btn .sprite-icon {
+  width: 52px !important;
+  height: 52px !important;
+  filter: drop-shadow(0 0 10px rgba(85, 236, 255, 0.56));
+}
+
+#permanentScreen .sub-head h2 {
+  flex: 0 0 auto;
+  min-width: 0;
+  justify-content: center;
+  color: #e9fbff;
+  font-size: clamp(0.88rem, 3.7vw, 1.08rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  text-align: center;
+  text-shadow: 0 0 12px rgba(85, 236, 255, 0.72);
+}
+
+#permanentScreen .sub-head h2 .sprite-icon {
+  display: none;
+}
+
+#permanentScreen .resource-pill {
+  min-width: 94px;
+  min-height: 44px;
+  justify-content: center;
+  border: 11px solid transparent;
+  border-image: url("image/ui/card_price_badge.png") 20 fill stretch;
+  background: transparent;
+  color: #5dffa8;
+  font-size: 1.04rem;
+  font-weight: 900;
+  box-shadow: none;
+  text-shadow: 0 0 10px rgba(36, 255, 143, 0.5);
+}
+
+#permanentScreen .resource-pill .sprite-icon {
+  width: 28px;
+  height: 28px;
+}
+
 #prestigePanel.info-panel {
-  margin: 0 -10px 14px;
+  margin: 0 0 14px;
   padding: 14px 16px;
   border: 12px solid transparent;
   border-image: url("image/ui/panel-purple.png") 18 fill stretch;
@@ -37,509 +92,13 @@
 
 #permanentList.shop-list {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-  margin-inline: -10px;
+  gap: 12px;
   padding-bottom: 18px;
-}
-
-#ultimateList.shop-list {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-  margin-inline: -10px;
-  padding-bottom: 18px;
-}
-
-#ultimateOverviewPanel.info-panel {
-  margin-inline: -10px;
-  gap: 10px;
-}
-
-.ultimate-overview-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-#ultimateLoadoutInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.ultimate-loadout-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 10px;
-  padding-top: 9px;
-  border-top: 1px solid rgba(85, 236, 255, 0.18);
-}
-
-#ultimateLoadoutInfo strong {
-  color: var(--accent-cyan);
-  font-size: 0.95rem;
-}
-
-#ultimateLoadoutInfo span {
-  color: var(--text-muted);
-  font-size: 0.82rem;
-  line-height: 1.25;
-}
-
-.ultimate-selected-icons {
-  display: grid;
-  grid-template-columns: repeat(3, 34px);
-  align-items: center;
-  justify-content: flex-end;
-  gap: 5px;
-  min-width: 112px;
-}
-
-.ultimate-selected-icon {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  background: url("image/ui/card-purple.png") center / 100% 100% no-repeat;
-  filter: drop-shadow(0 0 6px rgba(85, 236, 255, 0.32));
-}
-
-.ultimate-selected-icon.empty {
-  opacity: 0.34;
-  filter: none;
-}
-
-.ultimate-selected-icon .sprite-icon {
-  width: 70%;
-  height: 70%;
-}
-
-.ultimate-selected-empty {
-  color: #aebdce;
-  font-size: 0.76rem;
-  font-weight: 900;
-}
-
-#stoneShopList.shop-list {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-  margin-inline: -10px;
-}
-
-.ultimate-stone-card.shop-card {
-  min-height: clamp(138px, 35vw, 160px);
-  padding: clamp(14px, 3.3vw, 17px) clamp(11px, 2.9vw, 15px) clamp(11px, 2.7vw, 14px);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  border: 0;
-  border-image: none;
-  border-radius: 0;
-  background: url("image/ui/upgrade_card_empty.png") center / 100% 100% no-repeat;
-  box-shadow: none;
-  opacity: 1;
-  filter: none;
-}
-
-.ultimate-stone-card .ultimate-stone-head {
-  flex: 0 0 auto;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding-right: 8px;
-}
-
-.ultimate-stone-card .ultimate-stone-head strong {
-  color: #f2fbff;
-  font-size: clamp(0.72rem, 2.82vw, 0.9rem);
-  font-weight: 900;
-  line-height: 1.05;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.28);
-}
-
-.ultimate-stone-card .ultimate-stone-head span {
-  margin: 0;
-  padding: 0;
-  color: #aebdce !important;
-  font-size: clamp(0.68rem, 2.65vw, 0.84rem) !important;
-  font-weight: 800;
-  line-height: 1.15;
-}
-
-.ultimate-stone-card p {
-  flex: 1;
-  margin: 0;
-  color: #d6e3f0;
-  font-size: clamp(0.68rem, 2.55vw, 0.8rem);
-  font-weight: 700;
-  line-height: 1.12;
-}
-
-.ultimate-stone-price {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  flex: 1 1 auto;
-  min-width: 0;
-  color: #d593ff;
-  font-size: clamp(0.78rem, 2.95vw, 0.94rem);
-  font-weight: 900;
-}
-
-.ultimate-stone-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 2px;
-}
-
-.ultimate-stone-price .sprite-icon {
-  width: 28px;
-  height: 28px;
-}
-
-.ultimate-stone-price span {
-  margin: 0;
-  padding: 0;
-  color: #d593ff !important;
-  font-size: inherit !important;
-  font-weight: 900;
-}
-
-.ultimate-stone-btn,
-.ultimate-stone-btn:disabled {
-  flex: 0 0 44%;
-  min-height: 38px !important;
-  width: 44%;
-  padding: 3px 7px !important;
-  border: 11px solid transparent !important;
-  border-image: url("image/ui/button_buy_empty.png") 24 fill stretch !important;
-  background: transparent !important;
-  border-radius: 0 !important;
-  color: #9af7ff !important;
-  font-size: clamp(0.72rem, 2.8vw, 0.92rem) !important;
-  font-weight: 900;
-  line-height: 1;
-  text-shadow: 0 0 10px rgba(85, 236, 255, 0.8);
-  box-shadow: none !important;
-}
-
-.ultimate-stone-btn:disabled {
-  color: rgba(175, 209, 218, 0.58) !important;
-  filter: grayscale(0.5);
-}
-
-#labActiveSlots {
-  margin: 0 -10px 16px !important;
-}
-
-#labList.shop-list {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-  margin-inline: -10px;
-  padding-bottom: 18px;
-}
-
-.lab-active-panel {
-  padding: 16px 18px;
-  border: 14px solid transparent;
-  border-image: url("image/ui/panel-purple.png") 21 fill stretch;
-  background: transparent;
-  box-shadow: none;
-}
-
-.lab-active-panel > strong {
-  display: block;
-  margin-bottom: 4px;
-  color: #f2fbff;
-  font-size: clamp(0.92rem, 3.45vw, 1.12rem);
-  font-weight: 900;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  text-shadow: 0 0 10px rgba(255, 92, 214, 0.5);
-}
-
-.lab-slot-hint {
-  display: block;
-  margin-bottom: 10px;
-  color: #ff8bff;
-  font-size: clamp(0.68rem, 2.45vw, 0.78rem);
-  font-weight: 800;
-}
-
-.lab-active-empty {
-  color: #aebdce;
-  font-size: clamp(0.78rem, 2.8vw, 0.92rem);
-  font-weight: 700;
-}
-
-.lab-active-task {
-  display: grid;
-  grid-template-columns: clamp(54px, 14vw, 68px) minmax(0, 1fr);
-  grid-template-rows: 1fr auto;
-  column-gap: 12px;
-  row-gap: 3px;
-  align-items: stretch;
-  padding: 10px 0 2px;
-}
-
-.lab-active-icon {
-  width: clamp(54px, 14vw, 68px);
-  aspect-ratio: 1;
-  grid-row: 1 / 3;
-  display: grid;
-  place-items: center;
-  background: url("image/ui/card-purple.png") center / 100% 100% no-repeat;
-  filter: drop-shadow(0 0 8px rgba(255, 92, 214, 0.34));
-}
-
-.lab-active-icon .sprite-icon {
-  width: 72%;
-  height: 72%;
-}
-
-.lab-active-body {
-  min-width: 0;
-  align-self: center;
-}
-
-.lab-active-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.lab-active-head strong {
-  min-width: 0;
-  color: #5dffa8;
-  font-size: clamp(0.9rem, 3.6vw, 1.16rem);
-  font-weight: 900;
-  line-height: 1.05;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.lab-active-head span,
-.lab-active-time {
-  color: #aebdce;
-  font-size: clamp(0.68rem, 2.45vw, 0.8rem);
-  font-weight: 800;
-}
-
-.lab-active-time {
-  margin-top: 1px;
-}
-
-.lab-active-task .lab-progress {
-  grid-column: 2;
-  grid-row: 2;
-  align-self: end;
-  width: 100%;
-  height: 7px;
-  margin-top: 0;
-  border-radius: 0;
-  overflow: hidden;
-  background: url("image/ui/upgrade_card_progress_bar.png") center / 100% 100% no-repeat;
-  position: relative;
-}
-
-.lab-active-task .lab-progress-fill {
-  display: none;
-}
-
-.lab-active-task .lab-progress::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: url("image/ui/upgrade_card_progress_bar_filled.png") left center / 100% 100% no-repeat;
-  clip-path: inset(0 calc(100% - var(--progress-percent, 0%)) 0 0);
-  transition: clip-path 1s linear;
-}
-
-.lab-upgrade-card.shop-card {
-  position: relative;
-  min-height: clamp(220px, 56vw, 258px);
-  padding: clamp(16px, 3.8vw, 20px) clamp(10px, 2.7vw, 14px) clamp(12px, 3vw, 16px);
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  border: 0;
-  border-image: none;
-  border-radius: 0;
-  background: url("image/ui/upgrade_card_empty.png") center / 100% 100% no-repeat;
-  box-shadow: none;
-  overflow: hidden;
-  opacity: 1;
-  filter: none;
-}
-
-.lab-upgrade-card .lab-info-btn {
-  position: absolute;
-  top: 8px;
-  right: 5px;
-  width: 40px;
-  height: 40px;
-  min-height: 40px;
-  padding: 0;
-  border: 0;
-  background: url("image/ui/button_info_round.png") center / 24px 24px no-repeat;
-  color: transparent;
-  box-shadow: none;
-}
-
-.lab-card-head {
-  display: grid !important;
-  grid-template-columns: clamp(42px, 11.5vw, 52px) minmax(0, 1fr);
-  align-items: center;
-  gap: 7px;
-  margin-top: 5px;
-  padding-right: 20px;
-}
-
-.lab-icon-frame {
-  width: clamp(42px, 11.5vw, 52px);
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
-  background: url("image/ui/card-purple.png") center / 100% 100% no-repeat;
-  filter: drop-shadow(0 0 8px rgba(85, 236, 255, 0.26));
-}
-
-.lab-upgrade-icon {
-  width: 74%;
-  height: 74%;
-}
-
-.lab-title-block {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.lab-title-block strong {
-  color: #f2fbff;
-  font-size: clamp(0.68rem, 2.72vw, 0.88rem);
-  font-weight: 900;
-  line-height: 1.05;
-  overflow-wrap: normal;
-  word-break: normal;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.28);
-}
-
-.lab-title-block span {
-  color: #aebdce !important;
-  font-size: clamp(0.68rem, 2.65vw, 0.84rem) !important;
-  font-weight: 800;
-}
-
-.lab-upgrade-card p {
-  flex: 0 1 auto;
-  margin: 0;
-  color: #d6e3f0;
-  font-size: clamp(0.7rem, 2.62vw, 0.84rem);
-  font-weight: 700;
-  line-height: 1.14;
-}
-
-.lab-card-bottom {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: auto;
-}
-
-.lab-effect {
-  color: var(--accent-cyan);
-  font-size: clamp(0.66rem, 2.45vw, 0.78rem);
-  font-weight: 800;
-  line-height: 1.1;
-}
-
-.lab-next-effect {
-  color: #ff8bff;
-}
-
-.lab-card-footer {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: center;
-  gap: 6px;
-  padding: 5px 8px;
-  border: 1px solid rgba(85, 236, 255, 0.18);
-  background: rgba(1, 7, 18, 0.48);
-}
-
-.lab-time,
-.lab-cost {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  min-width: 0;
-  color: #d6e3f0;
-  font-size: clamp(0.62rem, 2.35vw, 0.78rem);
-  font-weight: 900;
-  white-space: nowrap;
-}
-
-.lab-meta-icon {
-  color: #aebdce;
-  font-size: 1rem;
-  line-height: 1;
-}
-
-.lab-cost {
-  color: #d593ff;
-}
-
-.lab-cost .sprite-icon {
-  width: 21px;
-  height: 21px;
-}
-
-.lab-cost span {
-  color: #d593ff !important;
-  font-size: inherit !important;
-  font-weight: 900;
-}
-
-.lab-upgrade-card.cant-study .lab-cost,
-.lab-upgrade-card.cant-study .lab-buy-btn,
-.lab-upgrade-card.researching .lab-buy-btn,
-.lab-upgrade-card.is-max .lab-buy-btn {
-  opacity: 0.5;
-  filter: grayscale(0.6);
-}
-
-.lab-upgrade-card .lab-buy-btn,
-.lab-upgrade-card .lab-buy-btn:disabled {
-  min-height: 40px !important;
-  padding: 3px 8px !important;
-  border: 11px solid transparent !important;
-  border-image: url("image/ui/button_buy_empty.png") 24 fill stretch !important;
-  background: transparent !important;
-  border-radius: 0 !important;
-  color: #9af7ff !important;
-  font-size: clamp(0.74rem, 2.9vw, 0.96rem) !important;
-  font-weight: 900;
-  line-height: 1;
-  text-shadow: 0 0 10px rgba(85, 236, 255, 0.8);
-  box-shadow: none !important;
-}
-
-.lab-upgrade-card .lab-buy-btn:disabled {
-  color: rgba(175, 209, 218, 0.58) !important;
 }
 
 .permanent-upgrade-card.shop-card {
   position: relative;
-  min-height: clamp(202px, 53vw, 235px);
+  min-height: clamp(202px, 53vw, 260px);
   padding: clamp(18px, 4.2vw, 22px) clamp(11px, 2.9vw, 15px);
   display: flex;
   flex-direction: column;
@@ -547,29 +106,18 @@
   border: 0;
   border-image: none;
   border-radius: 0;
-  background: url("image/ui/upgrade_card_empty.png") center / 100% 100% no-repeat;
+  background:
+    linear-gradient(180deg, rgba(2, 11, 23, 0.34), rgba(1, 7, 18, 0.78)),
+    url("image/ui/upgrade_card_empty.png") center / 100% 100% no-repeat;
   box-shadow: none;
   overflow: hidden;
   opacity: 1;
   filter: none;
 }
 
-.shop-card.permanent-upgrade-card.disabled {
-  opacity: 1;
-  filter: none;
-}
-
-.shop-card.permanent-upgrade-card.disabled .permanent-card-head,
-.shop-card.permanent-upgrade-card.disabled p,
-.shop-card.permanent-upgrade-card.disabled .permanent-card-footer,
-.shop-card.permanent-upgrade-card.disabled .permanent-info-btn {
+.permanent-upgrade-card.disabled {
   opacity: 0.62;
   filter: saturate(0.74);
-}
-
-.shop-card.permanent-upgrade-card.disabled .permanent-progress {
-  opacity: 1;
-  filter: none;
 }
 
 .permanent-upgrade-card.can-buy {
@@ -578,14 +126,13 @@
 
 .permanent-upgrade-card .permanent-info-btn {
   position: absolute;
-  top: 0;
-  right: 5px;
-  width: 40px;
-  height: 40px;
-  min-height: 40px;
+  top: 18px;
+  right: 13px;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border: 0;
-  background: url("image/ui/button_info_round.png") center / 24px 24px no-repeat;
+  background: url("image/ui/button_info_round.png") center / contain no-repeat;
   color: transparent;
   box-shadow: none;
 }
@@ -595,7 +142,6 @@
   grid-template-columns: clamp(42px, 11.5vw, 52px) minmax(0, 1fr);
   align-items: center;
   gap: 7px;
-  margin-top: 5px;
   padding-right: 18px;
 }
 
@@ -646,24 +192,19 @@
   width: 100%;
   height: 12px;
   margin: 9px 0 8px;
-  position: relative;
-  overflow: hidden;
+  padding: 3px 4px;
   background: url("image/ui/upgrade_card_progress_bar.png") center / 100% 100% no-repeat;
 }
 
-.permanent-progress::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: url("image/ui/upgrade_card_progress_bar_filled.png") left center / 100% 100% no-repeat;
-  clip-path: inset(0 calc(100% - var(--progress-percent, 0%)) 0 0);
-}
-
 .permanent-progress i {
-  display: none;
+  display: block;
+  height: 100%;
+  max-width: 100%;
+  background: url("image/ui/upgrade_card_progress_bar_filled.png") left center / auto 100% repeat-x;
 }
 
 .permanent-upgrade-card p {
+  flex: 1;
   margin: 0;
   color: #d6e3f0;
   font-size: clamp(0.76rem, 3vw, 0.94rem);
@@ -671,23 +212,12 @@
   line-height: 1.22;
 }
 
-.permanent-effect {
-  color: #55ecff;
-  font-size: clamp(0.68rem, 2.55vw, 0.82rem);
-  font-weight: 800;
-  line-height: 1.18;
-}
-
-.permanent-starter-effect {
-  color: #ff8bff;
-}
-
 .permanent-card-footer {
   min-height: 42px;
   display: flex;
   align-items: center;
   margin-top: auto;
-  padding-right: clamp(70px, 36%, 95px);
+  padding-right: clamp(82px, 42%, 112px);
 }
 
 .permanent-price {
@@ -715,7 +245,7 @@
   position: absolute;
   right: 14px;
   bottom: 18px;
-  width: clamp(68px, 19.5vw, 95px);
+  width: clamp(80px, 23vw, 112px);
   min-height: 42px !important;
   padding: 4px 8px !important;
   border: 11px solid transparent !important;
@@ -735,272 +265,13 @@
   filter: grayscale(0.5);
 }
 
-.ultimate-upgrade-card.shop-card {
-  position: relative;
-  min-height: clamp(210px, 53vw, 248px);
-  padding: clamp(15px, 3.7vw, 19px) clamp(10px, 2.7vw, 14px);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  border: 0;
-  border-image: none;
-  border-radius: 0;
-  background: url("image/ui/upgrade_card_empty.png") center / 100% 100% no-repeat;
-  box-shadow: none;
-  overflow: hidden;
-  opacity: 1;
-  filter: none;
-}
-
-.shop-card.ultimate-upgrade-card.disabled {
-  opacity: 1;
-  filter: none;
-}
-
-.shop-card.ultimate-upgrade-card.disabled .ultimate-card-head,
-.shop-card.ultimate-upgrade-card.disabled p,
-.shop-card.ultimate-upgrade-card.disabled .ultimate-effect,
-.shop-card.ultimate-upgrade-card.disabled .ultimate-card-footer,
-.shop-card.ultimate-upgrade-card.disabled .ultimate-info-btn {
-  opacity: 0.62;
-  filter: saturate(0.74);
-}
-
-.shop-card.ultimate-upgrade-card.selected {
-  border: 0;
-  border-image: none;
-  background: url("image/ui/upgrade_card_empty.png") center / 100% 100% no-repeat;
-  box-shadow: none;
-  filter: none;
-  overflow: visible;
-  isolation: isolate;
-}
-
-.shop-card.ultimate-upgrade-card.selected::before {
-  content: "";
-  position: absolute;
-  inset: -4px;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(93, 255, 168, 0.42), rgba(93, 255, 168, 0.18) 14%, transparent 38%, transparent 62%, rgba(93, 255, 168, 0.18) 86%, rgba(93, 255, 168, 0.42)),
-    linear-gradient(180deg, rgba(93, 255, 168, 0.38), rgba(93, 255, 168, 0.16) 18%, transparent 42%, transparent 58%, rgba(93, 255, 168, 0.16) 82%, rgba(93, 255, 168, 0.38)),
-    radial-gradient(ellipse at 50% 50%, rgba(93, 255, 168, 0.16), transparent 78%);
-  filter: blur(16px);
-  opacity: 0.62;
-}
-
-.ultimate-upgrade-card > :not(.ultimate-info-btn) {
-  position: relative;
-  z-index: 1;
-}
-
-.ultimate-upgrade-card .ultimate-info-btn {
-  position: absolute;
-  top: 10px;
-  right: 5px;
-  width: 40px;
-  height: 40px;
-  min-height: 40px;
-  padding: 0;
-  border: 0;
-  background: url("image/ui/button_info_round.png") center / 24px 24px no-repeat;
-  color: transparent;
-  box-shadow: none;
-}
-
-.ultimate-card-head {
-  display: grid !important;
-  grid-template-columns: clamp(42px, 11.5vw, 52px) minmax(0, 1fr);
-  align-items: center;
-  gap: 7px;
-  margin-top: 5px;
-  padding-right: 18px;
-}
-
-.ultimate-icon-frame {
-  width: clamp(42px, 11.5vw, 52px);
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
-  background: url("image/ui/card-purple.png") center / 100% 100% no-repeat;
-  filter: drop-shadow(0 0 8px rgba(255, 92, 214, 0.3));
-}
-
-.ultimate-upgrade-icon {
-  width: 74%;
-  height: 74%;
-}
-
-.ultimate-title-block {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.ultimate-title-block strong {
-  color: #f2fbff;
-  font-size: clamp(0.68rem, 2.72vw, 0.88rem);
-  font-weight: 900;
-  line-height: 1.05;
-  overflow-wrap: normal;
-  word-break: normal;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.28);
-}
-
-.ultimate-title-block span {
-  color: #aebdce !important;
-  font-size: clamp(0.68rem, 2.65vw, 0.84rem) !important;
-  font-weight: 800;
-}
-
-.permanent-title-block strong,
-.ultimate-title-block strong,
-.lab-title-block strong {
-  font-size: clamp(0.68rem, 2.72vw, 0.88rem) !important;
-  line-height: 1.05;
-  overflow-wrap: normal;
-  word-break: normal;
-}
-
-.permanent-title-block span,
-.ultimate-title-block span,
-.lab-title-block span {
-  font-size: clamp(0.68rem, 2.65vw, 0.84rem) !important;
-}
-
-.ultimate-upgrade-card.shop-card p {
-  flex: 0 1 auto;
-  margin: 0;
-  color: #d6e3f0;
-  font-size: clamp(0.7rem, 2.62vw, 0.84rem);
-  font-weight: 700;
-  line-height: 1.12;
-}
-
-.ultimate-effect {
-  color: var(--accent-cyan);
-  font-size: clamp(0.66rem, 2.45vw, 0.78rem);
-  font-weight: 800;
-  line-height: 1.1;
-}
-
-.ultimate-card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  color: #d593ff;
-  font-size: clamp(0.64rem, 2.45vw, 0.8rem);
-  font-weight: 900;
-}
-
-.ultimate-price {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  min-width: 0;
-  white-space: nowrap;
-}
-
-.ultimate-price span {
-  margin: 0;
-  padding: 0;
-  color: #d593ff !important;
-  font-size: inherit !important;
-  font-weight: 900;
-}
-
-.shop-card.ultimate-upgrade-card.cant-upgrade .ultimate-price {
-  opacity: 0.48;
-  filter: grayscale(0.45);
-}
-
-.ultimate-price .sprite-icon {
-  width: 22px;
-  height: 22px;
-}
-
-.ultimate-cooldown {
-  color: #9af7ff;
-  white-space: nowrap;
-}
-
-.ultimate-actions {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 5px;
-  margin-top: auto;
-}
-
-.ultimate-actions.has-toggle {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-}
-
-.ultimate-actions button,
-.ultimate-actions button:disabled,
-.ultimate-toggle-btn,
-.ultimate-toggle-btn.off {
-  min-height: 38px !important;
-  padding: 3px 7px !important;
-  border: 11px solid transparent !important;
-  border-image: url("image/ui/button_buy_empty.png") 24 fill stretch !important;
-  background: transparent !important;
-  border-radius: 0 !important;
-  color: #9af7ff !important;
-  font-size: clamp(0.72rem, 2.8vw, 0.92rem) !important;
-  font-weight: 900;
-  line-height: 1;
-  text-shadow: 0 0 10px rgba(85, 236, 255, 0.8);
-  box-shadow: none !important;
-}
-
-.ultimate-actions.has-toggle button {
-  font-size: clamp(0.64rem, 2.35vw, 0.78rem) !important;
-  padding-inline: 4px !important;
-}
-
-.ultimate-actions button:disabled {
-  color: rgba(175, 209, 218, 0.58) !important;
-  filter: grayscale(0.5);
-}
-
-.ultimate-toggle-btn {
-  border-image: url("image/ui/panel-green.png") 24 fill stretch !important;
-  color: #5dffa8 !important;
-  text-shadow: 0 0 10px rgba(36, 255, 143, 0.72);
-}
-
-.ultimate-toggle-btn.off {
-  border-image: url("image/ui/panel-purple.png") 24 fill stretch !important;
-  color: #d9bcff !important;
-  text-shadow: 0 0 10px rgba(179, 117, 255, 0.72);
-}
-
 @media (max-width: 380px) {
+  #permanentScreen {
+    padding-inline: 8px;
+  }
+
   #permanentList.shop-list {
-    gap: 5px;
-    margin-inline: -10px;
-  }
-
-  #ultimateList.shop-list {
-    gap: 5px;
-    margin-inline: -10px;
-  }
-
-  #stoneShopList.shop-list {
-    gap: 5px;
-    margin-inline: -10px;
-  }
-
-  #labActiveSlots,
-  #labList.shop-list {
-    margin-inline: -10px !important;
-  }
-
-  #labList.shop-list {
-    gap: 5px;
+    gap: 9px;
   }
 
   .permanent-upgrade-card.shop-card {
@@ -1008,27 +279,7 @@
     padding: 13px 12px;
   }
 
-  .ultimate-upgrade-card.shop-card {
-    min-height: 210px;
-    padding: 12px 11px;
-  }
-
-  .lab-upgrade-card.shop-card {
-    min-height: 216px;
-    padding: 12px 11px;
-  }
-
   .permanent-card-head {
-    grid-template-columns: 50px minmax(0, 1fr);
-    gap: 8px;
-  }
-
-  .ultimate-card-head {
-    grid-template-columns: 50px minmax(0, 1fr);
-    gap: 8px;
-  }
-
-  .lab-card-head {
     grid-template-columns: 50px minmax(0, 1fr);
     gap: 8px;
   }
@@ -1037,18 +288,10 @@
     width: 50px;
   }
 
-  .ultimate-icon-frame {
-    width: 50px;
-  }
-
-  .lab-icon-frame {
-    width: 50px;
-  }
-
   .permanent-buy-btn {
     right: 13px;
     bottom: 14px;
-    width: 72px;
+    width: 84px;
   }
 }
 
@@ -2306,6 +1549,7 @@ button:disabled {
 
 /* --- Ползунки громкости --- */
 input[type="range"] {
+  appearance: none;
   -webkit-appearance: none;
   background: rgba(255, 255, 255, 0.1);
   height: 6px;
@@ -2313,6 +1557,7 @@ input[type="range"] {
   outline: none;
 }
 input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
   -webkit-appearance: none;
   width: 16px;
   height: 16px;
@@ -2475,13 +1720,6 @@ input[type="range"]::-webkit-slider-thumb {
 .icon-labs { background-image: url("image/ui/icon_laboratory.png"); background-size: contain; background-position: center; }
 .icon-cards { background-image: url("image/ui/icon_loot_cube.png"); background-size: contain; background-position: center; }
 .icon-rank-star { background-image: url("image/ui/icon_rank_star.png"); background-size: contain; background-position: center; }
-.icon-home { background-image: url("image/ui/icon_home.png"); background-size: contain; background-position: center; }
-.icon-death { background-image: url("image/ui/icon_death.png"); background-size: contain; background-position: center; }
-.icon-close { background-image: url("image/ui/icon_close.png"); background-size: contain; background-position: center; }
-.icon-recovery { background-image: url("image/ui/icon_recovery.png"); background-size: contain; background-position: center; }
-.icon-warning { background-image: url("image/ui/icon_warning.png"); background-size: contain; background-position: center; }
-.icon-coins { background-image: url("image/ui/icon_coins.png"); background-size: contain; background-position: center; }
-.icon-arrow-right { background-image: url("image/ui/icon_arrow_right.png"); background-size: contain; background-position: center; }
 .icon-damage { background-image: url("image/ui/icon_damage.png"); }
 .icon-attack-speed { background-image: url("image/ui/icon_attack_speed.png"); }
 .icon-health { background-image: url("image/ui/icon_health.png"); }
@@ -4015,8 +3253,6 @@ button {
   color: #e9fdff;
   font-size: clamp(1.08rem, 4.35vw, 1.38rem);
   letter-spacing: 1px;
-  transform: scaleX(0.86);
-  transform-origin: center;
 }
 
 .resource-pill {
@@ -4381,7 +3617,6 @@ input[type="range"] {
 .icon-enemy-health-skip { background-image: url("image/ui/icon_enemy_health_skip.png"); }
 .icon-wave-skip { background-image: url("image/ui/icon_wave_skip.png"); }
 .icon-tower-upgrade { background-image: url("image/ui/icon_tower_upgrade.png"); }
-.icon-energy { background-image: url("image/ui/icon_energy.png"); }
 
 .upgrade-card.is-available .run-upgrade-icon-placeholder {
   color: #7dff55;
@@ -4394,589 +3629,6 @@ input[type="range"] {
 .upgrade-card.is-locked .run-upgrade-icon-placeholder {
   color: #7d8795;
   border-radius: 4px;
-}
-
-/* --- Card equipment screen --- */
-#cardsScreen {
-  gap: 14px;
-}
-
-.card-slots-grid {
-  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-
-.card-slots-grid .card-slot {
-  min-height: 108px;
-}
-
-.card-slots-grid .card-slot:nth-child(1),
-.card-slots-grid .card-slot:nth-child(2),
-.card-slots-grid .card-slot:nth-child(3) {
-  grid-column: span 2;
-}
-
-.card-slots-grid .card-slot:nth-child(4) {
-  grid-column: 2 / span 2;
-}
-
-.card-slots-grid .card-slot:nth-child(5) {
-  grid-column: 4 / span 2;
-}
-
-#cardsInventory.cards-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-#cardsScreen .card-slot,
-#cardsScreen .card-item {
-  position: relative;
-  isolation: isolate;
-  min-width: 0;
-  overflow: hidden;
-  border: 12px solid transparent;
-  border-radius: 0;
-  border-image: url("image/ui/upgrade_card_empty.png") 24 fill stretch;
-  background:
-    linear-gradient(180deg, rgba(5, 22, 45, 0.86), rgba(2, 8, 20, 0.96)),
-    repeating-linear-gradient(0deg, rgba(85, 236, 255, 0.045) 0 1px, transparent 1px 5px);
-  box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.54), 0 0 18px rgba(85, 236, 255, 0.08);
-}
-
-#cardsScreen .card-slot::before,
-#cardsScreen .card-item::before {
-  content: "";
-  position: absolute;
-  inset: 5px;
-  z-index: -1;
-  background: radial-gradient(circle at 18% 14%, rgba(85, 236, 255, 0.16), transparent 34%);
-  opacity: 0.65;
-  pointer-events: none;
-}
-
-#cardsScreen .card-slot {
-  height: auto;
-  padding: 9px 6px;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  color: #dffbff;
-}
-
-#cardsScreen .card-slot:not(.locked) {
-  border-image-source: url("image/ui/feature-frame.png");
-}
-
-#cardsScreen .card-slot.equipped {
-  border-image-source: url("image/ui/upgrade_card_default.png");
-  color: #ffffff;
-  box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.52), 0 0 18px rgba(85, 236, 255, 0.24);
-}
-
-#cardsScreen .card-slot.locked {
-  border-image-source: url("image/ui/upgrade_card_locked.png");
-  filter: grayscale(0.45);
-}
-
-#cardsScreen .card-slot.unlockable {
-  border-image-source: url("image/ui/card-feature-pink-empty.png");
-  filter: none;
-  gap: 2px;
-}
-
-#cardsScreen .card-slot.hard-locked {
-  opacity: 0.76;
-}
-
-.card-slot-plus {
-  color: #55ecff;
-  font-size: 2.8rem;
-  line-height: 0.8;
-  text-shadow: 0 0 14px rgba(85, 236, 255, 0.9);
-}
-
-#cardsScreen .card-slot strong {
-  color: #ff65b5;
-  font-size: clamp(0.76rem, 2.85vw, 0.94rem);
-  text-transform: uppercase;
-}
-
-#cardsScreen .card-slot span,
-#cardsScreen .card-slot i {
-  color: #d5f7ff;
-  font-style: normal;
-  font-size: clamp(0.72rem, 2.7vw, 0.86rem);
-  line-height: 1.1;
-}
-
-#cardsScreen .card-slot.locked span b {
-  color: #ff65b5;
-  font-size: 1.05rem;
-}
-
-.card-slot-icon,
-.card-icon-frame {
-  display: grid;
-  place-items: center;
-  flex: 0 0 auto;
-  border: 8px solid transparent;
-  border-image: url("image/ui/card-purple.png") 20 fill stretch;
-  background: rgba(2, 8, 18, 0.8);
-  box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.5);
-}
-
-.card-slot-icon {
-  width: 42px;
-  height: 42px;
-}
-
-.card-icon-frame {
-  width: 62px;
-  height: 62px;
-}
-
-.card-slot-icon .sprite-icon,
-.card-icon-frame .sprite-icon {
-  background-size: contain;
-}
-
-.card-slot-icon .sprite-icon {
-  width: 84%;
-  height: 84%;
-}
-
-.card-icon-frame .sprite-icon {
-  width: 100%;
-  height: 100%;
-}
-
-.card-lock {
-  width: 34px;
-  height: 34px;
-  background: url("image/ui/icon_lock.png") center / contain no-repeat;
-  opacity: 0.82;
-  filter: drop-shadow(0 0 8px rgba(220, 233, 255, 0.4));
-}
-
-#cardsScreen .card-slot.unlockable .card-lock {
-  width: 27px;
-  height: 27px;
-  margin-bottom: 1px;
-}
-
-#cardsScreen .card-slot.unlockable strong {
-  font-size: clamp(0.66rem, 2.45vw, 0.78rem);
-  line-height: 1;
-}
-
-.pull-card-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  min-height: 66px !important;
-  margin: 0 0 14px;
-  border-image-source: url("image/ui/button-menu-blue-small-empty.png") !important;
-  color: #e9fdff;
-  text-transform: uppercase;
-  letter-spacing: 0;
-}
-
-.pull-card-btn .sprite-icon {
-  width: 34px;
-  height: 34px;
-  filter: drop-shadow(0 0 8px rgba(255, 92, 178, 0.72));
-}
-
-.pull-card-btn b {
-  color: #55ecff;
-  font-weight: 800;
-}
-
-.pull-card-btn.disabled,
-.pull-card-btn:disabled {
-  opacity: 0.48;
-  filter: grayscale(0.7);
-}
-
-.card-collection-head.info-panel {
-  display: grid;
-  grid-template-columns: 74px minmax(0, 1fr);
-  align-items: center;
-  gap: 2px 12px;
-  margin: 0 0 10px;
-  border-image-source: url("image/ui/panel-purple.png");
-}
-
-.card-collection-head .sprite-icon {
-  grid-row: span 2;
-  width: 60px;
-  height: 60px;
-  background-size: contain;
-  filter: drop-shadow(0 0 12px rgba(179, 117, 255, 0.78));
-}
-
-.card-collection-head strong {
-  color: #ff8bff;
-  font-size: clamp(1rem, 4vw, 1.25rem);
-  text-transform: uppercase;
-}
-
-#cardsScreen .card-item {
-  min-height: 112px;
-  padding: 10px;
-  display: grid;
-  grid-template-columns: 66px minmax(0, 1fr);
-  grid-template-rows: auto 1fr;
-  align-items: start;
-  gap: 5px 10px;
-  text-align: left;
-  cursor: pointer;
-  opacity: 0.68;
-  filter: grayscale(0.78);
-}
-
-#cardsScreen .card-item.owned {
-  opacity: 1;
-  filter: none;
-  border-image-source: url("image/ui/feature-frame.png");
-}
-
-#cardsScreen .card-item.equipped-inv {
-  border-image-source: url("image/ui/upgrade_card_default.png");
-  box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.45), 0 0 18px rgba(85, 236, 255, 0.22);
-}
-
-#cardsScreen .card-item.locked {
-  border-image-source: url("image/ui/upgrade_card_locked.png");
-}
-
-.card-copy {
-  grid-column: 2;
-  grid-row: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding-top: 1px;
-}
-
-#cardsScreen .card-item strong {
-  color: #55ecff;
-  font-size: clamp(0.68rem, 2.72vw, 0.88rem);
-  font-weight: 900;
-  line-height: 1.05;
-  text-transform: uppercase;
-  overflow-wrap: normal;
-  word-break: normal;
-}
-
-#cardsScreen .card-item span {
-  color: #dce8f4;
-  font-size: clamp(0.68rem, 2.65vw, 0.84rem);
-  font-weight: 800;
-}
-
-#cardsScreen .card-item .card-desc {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  color: #9daec3;
-  font-style: normal;
-  font-size: clamp(0.66rem, 2.5vw, 0.78rem);
-  line-height: 1.15;
-  min-height: 1.15em;
-}
-
-#cardsScreen .card-item .card-desc { align-self: end; width: 100%; }
-
-.card-owned-check {
-  display: none;
-  position: absolute;
-  top: 6px;
-  right: 7px;
-  width: 28px;
-  height: 28px;
-  border: 6px solid transparent;
-  border-image: url("image/ui/card-feature-green-empty.png") 20 fill stretch;
-}
-
-.card-owned-check::after {
-  content: "";
-  position: absolute;
-  left: 7px;
-  top: 2px;
-  width: 8px;
-  height: 14px;
-  border: solid #7dff55;
-  border-width: 0 4px 4px 0;
-  transform: rotate(45deg);
-  filter: drop-shadow(0 0 6px rgba(125, 255, 85, 0.8));
-}
-
-.card-item.equipped-inv .card-owned-check,
-.card-item.can-equip .card-owned-check {
-  display: block;
-}
-
-@media (max-width: 390px) {
-  .card-slots-grid {
-    gap: 8px;
-  }
-
-  .card-slots-grid .card-slot {
-    min-height: 96px;
-  }
-
-  #cardsInventory.cards-grid {
-    gap: 8px;
-  }
-
-  #cardsScreen .card-item {
-    grid-template-columns: 54px minmax(0, 1fr);
-    gap: 7px;
-    padding: 8px;
-  }
-
-  .card-icon-frame {
-    width: 52px;
-    height: 52px;
-  }
-}
-
-.card-pull-overlay {
-  background:
-    radial-gradient(circle at center, rgba(85, 236, 255, 0.14), transparent 42%),
-    rgba(0, 0, 0, 0.96);
-}
-
-.card-pull-box.reward-box {
-  position: relative;
-  overflow: hidden;
-  border: 14px solid transparent;
-  border-image: url("image/ui/modal.png") 24 fill stretch;
-  border-radius: 0;
-  background:
-    linear-gradient(180deg, rgba(4, 18, 42, 0.94), rgba(2, 7, 20, 0.98)),
-    repeating-linear-gradient(0deg, rgba(85, 236, 255, 0.045) 0 1px, transparent 1px 5px);
-  box-shadow: 0 0 36px rgba(85, 236, 255, 0.28), inset 0 0 28px rgba(0, 0, 0, 0.62);
-}
-
-.card-pull-box::before {
-  content: "";
-  position: absolute;
-  inset: -40%;
-  background: conic-gradient(from 0deg, transparent, rgba(85, 236, 255, 0.22), transparent, rgba(255, 92, 178, 0.22), transparent);
-  opacity: 0.55;
-  animation: cardPullSpin 2.2s linear infinite;
-  pointer-events: none;
-}
-
-.card-pull-box > * {
-  position: relative;
-  z-index: 1;
-}
-
-.card-pull-reveal {
-  position: relative;
-  min-height: 244px;
-  display: grid;
-  place-items: center;
-  margin: 8px 0 18px;
-}
-
-.card-pull-burst {
-  position: absolute;
-  width: 190px;
-  height: 190px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle, rgba(255, 255, 255, 0.7) 0 3%, rgba(85, 236, 255, 0.28) 6% 22%, transparent 56%),
-    conic-gradient(from 0deg, transparent 0 16%, rgba(85, 236, 255, 0.42) 19%, transparent 24% 50%, rgba(255, 92, 178, 0.34) 54%, transparent 61% 100%);
-  filter: blur(0.2px) drop-shadow(0 0 24px rgba(85, 236, 255, 0.56));
-  animation: cardPullAura 2.6s linear infinite;
-}
-
-.card-pull-burst::after {
-  content: "";
-  position: absolute;
-  inset: 28px;
-  border-radius: 50%;
-  border: 1px solid rgba(85, 236, 255, 0.35);
-  box-shadow:
-    0 0 18px rgba(85, 236, 255, 0.4),
-    inset 0 0 18px rgba(255, 92, 178, 0.12);
-}
-
-.card-pull-rays {
-  position: absolute;
-  width: 224px;
-  height: 224px;
-  border-radius: 50%;
-  animation: cardPullOrbit 1.55s linear infinite;
-  filter: drop-shadow(0 0 16px rgba(85, 236, 255, 0.52));
-  pointer-events: none;
-}
-
-.card-pull-rays::before,
-.card-pull-rays::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 112px;
-  height: 24px;
-  transform-origin: 0 50%;
-  clip-path: polygon(0 50%, 78% 12%, 100% 50%, 78% 88%);
-  mix-blend-mode: screen;
-}
-
-.card-pull-rays::before {
-  transform: rotate(20deg) translateX(22px);
-  background: linear-gradient(90deg, transparent, rgba(85, 236, 255, 0.88), transparent);
-}
-
-.card-pull-rays::after {
-  transform: rotate(198deg) translateX(22px);
-  background: linear-gradient(90deg, transparent, rgba(255, 92, 178, 0.78), transparent);
-  filter: drop-shadow(0 0 12px rgba(255, 92, 178, 0.72));
-}
-
-.card-pull-result {
-  width: min(210px, 72vw);
-  min-height: 238px;
-  display: grid;
-  grid-template-rows: auto auto auto 1fr;
-  justify-items: center;
-  gap: 7px;
-  padding: 18px 16px 16px;
-  border: 15px solid transparent;
-  border-image: url("image/ui/upgrade_card_default.png") 24 fill stretch;
-  background:
-    linear-gradient(180deg, rgba(5, 22, 45, 0.9), rgba(2, 8, 20, 0.97)),
-    repeating-linear-gradient(0deg, rgba(85, 236, 255, 0.05) 0 1px, transparent 1px 5px);
-  transform: rotateY(88deg) scale(0.82);
-  opacity: 0.35;
-  filter: brightness(0.6) blur(1px);
-}
-
-.card-pull-overlay.drawing .card-pull-result::after {
-  content: "";
-  position: absolute;
-  inset: 14px;
-  border: 1px solid rgba(85, 236, 255, 0.32);
-  background:
-    linear-gradient(180deg, transparent 0 42%, rgba(85, 236, 255, 0.5) 46%, transparent 52% 100%);
-  animation: cardPullScan 0.9s ease-in-out infinite;
-}
-
-.card-pull-overlay.revealed .card-pull-result,
-.card-pull-result.revealed {
-  animation: cardPullReveal 0.5s cubic-bezier(0.18, 0.9, 0.25, 1.18) forwards;
-}
-
-.card-pull-overlay.revealed .card-pull-burst,
-.card-pull-overlay.revealed .card-pull-rays {
-  animation: cardPullBoom 0.62s ease-out forwards;
-}
-
-.card-pull-icon {
-  width: 78px;
-  height: 78px;
-  display: grid;
-  place-items: center;
-  border: 10px solid transparent;
-  border-image: url("image/ui/card-purple.png") 20 fill stretch;
-}
-
-.card-pull-icon .sprite-icon {
-  width: 86%;
-  height: 86%;
-  background-size: contain;
-  filter: drop-shadow(0 0 12px rgba(85, 236, 255, 0.76));
-}
-
-.card-pull-result strong {
-  margin: 4px 0 0;
-  color: #55ecff;
-  font-size: clamp(1rem, 4vw, 1.22rem);
-  line-height: 1.05;
-  text-transform: uppercase;
-}
-
-.card-pull-result span {
-  color: #ffffff;
-  font-size: 0.9rem;
-  letter-spacing: 0;
-}
-
-.card-pull-result i {
-  align-self: start;
-  color: #d8e8f3;
-  font-style: normal;
-  font-size: 0.86rem;
-  line-height: 1.25;
-}
-
-.card-pull-close {
-  opacity: 0.5;
-}
-
-.card-pull-close.ready {
-  opacity: 1;
-}
-
-@keyframes cardPullSpin {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes cardPullAura {
-  0% { transform: scale(0.94) rotate(0deg); opacity: 0.54; }
-  50% { transform: scale(1.06) rotate(180deg); opacity: 0.88; }
-  100% { transform: scale(0.94) rotate(360deg); opacity: 0.54; }
-}
-
-@keyframes cardPullOrbit {
-  0% { transform: rotate(0deg) scale(0.96); opacity: 0.58; }
-  45% { opacity: 0.98; }
-  100% { transform: rotate(360deg) scale(1.02); opacity: 0.58; }
-}
-
-@keyframes cardPullScan {
-  from { transform: translateY(-44%); opacity: 0.22; }
-  50% { opacity: 0.9; }
-  to { transform: translateY(44%); opacity: 0.22; }
-}
-
-@keyframes cardPullReveal {
-  0% { transform: rotateY(88deg) scale(0.82); opacity: 0.35; filter: brightness(0.6) blur(1px); }
-  58% { transform: rotateY(-8deg) scale(1.08); opacity: 1; filter: brightness(1.45) blur(0); }
-  100% { transform: rotateY(0deg) scale(1); opacity: 1; filter: brightness(1) blur(0); }
-}
-
-@keyframes cardPullBoom {
-  0% { transform: scale(0.8) rotate(0deg); opacity: 0.72; }
-  70% { transform: scale(1.65) rotate(36deg); opacity: 0.82; }
-  100% { transform: scale(2.1) rotate(55deg); opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .card-pull-box::before,
-  .card-pull-burst,
-  .card-pull-rays,
-  .card-pull-overlay.drawing .card-pull-result::after,
-  .card-pull-overlay.revealed .card-pull-result,
-  .card-pull-result.revealed,
-  .card-pull-overlay.revealed .card-pull-burst {
-    animation: none;
-  }
-
-  .card-pull-result {
-    transform: none;
-    opacity: 1;
-    filter: none;
-  }
 }
 
 .upgrade-card.is-locked .run-upgrade-icon-placeholder::before {
@@ -5026,6 +3678,7 @@ input[type="range"] {
   color: #b8c4d4;
   font-size: clamp(0.56rem, 2.2vw, 0.68rem);
   line-height: 1.2;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -5084,299 +3737,9 @@ input[type="range"] {
   border-color: rgba(127, 135, 148, 0.28);
 }
 
-/* --- Death screen --- */
-.death-screen {
-  gap: 4px;
-  padding: calc(6px + var(--safe-top)) clamp(10px, 3.4vw, 18px) calc(8px + var(--safe-bottom));
-  background:
-    linear-gradient(180deg, rgba(0, 2, 9, 0.04), rgba(0, 2, 9, 0.34)),
-    url("image/back_death.png") center top / cover no-repeat,
-    #020510;
-}
-
-.death-screen:not(.game-screen):not(.menu-screen) {
-  background:
-    linear-gradient(180deg, rgba(0, 2, 9, 0.04), rgba(0, 2, 9, 0.34)),
-    url("image/back_death.png") center top / cover no-repeat,
-    #020510;
-  background-size: auto, cover, auto;
-}
-
-.death-screen::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background:
-    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 5px),
-    radial-gradient(circle at 50% 26%, rgba(255, 45, 150, 0.28), transparent 26%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 5, 16, 0.62));
-  mix-blend-mode: screen;
-  opacity: 0.45;
-}
-
-.death-screen > * {
-  position: relative;
-  z-index: 1;
-}
-
-.death-title {
-  margin: 0 0 3px;
-}
-
-.death-title-icon {
-  width: clamp(46px, 13vw, 64px);
-  height: clamp(46px, 13vw, 64px);
-  margin-bottom: 2px;
-  background-image: url("image/ui/icon_close.png");
-  background-size: contain;
-  filter: drop-shadow(0 0 16px rgba(255, 92, 155, 0.95));
-}
-
-.death-title .eyebrow {
-  color: #ff5c9b;
-  font-size: clamp(0.62rem, 2.15vw, 0.78rem);
-  text-shadow: 0 0 12px rgba(255, 92, 155, 0.72);
-}
-
-.death-title h1 {
-  font-size: clamp(1.46rem, 6.1vw, 2.28rem);
-  line-height: 0.98;
-  color: #55ecff;
-  text-shadow: 0 0 18px rgba(85, 236, 255, 0.78), 0 3px 0 rgba(8, 33, 58, 0.9);
-}
-
-.revive-panel {
-  display: grid;
-  grid-template-columns: clamp(56px, 15.5vw, 76px) minmax(0, 1fr);
-  align-items: center;
-  gap: 5px 10px;
-  min-height: 112px;
-  margin: 0 -2px 3px;
-  padding: clamp(7px, 2.2vw, 11px);
-  border: 10px solid transparent;
-  border-image: url("image/ui/panel-purple.png") 22 fill stretch;
-  background: rgba(8, 0, 22, 0.28);
-  box-shadow: inset 0 0 28px rgba(255, 92, 155, 0.16), 0 0 24px rgba(255, 92, 155, 0.2);
-}
-
-.revive-crystal {
-  width: 100%;
-  aspect-ratio: 1;
-  background:
-    radial-gradient(circle at 50% 80%, rgba(255, 92, 155, 0.42), transparent 36%),
-    url("image/ui/icon_recovery.png") center / contain no-repeat;
-  filter: drop-shadow(0 0 18px rgba(255, 92, 155, 0.86)) saturate(1.3);
-}
-
-.revive-copy {
-  min-width: 0;
-}
-
-.revive-copy strong {
-  display: block;
-  color: #ff75c0;
-  font-size: clamp(1.02rem, 4vw, 1.42rem);
-  line-height: 1;
-  text-transform: uppercase;
-  text-shadow: 0 0 12px rgba(255, 92, 155, 0.75);
-}
-
-.revive-copy span {
-  display: block;
-  margin-top: 3px;
-  color: #f5f7ff;
-  font-size: clamp(0.68rem, 2.35vw, 0.84rem);
-  font-weight: 700;
-  line-height: 1.18;
-}
-
-.revive-btn {
-  grid-column: 1 / -1;
-  display: inline-flex;
-  justify-content: center;
-  gap: 5px;
-  min-height: 38px;
-  width: 100%;
-  padding: 4px 7px;
-  border: 8px solid transparent;
-  border-image: url("image/ui/button-menu-pink-small-empty.png") 16 fill stretch;
-  border-radius: 0;
-  background: transparent;
-  color: #ffffff;
-  font-size: clamp(0.72rem, 2.75vw, 0.96rem);
-  text-shadow: 0 0 10px rgba(255, 92, 155, 0.72);
-}
-
-.revive-btn .sprite-icon {
-  width: 21px;
-  height: 21px;
-}
-
-.revive-btn strong {
-  color: #ffffff;
-  font-size: 1.08em;
-}
-
-.revive-stars {
-  color: #ffcf35;
-  letter-spacing: 0;
-  text-shadow: 0 0 10px rgba(255, 207, 53, 0.8);
-  white-space: nowrap;
-}
-
-.death-screen .result-list {
-  gap: 4px;
-  padding-bottom: 4px;
-}
-
-.death-screen .result-list div {
-  display: grid;
-  grid-template-columns: 30px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  min-height: 38px;
-  margin: 0;
-  padding: 4px 8px;
-  border-width: 6px;
-  background:
-    linear-gradient(180deg, rgba(3, 22, 46, 0.82), rgba(1, 8, 22, 0.94)),
-    repeating-linear-gradient(90deg, rgba(85, 236, 255, 0.06) 0 1px, transparent 1px 8px);
-}
-
-.death-screen .result-list .sprite-icon {
-  width: 22px;
-  height: 22px;
-  filter: drop-shadow(0 0 8px currentColor);
-}
-
-.death-screen .result-list span {
-  min-width: 0;
-  color: #b8c4d4;
-  font-size: clamp(0.66rem, 2.25vw, 0.82rem);
-  font-weight: 700;
-}
-
-.death-screen .result-list strong {
-  color: #ffffff;
-  font-size: clamp(0.78rem, 2.85vw, 0.96rem);
-  font-weight: 900;
-  text-align: right;
-}
-
-.death-action {
-  position: relative;
-  display: flex !important;
-  align-items: center;
-  justify-content: center !important;
-  min-height: 42px;
-  margin: 0;
-  padding: 5px 58px;
-  border-width: 8px;
-  border-radius: 0;
-  font-size: clamp(0.86rem, 3.55vw, 1.18rem);
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: 0;
-  text-align: center !important;
-}
-
-.death-action .sprite-icon {
-  display: none;
-}
-
-.death-action span:not(.sprite-icon) {
-  min-width: 0;
-}
-
-.death-action::before,
-.death-action::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 28px;
-  height: 28px;
-  transform: translateY(-50%);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  filter: drop-shadow(0 0 8px rgba(85, 236, 255, 0.72));
-  pointer-events: none;
-}
-
-.death-action::before {
-  left: 22px;
-}
-
-.death-action::after {
-  right: 22px;
-  background-image: url("image/ui/icon_arrow_right.png");
-}
-
-.death-screen .death-action-again {
-  color: #eefdff;
-  border-image: url("image/ui/panel-green.png") 18 fill stretch !important;
-  background: transparent;
-  text-shadow: 0 0 12px rgba(85, 236, 255, 0.72);
-}
-
-.death-screen .death-action-again::before {
-  background-image: url("image/ui/icon_death.png");
-}
-
-.death-screen .death-action-again::after {
-  transform: translateY(-50%) scaleX(-1);
-}
-
-.death-screen .death-action-menu {
-  color: #f7e9ff;
-  border-image: url("image/ui/panel-purple.png") 18 fill stretch !important;
-  background: transparent;
-  text-shadow: 0 0 12px rgba(190, 84, 255, 0.72);
-}
-
-.death-screen .death-action-menu::before {
-  background-image: url("image/ui/icon_home.png");
-}
-
-@media (max-width: 380px) {
-  .revive-panel {
-    grid-template-columns: 52px minmax(0, 1fr);
-    min-height: 106px;
-  }
-
-  .revive-btn {
-    gap: 4px;
-    font-size: 0.68rem;
-  }
-
-  .death-action {
-    padding-inline: 48px;
-    font-size: 0.84rem;
-  }
-
-  .death-action::before {
-    left: 17px;
-  }
-
-  .death-action::after {
-    right: 17px;
-  }
-}
-
 .upgrade-card.is-available .run-upgrade-level {
   color: #a7ff45;
   border-color: rgba(167, 255, 69, 0.55);
-}
-
-.screen:not(.active) {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-.screen.active {
-  opacity: 1 !important;
-  pointer-events: auto !important;
 }
 
 .upgrade-card.is-available .run-upgrade-cost {
@@ -5459,58 +3822,4 @@ input[type="range"] {
 
 #permanentScreen .permanent-price {
   font-size: clamp(0.66rem, 2.6vw, 0.84rem);
-}
-
-.shop-card .shop-actions.ultimate-actions {
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-  gap: 5px !important;
-  margin-top: auto;
-}
-
-.shop-card .shop-actions.ultimate-actions.has-toggle {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-}
-
-.shop-card .shop-actions.ultimate-actions button {
-  width: 100%;
-  min-width: 0;
-  min-height: 38px !important;
-  padding: 3px 5px !important;
-  border: 11px solid transparent !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  font-size: clamp(0.62rem, 2.25vw, 0.78rem) !important;
-  font-weight: 900;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.shop-card .shop-actions.ultimate-actions .ultimate-buy-btn {
-  border-image: url("image/ui/button_buy_empty.png") 24 fill stretch !important;
-  color: #9af7ff !important;
-  text-shadow: 0 0 10px rgba(85, 236, 255, 0.8);
-}
-
-.shop-card .shop-actions.ultimate-actions:not(.has-toggle) .ultimate-buy-btn {
-  justify-self: center;
-  width: clamp(72px, 72%, 104px);
-}
-
-.shop-card .shop-actions.ultimate-actions .ultimate-toggle-btn {
-  border-image: url("image/ui/panel-green.png") 24 fill stretch !important;
-  color: #5dffa8 !important;
-  text-shadow: 0 0 10px rgba(36, 255, 143, 0.72);
-}
-
-.shop-card .shop-actions.ultimate-actions .ultimate-toggle-btn.off {
-  border-image: url("image/ui/panel-purple.png") 24 fill stretch !important;
-  color: #d9bcff !important;
-  text-shadow: 0 0 10px rgba(179, 117, 255, 0.72);
-}
-
-.shop-card .shop-actions.ultimate-actions button:disabled {
-  color: rgba(175, 209, 218, 0.58) !important;
-  filter: grayscale(0.5);
 }
