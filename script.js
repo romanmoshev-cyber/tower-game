@@ -9,6 +9,7 @@ const ARENA_CAMERA_ZOOM_OUT = 2.5;
 
 const balance = {
   waveSpeedGrowth: 0.006,
+  enemyBaseSpeedMult: 1.2,
   spawnBaseDelay: 0.95,
   spawnMinDelay: 0.42,
   spawnDelayWaveReduction: 0.006,
@@ -279,7 +280,7 @@ const enemyDescs = {
 const runUpgradeDefs = [
   { id: "damage", name: "Урон", category: "attack", base: 12, growth: 1.04, max: 5000, desc: "Увеличивает базовый урон снарядов башни." },
   { id: "attackSpeed", name: "Скорость атаки", category: "attack", base: 16, growth: 1.16, max: 100, desc: "Увеличивает частоту выстрелов." },
-  { id: "range", name: "Дальность", category: "attack", base: 14, growth: 1.16, max: 40, desc: "Увеличивает радиус поражения башни." },
+  { id: "range", name: "Дальность", category: "attack", base: 32, growth: 1.24, max: 20, desc: "Увеличивает радиус поражения башни до 400px." },
   { id: "critChance", name: "Шанс крита", category: "attack", base: 18, growth: 1.16, max: 90, desc: "Вероятность нанести критический урон." },
   { id: "critDamage", name: "Сила крита", category: "attack", base: 22, growth: 1.16, max: 150, desc: "Множитель урона при критическом попадании." },
   { id: "multiShot", name: "Мультивыстрел", category: "attack", base: 32, growth: 1.18, max: 100, desc: "Шанс выпустить дополнительный снаряд." },
@@ -522,6 +523,7 @@ let wasPausedForInfo = false;
 let offlineMsCalculated = 0;
 let arenaGridOffset = { x: 0, y: 0 };
 let towerPositionAnimationId = 0;
+let upgradePanelSwipeStart = null;
 
 // --- ИНТЕГРАЦИЯ TELEGRAM ---
 const tg = window.Telegram?.WebApp;
@@ -548,17 +550,10 @@ function getArenaWorldCenter() {
   const viewportHeight = Math.max(240, Math.round(arenaRect?.height || canvas.clientHeight || 920));
   const scaleX = ARENA_CAMERA_ZOOM_OUT;
   const scaleY = ARENA_CAMERA_ZOOM_OUT;
-  const upgradePanel = document.querySelector(".upgrade-panel");
-  const panelRect = upgradePanel?.getBoundingClientRect();
-  let visibleBottom = viewportHeight;
-
-  if (arenaRect && panelRect) {
-    visibleBottom = Math.max(120, Math.min(viewportHeight, panelRect.top - arenaRect.top));
-  }
 
   return {
     x: (viewportWidth / 2) * scaleX,
-    y: (visibleBottom / 2) * scaleY,
+    y: (viewportHeight / 2) * scaleY,
   };
 }
 
@@ -1026,6 +1021,7 @@ function bindUi() {
   document.getElementById("runUpgradeGrid").addEventListener("scroll", () => {
     if (!isRestoringRunUpgradeScroll) saveRunUpgradeScrollPosition();
   }, { passive: true });
+  bindUpgradePanelSwipe();
   document.getElementById("closeUpgradeInfoBtn").addEventListener("click", () => {
     document.getElementById("upgradeInfoOverlay").classList.add("hidden");
     if (wasPausedForInfo) {
@@ -1208,13 +1204,39 @@ function setUpgradePanelCollapsed(collapsed) {
   const gameScreen = screens.game || document.getElementById("gameScreen");
   if (!gameScreen) return;
   gameScreen.classList.toggle("upgrade-panel-collapsed", collapsed);
-  scheduleTowerPositionUpdate();
+  if (game && !game.ended) drawGame();
 }
 
 function toggleUpgradePanel() {
   const gameScreen = screens.game || document.getElementById("gameScreen");
   if (!gameScreen) return;
   setUpgradePanelCollapsed(!gameScreen.classList.contains("upgrade-panel-collapsed"));
+}
+
+function bindUpgradePanelSwipe() {
+  const gameScreen = screens.game || document.getElementById("gameScreen");
+  if (!gameScreen) return;
+  gameScreen.addEventListener("touchstart", (event) => {
+    if (event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    upgradePanelSwipeStart = {
+      x: touch.clientX,
+      y: touch.clientY,
+      target: event.target,
+      at: performance.now(),
+    };
+  }, { passive: true });
+  gameScreen.addEventListener("touchend", (event) => {
+    if (!upgradePanelSwipeStart || event.changedTouches.length !== 1) return;
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - upgradePanelSwipeStart.x;
+    const dy = touch.clientY - upgradePanelSwipeStart.y;
+    const startedInGrid = upgradePanelSwipeStart.target?.closest?.("#runUpgradeGrid");
+    upgradePanelSwipeStart = null;
+    if (Math.abs(dy) < 54 || Math.abs(dy) < Math.abs(dx) * 1.25) return;
+    if (startedInGrid && dy > 0 && startedInGrid.scrollTop > 4) return;
+    setUpgradePanelCollapsed(dy > 0);
+  }, { passive: true });
 }
 
 function renderRunUpgradeTabs() {
@@ -1689,7 +1711,7 @@ function spawnEnemy(type, override = {}) {
     type = override.type;
   }
   const def = enemyDefs[type];
-  const spawnPoint = getSpawnPoint();
+  const spawnPoint = getSpawnPoint(type);
   const angle = override.angle ?? Math.atan2(game.tower.y - spawnPoint.y, game.tower.x - spawnPoint.x);
   const bossIndex = Math.max(1, Math.floor(game.wave / 10));
   
@@ -1716,7 +1738,7 @@ function spawnEnemy(type, override = {}) {
     angularVelocity: 0,
     hp: (override.hp ?? def.hp) * scale * (type === "boss" ? 1 : game.perkMultipliers.enemyHp),
     maxHp: (override.hp ?? def.hp) * scale * (type === "boss" ? 1 : game.perkMultipliers.enemyHp),
-    speed: (override.speed ?? def.speed) * (1 + game.wave * balance.waveSpeedGrowth) * (type === "boss" ? 0.95 : 1) * (game.eventMode === "overclocked" ? balance.overclockedSpeed : 1),
+    speed: (override.speed ?? def.speed) * balance.enemyBaseSpeedMult * (1 + game.wave * balance.waveSpeedGrowth) * (type === "boss" ? 0.95 : 1) * (game.eventMode === "overclocked" ? balance.overclockedSpeed : 1),
     reward: Math.ceil((override.reward ?? def.reward) * rewardScale * (type === "boss" ? (1 + game.tier * balance.bossTierReward) : 1) * (game.eventMode === "glassCore" ? balance.glassCoreCash : 1) * (1 + (progress.equippedCards.includes("cardEnemyBalance") ? getCardLevelFromCount(progress.cards.cardEnemyBalance || 0) * 0.04 : 0))),
     damage: Math.ceil(def.damage * damageScale * game.tierMult * eventMult * game.perkMultipliers.enemyDamage),
     radius: override.radius ?? def.radius,
@@ -1762,11 +1784,14 @@ function spawnEnemy(type, override = {}) {
   game.enemies.push(enemy);
 }
 
-function getSpawnPoint() {
+function getSpawnPoint(type = "") {
   const width = getCanvasEffectiveWidth();
   const height = getCanvasEffectiveHeight();
   const margin = 34;
-  const side = Math.floor(Math.random() * 4);
+  const sideRoll = Math.random();
+  const side = type === "boss"
+    ? (sideRoll < 0.4 ? 0 : (sideRoll < 0.7 ? 1 : 3))
+    : (sideRoll < 0.38 ? 0 : (sideRoll < 0.71 ? 1 : (sideRoll < 0.94 ? 3 : 2)));
   if (side === 0) return { x: Math.random() * width, y: -margin };
   if (side === 1) return { x: width + margin, y: Math.random() * height };
   if (side === 2) return { x: Math.random() * width, y: height + margin };
@@ -2888,7 +2913,7 @@ function applyUpgradeStat(id) {
     const runStep = level < 15 ? 0.07 : 0.025;
     t.attackSpeed = Math.min(balance.attackSpeedCap, t.attackSpeed + runStep);
   }
-  if (id === "range") t.range += 12;
+  if (id === "range") t.range = Math.min(400, t.range + 12);
   if (id === "maxHealth") {
     const added = (level < 25 ? 20 : 8) * (game.eventMode === "glassCore" ? balance.glassCoreHp : 1) * (game.perks?.includes("hp") ? 1.25 : 1) * cardHpMult * getModuleMult("health");
     t.maxHp += added;
@@ -3117,7 +3142,7 @@ function getNextUpgradeEffectString(id, level) {
   switch(id) {
     case "damage": return level < 20 ? `+12% от базы урона` : `+4% от базы урона`;
     case "attackSpeed": return level < 15 ? `+0.07 выстр./с` : `+0.025 выстр./с`;
-    case "range": return `+12 px`;
+    case "range": return `+12 px (до 400)`;
     case "critChance": return `+0.8%`;
     case "critDamage": return `+0.10x`;
     case "superCritChance": return `+1.0%`;

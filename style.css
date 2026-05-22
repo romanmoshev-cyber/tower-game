@@ -2602,6 +2602,16 @@ button {
   min-height: 0;
 }
 
+#gameCanvas {
+  transform-origin: top left;
+  transform: translateY(calc(-1 * (var(--upgrade-panel-visible) - var(--upgrade-panel-peek))));
+  transition: transform 0.28s ease;
+}
+
+.game-screen.upgrade-panel-collapsed #gameCanvas {
+  transform: translateY(0);
+}
+
 .top-left-currencies {
   top: calc(6px + var(--safe-top));
   left: calc(6px + var(--safe-left));
